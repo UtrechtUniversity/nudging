@@ -1,0 +1,11 @@
+{
+    "id": 17,
+    "title": "Nudges in the Restroom: How Hand-Washing Can Be Impacted by Environmental Cues",
+    "data_availability": "yes",
+    "data_usability": "no",
+    "filename": "finaldataset.csv",
+    "format": "csv",
+    "number_of_participants": "unknown",
+    "personal_info": ["gender"],
+    "nudge_types": ["visual cues (arrows and smileys)"]
+}
