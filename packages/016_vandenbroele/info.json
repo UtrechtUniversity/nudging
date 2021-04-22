@@ -1,8 +1,8 @@
 {
     "id": 16,
     "title": "Mock meat in the butchery: Nudging consumers toward meat substitutes",
-    "data_availability": "yes",
-    "data_usability": "yes",
+    "data_availability": true,
+    "data_usability": true,
     "filename": "S2_OpenAccess.sav",
     "format": "sav",
     "number_of_participants": 231,

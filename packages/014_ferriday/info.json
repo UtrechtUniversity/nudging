@@ -1,8 +1,8 @@
 {
     "id": 14,
     "title": "Variation in the Oral Processing of Everyday Meals Is Associated with Fullness and Meal Size; A Potential Nudge to Reduce Energy Intake?",
-    "data_availability": "yes",
-    "data_usability": "no",
+    "data_availability": true,
+    "data_usability": false,
     "filename": "Study 2 final data.sav",
     "format": "sav",
     "number_of_participants": 24,

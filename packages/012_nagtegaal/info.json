@@ -1,6 +1,6 @@
 {
     "id": 12,
     "title": "Nudging healthcare professionals towards evidence-based medicine: A systematic scoping review",
-    "data_availability": "no",
-    "data_usability": "no"
+    "data_availability": false,
+    "data_usability": false
 }

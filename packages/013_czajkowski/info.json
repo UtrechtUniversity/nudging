@@ -1,8 +1,8 @@
 {
     "id": 13,
     "title": "Social norm nudging and preferences for household recycling",
-    "data_availability": "yes",
-    "data_usability": "yes",
+    "data_availability": true,
+    "data_usability": true,
     "filename": "data_smieci_3_1.mat",
     "format": "mat",
     "number_of_participants": 1853,
