@@ -1,0 +1,11 @@
+{
+    "id": 11,
+    "title": "Selective psychological effects of nudging, gamification and rational information in converting commuters from cars to buses: A controlled field experiment",
+    "data_availability": "yes",
+    "data_usability": "yes",    
+    "filename": "Commuter experiment_simple.csv",
+    "format": "csv",
+    "number_of_participants": 74,
+    "personal_info": ["age", "gender"],
+    "nudge_types": ["action planning", "precommitment", "priming", "social proof"]
+}
