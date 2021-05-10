@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+"""Check download.json files and summarize"""
 
 import json
 from pathlib import Path
 from pprint import pprint
-
 
 for data_dir in sorted(Path("data/raw").glob("[!.]*/")):
     try:
