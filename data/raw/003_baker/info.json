@@ -1,0 +1,9 @@
+{
+    "id": 3,
+    "title": "A Randomized Experiment Testing the Efficacy of a Scheduling Nudge in a Massive Open Online Course (MOOC)",
+    "data_availability": true,
+    "data_usability": false,
+    "number_of_participants": 18042,
+    "personal_info": ["origin"],
+    "comment": "Needs login to download, doesn't seem like there is a lot of information that can be used for machine learning. Although I suppose that people that are studying might have similar ages."
+}

@@ -1,0 +1,9 @@
+{
+    "id": 18,
+    "title": "Impact of increasing vegetarian availability on meal selection and sales in cafeterias",
+    "data_availability": true,
+    "data_usability": false,
+    "filename": "Garnett_2019_PNAS_ResearchData_VegetarianAvailability-2.xlsx",
+    "format": "xlsx",
+    "nudge_types": ["increased vegetarian availability"]
+}

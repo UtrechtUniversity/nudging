@@ -18,7 +18,7 @@ def read_info(info_fp):
 
 
 if __name__ == "__main__":
-    all_data_dir = sorted(Path("packages").glob("[!.]*/"))
+    all_data_dir = sorted(Path("data/raw").glob("[!.]*/"))
     data = defaultdict(lambda: [])
     for data_dir in all_data_dir:
         info_data = read_info(Path(data_dir, "info.json"))
@@ -34,8 +34,8 @@ if __name__ == "__main__":
     n_available = np.nansum(data["available"])
     n_usable = int(np.nansum(data["usable"]))
     participant_list = data["n_participants"][np.where(data["usable"])[0]]
-    avg_participants = np.nanmean(participant_list)
+    total_participants = int(np.nansum(participant_list))
     print(f"# Datasets: {n_data}")
     print(f"# Available: {n_available}")
     print(f"# Usable: {n_usable}")
-    print(f"Avg. # of participants: {avg_participants}")
+    print(f"# of participants: {total_participants}")

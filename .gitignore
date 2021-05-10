@@ -132,5 +132,5 @@ dmypy.json
 .DS_Store
 
 # data
-packages/*/*
-!packages/*/info.json
+data/
+!data/raw/*/info.json

@@ -1,0 +1,9 @@
+{
+    "id": 9,
+    "title": "Using insights from behavioral economics to nudge individuals towards healthier choices when eating out: A restaurant experiment",
+    "data_availability": true,
+    "data_usability": true,
+    "personal_info": ["age", "gender", "employment"],
+    "comment": "Results in French.",
+    "number_of_particpants": 303
+}
