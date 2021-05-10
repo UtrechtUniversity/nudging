@@ -1,8 +1,0 @@
-{
-    "id": 4,
-    "title": "A low-cost information nudge increases citizenship application rates among low-income immigrants",
-    "data_availability": true,
-    "data_usability": true,
-    "number_of_participants": 1538,
-    "personal_info": ["age", "gender", "education", "marital status", "language", "origin"]
-}

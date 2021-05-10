@@ -1,8 +1,0 @@
-{
-    "id": 2,
-    "title": "Fighting COVID-19 Misinformation on Social Media: Experimental Evidence for a Scalable Accuracy-Nudge Intervention",
-    "data_availability": true,
-    "data_usability": true,
-    "personal_info": ["age", "gender", "ethnicity", "political identity"],
-    "number_of_participants": 853
-}

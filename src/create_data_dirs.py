@@ -18,7 +18,7 @@ for i in range(len(df)):
     authors = df.iloc[i]["Authors"]
     dir_name = f"{data_id:03d}" + "_" + authors.split(",")[0].split(" &")[0].split(" et al")[0].lower()
     dir_name = dir_name.encode('ascii', 'ignore').decode()
-    package_dir = Path("packages", dir_name)
+    package_dir = Path("data/raw", dir_name)
     download_properties = {
         "id": data_id,
         "download_data": str(date.today()),
