@@ -8,7 +8,7 @@ import numpy as np
 from datetime import date
 from pprint import pprint
 
-data = pd.read_excel('Database search_OPEN DATA_Precision Nudging.xlsx')
+data = pd.read_excel('data/raw/Database search_OPEN DATA_Precision Nudging.xlsx')
 
 valid_ids = np.where(np.logical_not(np.isnan(data["ID"])))[0]
 df = data.iloc[valid_ids]
