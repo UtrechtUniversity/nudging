@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Create directories for data downloads in data/raw """
 
 from datetime import date

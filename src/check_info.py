@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Check info.json files and summarize"""
 
 import json
