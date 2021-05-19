@@ -1,24 +1,25 @@
 #!/usr/bin/env python
+"""Check info.json files and summarize"""
 
 import json
 from pathlib import Path
-from pprint import pprint
 from collections import defaultdict
 import numpy as np
 
 
 def read_info(info_fp):
+    """Read and return content of info.json """
     try:
-        with open(info_fp, "r") as f:
-            data = json.load(f)
+        with open(info_fp, "r") as json_file:
+            result = json.load(json_file)
     except FileNotFoundError:
-        print("Error finding 'info.json' in ", data_dir)
+        print("Error finding ", info_fp)
         return None
-    return data
+    return result
 
 
 if __name__ == "__main__":
-    all_data_dir = sorted(Path("packages").glob("[!.]*/"))
+    all_data_dir = sorted(Path("data/raw").glob("[!.]*/"))
     data = defaultdict(lambda: [])
     for data_dir in all_data_dir:
         info_data = read_info(Path(data_dir, "info.json"))
@@ -32,10 +33,10 @@ if __name__ == "__main__":
                  if not isinstance(v[0], list)})
     n_data = len(data["usable"])
     n_available = np.nansum(data["available"])
-    n_usable = int(np.nansum(data["usable"]))
+    n_usable = np.nansum(data["usable"])
     participant_list = data["n_participants"][np.where(data["usable"])[0]]
-    avg_participants = np.nanmean(participant_list)
+    total_participants = np.nansum(participant_list)
     print(f"# Datasets: {n_data}")
     print(f"# Available: {n_available}")
-    print(f"# Usable: {n_usable}")
-    print(f"Avg. # of participants: {avg_participants}")
+    print(f"# Usable: {int(n_usable)}")
+    print(f"# of participants: {int(total_participants)}")

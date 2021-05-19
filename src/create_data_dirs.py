@@ -1,14 +1,13 @@
 #!/usr/bin/env python
+"""Create directories for data downloads in data/raw """
 
+from datetime import date
 from pathlib import Path
 import json
-
-import pandas as pd
 import numpy as np
-from datetime import date
-from pprint import pprint
+import pandas as pd
 
-data = pd.read_excel('Database search_OPEN DATA_Precision Nudging.xlsx')
+data = pd.read_excel('data/Database search_OPEN DATA_Precision Nudging.xlsx')
 
 valid_ids = np.where(np.logical_not(np.isnan(data["ID"])))[0]
 df = data.iloc[valid_ids]
@@ -16,9 +15,10 @@ df = data.iloc[valid_ids]
 for i in range(len(df)):
     data_id = int(df.iloc[i]["ID"])
     authors = df.iloc[i]["Authors"]
-    dir_name = f"{data_id:03d}" + "_" + authors.split(",")[0].split(" &")[0].split(" et al")[0].lower()
+    dir_name = f"{data_id:03d}" + "_" + \
+        authors.split(",")[0].split(" &")[0].split(" et al")[0].lower()
     dir_name = dir_name.encode('ascii', 'ignore').decode()
-    package_dir = Path("packages", dir_name)
+    package_dir = Path("data/raw", dir_name)
     download_properties = {
         "id": data_id,
         "download_data": str(date.today()),
