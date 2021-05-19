@@ -12,10 +12,10 @@ df = pd.read_csv("test.csv")
 target = np.array(df['nudge_success']).astype(int)
 target = np.array(
     df['nudge_type']).astype(int) + 100*(1.0 - np.array(df['nudge_success']).astype(int))
-print("nudge type==3: ", len(target[target==3]))
-print("nudge type==103: ", len(target[target==103]))
-print("nudge type==4: ", len(target[target==4]))
-print("nudge type==104: ", len(target[target==104]))
+print("nudge type==3: ", len(target[target == 3]))
+print("nudge type==103: ", len(target[target == 103]))
+print("nudge type==4: ", len(target[target == 4]))
+print("nudge type==104: ", len(target[target == 104]))
 print("")
 age = np.floor(df['age']/10.0).astype(int)
 gender = np.array(df['gender']).astype(int)
@@ -26,15 +26,15 @@ data = np.transpose(np.stack([age, gender, nudge_domain]))
 
 # Split dataset into training set and test set
 X_train, X_test, y_train, y_test = train_test_split(
-    data, target, test_size=0.25)#, random_state=1) # 70% training and 30% test
+    data, target, test_size=0.25)
 
-#Create a Gaussian Classifier
+# Create a Gaussian Classifier
 gnb = GaussianNB()
 
-#Train the model using the training sets
+# Train the model using the training sets
 gnb.fit(data, target)
 
-#Predict the response for test dataset
+# Predict the response for test dataset
 y_pred = gnb.predict(data)
 
 print("10-20 years, male: ", gnb.predict([[1, 1, 3]]))
@@ -51,13 +51,13 @@ print("50-60 years, female: ", gnb.predict([[5, 0, 3]]))
 print("")
 
 # Model Accuracy, how often is the classifier correct?
-print("Accuracy GaussianNB:",metrics.accuracy_score(target, y_pred))
+print("Accuracy GaussianNB:", metrics.accuracy_score(target, y_pred))
 
 clf = CategoricalNB()
-#Train the model using the training sets
+# Train the model using the training sets
 clf.fit(X_train, y_train)
 
-#Predict the response for test dataset
+# Predict the response for test dataset
 y_pred = clf.predict(X_test)
 # Model Accuracy, how often is the classifier correct?
-print("Accuracy CategoricalNB:",metrics.accuracy_score(y_test, y_pred))
+print("Accuracy CategoricalNB:", metrics.accuracy_score(y_test, y_pred))

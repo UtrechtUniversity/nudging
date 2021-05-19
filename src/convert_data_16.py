@@ -4,7 +4,6 @@ import csv
 import pyreadstat
 import numpy as np
 
-
 NUDGE_DOMAIN = 3
 NUDGE_TYPE = 4
 
@@ -67,6 +66,7 @@ def convert():
             gender = gender_array[index][np.isfinite(gender_array[index])][0]
             gender = 0 if gender == 1 else 1
             writer.writerow([age, gender, NUDGE_DOMAIN, NUDGE_TYPE, success, z_score])
+
 
 if __name__ == "__main__":
     convert()

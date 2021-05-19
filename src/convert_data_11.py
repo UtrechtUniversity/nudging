@@ -6,6 +6,7 @@ import numpy as np
 NUDGE_DOMAIN = 3
 NUDGE_TYPE = 3
 
+
 def convert():
     """Convert raw csv"""
 
@@ -33,22 +34,23 @@ def convert():
             writer.writerow(
                 ["age", "gender", "nudge_domain", "nudge_type", "success", "z_score"])
             for row in reader:
-                if row[0] == 'nudge' :
+                if row[0] == 'nudge':
                     z_score = round((int(row[9]) - mean)/std, 2)
                     if float(row[9]) >= mean + std:
                         success = 1
                     else:
                         success = 0
                     if row[2] == "1":
-                        #male
+                        # male
                         gender = 1
                     elif row[2] == "8":
-                        #female
+                        # female
                         gender = 0
                     else:
                         gender = " "
                     age = int(round(float(row[1]), 0))
                     writer.writerow([age, gender, NUDGE_DOMAIN, NUDGE_TYPE, success, z_score])
+
 
 if __name__ == "__main__":
     convert()
