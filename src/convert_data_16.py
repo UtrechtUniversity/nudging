@@ -5,7 +5,7 @@ import pyreadstat
 import numpy as np
 
 NUDGE_DOMAIN = 3
-NUDGE_TYPE = 4
+NUDGE_TYPE = [4]
 
 
 def convert():

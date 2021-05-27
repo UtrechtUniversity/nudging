@@ -7,7 +7,7 @@ import numpy as np
 
 
 NUDGE_DOMAIN = 3
-NUDGE_TYPE = 3
+NUDGE_TYPE = [3, 7, 8]
 
 
 def convert():
