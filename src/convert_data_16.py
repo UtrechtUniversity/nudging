@@ -13,7 +13,7 @@ def convert():
 
     input_data, _ = pyreadstat.read_sav('data/raw/016_vandenbroele/S2_OpenAccess.sav')
     # write csv file with raw data
-    input_data.to_csv("test16.csv")
+    input_data.to_csv("data/temp/raw_16.csv")
 
     person = np.array(input_data['ParticipantID'])
     visibility = np.array(input_data['Visibility'])
@@ -64,7 +64,12 @@ def convert():
             z_score = round(z_score, 2)
             age = int(round(age_array[index][np.isfinite(age_array[index])][0], 0))
             gender = gender_array[index][np.isfinite(gender_array[index])][0]
-            gender = 0 if gender == 1 else 1
+            if gender == 1:
+                gender = 0
+            elif gender == 0:
+                gender = 1
+            else:
+                gender = ""
             writer.writerow([age, gender, NUDGE_DOMAIN, NUDGE_TYPE, success, z_score])
 
 

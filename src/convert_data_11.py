@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 """Convert raw dataset 11 """
+from shutil import copyfile
+
 import csv
 import numpy as np
+
 
 NUDGE_DOMAIN = 3
 NUDGE_TYPE = 3
@@ -12,6 +15,9 @@ def convert():
 
     # Raw dataset
     filename = "data/raw/011_andreas/Commuter experiment_simple.csv"
+    # Copy csv file with raw data
+    copyfile(filename, "data/temp/raw_11.csv")
+
     # Get meand and std from control group
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -47,7 +53,7 @@ def convert():
                         # female
                         gender = 0
                     else:
-                        gender = " "
+                        gender = ""
                     age = int(round(float(row[1]), 0))
                     writer.writerow([age, gender, NUDGE_DOMAIN, NUDGE_TYPE, success, z_score])
 
