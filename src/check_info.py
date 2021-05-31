@@ -19,7 +19,7 @@ def read_info(info_fp):
 
 
 if __name__ == "__main__":
-    all_data_dir = sorted(Path("data/raw").glob("[!.]*/"))
+    all_data_dir = sorted(Path("data/external").glob("[!.]*/"))
     data = defaultdict(lambda: [])
     for data_dir in all_data_dir:
         info_data = read_info(Path(data_dir, "info.json"))
