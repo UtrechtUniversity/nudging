@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from pprint import pprint
 
-for data_dir in sorted(Path("data/raw").glob("[!.]*/")):
+for data_dir in sorted(Path("data/external").glob("[!.]*/")):
     try:
         download_fp = Path(data_dir, "download.json")
         with open(download_fp, "r") as f:
