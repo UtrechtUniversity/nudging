@@ -7,13 +7,14 @@ import numpy as np
 NUDGE_DOMAIN = 3
 NUDGE_TYPE = [4]
 
+THRESHOLD = 1.
 
 def convert():
     """Convert raw sav"""
 
-    input_data, _ = pyreadstat.read_sav('data/raw/016_vandenbroele/S2_OpenAccess.sav')
+    input_data, _ = pyreadstat.read_sav('data/external/016_vandenbroele/S2_OpenAccess.sav')
     # write csv file with raw data
-    input_data.to_csv("data/temp/raw_16.csv")
+    input_data.to_csv("data/raw/original_16.csv")
 
     person = np.array(input_data['ParticipantID'])
     visibility = np.array(input_data['Visibility'])
@@ -60,7 +61,7 @@ def convert():
                 continue
             ratio = veg_purchases/(meat_purchases + veg_purchases)
             z_score = (ratio - mean) / std
-            success = 1 if z_score >= 1.0 else 0
+            success = 1 if z_score >= THRESHOLD else 0
             z_score = round(z_score, 2)
             age = int(round(age_array[index][np.isfinite(age_array[index])][0], 0))
             gender = gender_array[index][np.isfinite(gender_array[index])][0]

@@ -9,14 +9,16 @@ import numpy as np
 NUDGE_DOMAIN = 3
 NUDGE_TYPE = [3, 7, 8]
 
+THRESHOLD = 1.
+
 
 def convert():
     """Convert raw csv"""
 
     # Raw dataset
-    filename = "data/raw/011_andreas/Commuter experiment_simple.csv"
+    filename = "data/external/011_andreas/Commuter experiment_simple.csv"
     # Copy csv file with raw data
-    copyfile(filename, "data/temp/raw_11.csv")
+    copyfile(filename, "data/raw/original_11.csv")
 
     # Get meand and std from control group
     with open(filename, newline='') as csvfile:
@@ -42,7 +44,7 @@ def convert():
             for row in reader:
                 if row[0] == 'nudge':
                     z_score = round((int(row[9]) - mean)/std, 2)
-                    if float(row[9]) >= mean + std:
+                    if float(row[9]) >= mean + std * THRESHOLD:
                         success = 1
                     else:
                         success = 0
