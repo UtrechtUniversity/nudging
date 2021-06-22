@@ -20,6 +20,7 @@ def combine():
     filenames = glob.glob('data/processed/dataset_*.csv')
     combined_file = 'data/processed/combined.csv'
     with open(combined_file, 'w') as fout, fileinput.input(filenames) as fin:
+        fout.write("age,gender,nudge_domain,nudge_type,success,z_score\n")        
         for line in fin:
             fout.write(line)
     # Read in as DataFrame
@@ -38,7 +39,7 @@ def classify(dataset):
     mlb = MultiLabelBinarizer()
     target = mlb.fit_transform(target)
     print("Classes: ", mlb.classes_)
-    age = np.floor(dataset['age']/10.0).astype(int)
+    age = np.floor(dataset['age']).astype(int)
     gender = np.array(dataset['gender']).astype(int)
     nudge_domain = np.array(dataset['nudge_domain']).astype(int)
 
