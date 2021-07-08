@@ -20,14 +20,12 @@ def read(filename):
     Returns:
         pandas.DataFrame: containing age, gender, outcome, nudge
     """
-    nudge_domain = 3
-    nudge_type = 3
 
     # Copy csv file with raw data
     copyfile(filename, "data/raw/original_11.csv")
 
     # Put data in DataFrame
-    df = pd.DataFrame(columns=('nudge_domain', 'nudge_type', 'age', 'gender', 'outcome', 'nudge'))
+    df = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         swipes = {}
@@ -51,7 +49,7 @@ def read(filename):
                 continue
             age = int(round(float(row[1])/10, 0))
             outcome = int(row[9])
-            df.loc[index] = [nudge_domain, nudge_type, age, gender, outcome, nudge]
+            df.loc[index] = [age, gender, outcome, nudge]
             index += 1
 
     df = df.apply(pd.to_numeric)
