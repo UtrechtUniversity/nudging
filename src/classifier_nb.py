@@ -17,10 +17,10 @@ from sklearn.multiclass import OneVsRestClassifier
 
 def combine():
     """Combine csv files"""
-    filenames = glob.glob('data/processed/dataset_*.csv')
+    filenames = glob.glob('data/processed/data_*.csv')
     combined_file = 'data/processed/combined.csv'
     with open(combined_file, 'w') as fout, fileinput.input(filenames) as fin:
-        fout.write("age,gender,nudge_domain,nudge_type,success,z_score\n")        
+        # fout.write("age,gender,nudge_domain,nudge_type,success,z_score\n")        
         for line in fin:
             fout.write(line)
     # Read in as DataFrame
