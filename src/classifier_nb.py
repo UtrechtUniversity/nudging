@@ -17,10 +17,9 @@ from sklearn.multiclass import OneVsRestClassifier
 
 def combine():
     """Combine csv files"""
-    filenames = glob.glob('data/processed/data_*.csv')
+    filenames = glob.glob('data/interim/002*.csv')
     combined_file = 'data/processed/combined.csv'
     with open(combined_file, 'w') as fout, fileinput.input(filenames) as fin:
-        # fout.write("age,gender,nudge_domain,nudge_type,success,z_score\n")        
         for line in fin:
             fout.write(line)
     # Read in as DataFrame
@@ -58,17 +57,18 @@ def classify(dataset):
     # Predict the response for test dataset
     y_pred = clf.predict(data)
 
-    print("10-20 years, male: ", clf.predict([[1, 1, 3]]))
-    print("20-30 years, male: ", clf.predict([[2, 1, 3]]))
-    print("30-40 years, male: ", clf.predict([[3, 1, 3]]))
-    print("40-50 years, male: ", clf.predict([[4, 1, 3]]))
-    print("50-60 years, male: ", clf.predict([[5, 1, 3]]))
+    nudge_domain = 5
+    print("10-20 years, male: ", clf.predict([[1, 1, nudge_domain]]))
+    print("20-30 years, male: ", clf.predict([[2, 1, nudge_domain]]))
+    print("30-40 years, male: ", clf.predict([[3, 1, nudge_domain]]))
+    print("40-50 years, male: ", clf.predict([[4, 1, nudge_domain]]))
+    print("50-60 years, male: ", clf.predict([[5, 1, nudge_domain]]))
 
-    print("10-20 years, female: ", clf.predict([[1, 0, 3]]))
-    print("20-30 years, female: ", clf.predict([[2, 0, 3]]))
-    print("30-40 years, female: ", clf.predict([[3, 0, 3]]))
-    print("40-50 years, female: ", clf.predict([[4, 0, 3]]))
-    print("50-60 years, female: ", clf.predict([[5, 0, 3]]))
+    print("10-20 years, female: ", clf.predict([[1, 0, nudge_domain]]))
+    print("20-30 years, female: ", clf.predict([[2, 0, nudge_domain]]))
+    print("30-40 years, female: ", clf.predict([[3, 0, nudge_domain]]))
+    print("40-50 years, female: ", clf.predict([[4, 0, nudge_domain]]))
+    print("50-60 years, female: ", clf.predict([[5, 0, nudge_domain]]))
     print("")
 
     # Model Accuracy, how often is the classifier correct?

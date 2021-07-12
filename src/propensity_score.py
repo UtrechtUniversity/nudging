@@ -118,7 +118,7 @@ def get_ate(data_ps):
         data_ps (pandas.DataFrame): dataframe with propensity score    
     """
     result = data_ps.groupby("nudge")["outcome"].mean()
-    print("Not bias corrected:")
+    print("Calculate Average Treatment Effect:")
     print("Y0:", result[0])
     print("Y1:", result[1])
     print("ATE", result[1] - result[0])   
@@ -242,29 +242,4 @@ def match_ps(data_ps):
 
     result = result.drop(columns=["nudge", "pscore", "outcome", "control", "matched_element"])
     return result
-
-
-if __name__ == "__main__":
-    # Raw dataset
-    filename = "data/external/011_andreas/Commuter experiment_simple.csv"
-    df = read(filename)
-
-    # Apply OLS regression and print info
-    # print(smf.ols("outcome ~ nudge", data=df.apply(pd.to_numeric)).fit().summary().tables[1])
-
-    # calculate propensity score
-    ps = get_pscore(df)
-    # check_weights(ps)    
-    # plot_confounding_evidence(ps)
-    # plot_overlap(ps)
-
-    get_ate(ps)    
-    get_psw_ate(ps)
-    # get_psm_ate(ps)
-
-    result = match_ps(ps)
-
-    result["nudge_type"] = "[3, 7, 8]"
-    result["nudge_domain"] = 3
-    result.to_csv("data/processed/data_11.csv", index=False)
 
