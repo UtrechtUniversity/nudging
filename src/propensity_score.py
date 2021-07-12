@@ -117,7 +117,7 @@ def get_ate(data_ps):
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score    
     """
-    result = ps.groupby("nudge")["outcome"].mean()
+    result = data_ps.groupby("nudge")["outcome"].mean()
     print("Not bias corrected:")
     print("Y0:", result[0])
     print("Y1:", result[1])
@@ -200,6 +200,7 @@ def match_ps(data_ps):
         data_ps[['pscore']].to_numpy(),
         n_neighbors=10
     )
+
     # print('For item 0, the 4 closest distances are (first item is self):')
     # for ds in distances[0,0:4]:
     #     print('Element distance: {:4f}'.format(ds))

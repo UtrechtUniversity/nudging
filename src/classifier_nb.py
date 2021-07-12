@@ -39,7 +39,7 @@ def classify(dataset):
     mlb = MultiLabelBinarizer()
     target = mlb.fit_transform(target)
     print("Classes: ", mlb.classes_)
-    age = np.floor(dataset['age']).astype(int)
+    age = np.floor(dataset['age']/10.).astype(int)
     gender = np.array(dataset['gender']).astype(int)
     nudge_domain = np.array(dataset['nudge_domain']).astype(int)
 
