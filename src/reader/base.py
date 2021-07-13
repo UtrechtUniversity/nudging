@@ -5,13 +5,12 @@ import numpy as np
 
 
 class BaseDataSet(ABC):
-    file_name = "unknown"
     covariates = []
 
-    def __init__(self, data_dir):
-        fp = Path(data_dir, self.file_name)
-        raw_df = self._load(fp)
-        self.df = self._preprocess(raw_df)
+    def __init__(self, file_path):
+        self.filename = file_path
+        self.raw_df = self._load(file_path)
+        self.df = self._preprocess(self.raw_df)
 
     @abstractmethod
     def _load(self, fp):
@@ -22,8 +21,8 @@ class BaseDataSet(ABC):
         used_columns = self.covariates + ["nudge", "outcome"]
         df = df.loc[:, used_columns]
 
-        df["nudge"] = df["nudge"].astype(int)
-        df["outcome"] = df["outcome"].astype(float)
+        # df["nudge"] = df["nudge"].astype(int)
+        # df["outcome"] = df["outcome"].astype(float)
 
         # Remove rows with NA in them
         df = df.dropna()
@@ -36,6 +35,10 @@ class BaseDataSet(ABC):
     @property
     def data(self):
         return split_df(self.df)
+
+    def write_raw(self, path):
+        self.raw_df.to_csv(path, index=False)
+
 
     def kfolds(self, k=10):
         zeros = np.where(self.df["nudge"].values == 0)[0]

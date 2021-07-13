@@ -34,14 +34,10 @@ class PennyCook1(BaseDataSet):
         return super()._preprocess(df)
 
 
-    def _write_raw(self, df):
-        df.to_csv("data/raw/002_pennycook1.csv", index=False)
-
-
-    def _write_interim(self, df):
+    def _write_interim(self, df, path):
         df["nudge_type"] = self.nudge_type
         df["nudge_domain"] = self.nudge_domain
-        df.to_csv("data/interim/002_pennycook1_success.csv", index=False)
+        df.to_csv(path, index=False)
 
 
 class PennyCook2(PennyCook1):

@@ -13,50 +13,6 @@ import statsmodels.formula.api as smf
 from causalinference import CausalModel
 
 
-def read(filename):
-    """Read raw csv and convert to standard format
-    Args:
-        filename (str): name of file to convert
-    Returns:
-        pandas.DataFrame: containing age, gender, outcome, nudge
-    """
-
-    # Copy csv file with raw data
-    copyfile(filename, "data/raw/original_11.csv")
-
-    # Put data in DataFrame
-    df = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        swipes = {}
-        index = 0
-        for i, row in enumerate(reader):
-            if row[0] == 'control':
-                nudge = 0
-            elif row[0] == 'nudge':
-                nudge = 1
-            else:
-                continue
-            if row[2] == "1":
-                # male
-                gender = 1
-            elif row[2] == "8":
-                # female
-                gender = 0
-            else:
-                gender = " "
-            if row[1] == " " or gender == " ":
-                continue
-            age = int(round(float(row[1])/10, 0))
-            outcome = int(row[9])
-            df.loc[index] = [age, gender, outcome, nudge]
-            index += 1
-
-    df = df.apply(pd.to_numeric)
-
-    return df
-
-
 def get_pscore(df):
     """Calculate propensity score with logistic regression
     Args:
