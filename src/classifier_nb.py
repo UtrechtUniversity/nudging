@@ -17,17 +17,17 @@ from sklearn.multiclass import OneVsRestClassifier
 
 def combine():
     """Combine csv files"""
-    filenames = glob.glob('data/interim/002*.csv')
-    combined_file = 'data/processed/combined.csv'
-    with open(combined_file, 'w') as fout, fileinput.input(filenames) as fin:
-        for line in fin:
-            fout.write(line)
-    # Read in as DataFrame
-    dataset = pd.read_csv(combined_file)
+    filenames = glob.glob('data/interim/*.csv')
+    dataframes = []
+    for fin in filenames:
+        print(fin)
+        dataframes.append(pd.read_csv(fin, encoding="iso-8859-1"))
+    dataset = pd.concat(dataframes)
+
     # Drop rows with missing values
     dataset.replace("", float("NaN"), inplace=True)
     dataset.dropna(subset=["age", "gender"], inplace=True)
-
+    dataset.to_csv("data/processed/combined.csv", index=False)
     return dataset
 
 
