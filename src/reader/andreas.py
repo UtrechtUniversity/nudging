@@ -48,7 +48,7 @@ class Andreas(BaseDataSet):
                     gender = " "
                 if row[1] == " " or gender == " ":
                     continue
-                age = int(round(float(row[1])/10, 0))
+                age = int(float(row[1]))
                 outcome = int(row[9])
                 df.loc[index] = [age, gender, outcome, nudge]
                 index += 1
