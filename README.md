@@ -13,9 +13,9 @@ For each study separately, we estimate the propensity score by logistic regressi
 When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increases or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
 
 Finally, we record for each subject in the treatment group the following:
-- age
-- gender
-- nudge succes 
+- age (in decades)
+- gender (0=female, 1=male)
+- nudge succes (0=failure, 1=success)
 - nudge domain
 - nudge type
 
@@ -41,7 +41,7 @@ Nudge domains (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soc
 
 
 ## Classifier for precision nudging
-Once, we have combined the data from different studies, we can use a classifier to determine which nudge type is most effective for a certain group of people, for a given nudge domain. In this study, we use age (in decades) and gender (female=0, male=0) to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available.
+Once, we have combined the data from different studies, we can use a classifier to determine which nudge type is most effective for a certain group of people, for a given nudge domain. In this study, we use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available.
 
 
 ## Installation
