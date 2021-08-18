@@ -8,7 +8,7 @@ class PennyCook1(BaseDataSet):
     file_name = "Pennycook et al._Study 1.csv"
     covariates = ["age", "gender", "education", "hhi", "ethnicity", "political_party",
                   "SciKnow", "MMS", "CRT_ACC"]
-    nudge_type = "[8]"
+    nudge_type = 8
     nudge_domain = 5
     control = 2
     nudge = 1

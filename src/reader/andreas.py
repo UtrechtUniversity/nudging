@@ -7,7 +7,7 @@ from reader.base import BaseDataSet
 
 class Andreas(BaseDataSet):
     covariates = ["age", "gender"]
-    nudge_type = "[3, 7, 8]"
+    nudge_type = 3
     nudge_domain = 3
     control = "control"
     nudge = "nudge"
