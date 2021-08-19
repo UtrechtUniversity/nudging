@@ -7,21 +7,32 @@ import json
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import CategoricalNB
 
 
-def get_probability(df, predictors):
+def get_probability(df, predictors, algorithm):
     """Calculate propability of nudge success with logistic regression
     Args:
         df (pandas.DataFrame):
         predictors (list): list with predictor variable names
+        algorithm (str): Choose naive_bayes or logistic_regression
     Returns:
         pandas.DataFrame: dataframe with probabilities
+    Raises:
+        RuntimeError: if requested algorithm is unknown
     """
-    T = 'success'
+    if algorithm == "naive_bayes":
+        alg = CategoricalNB()
+    elif algorithm == "logistic_regression":
+        alg = LogisticRegression()
+    else:
+        raise RuntimeError('Unknowm algorithm')
+    T = "success"
     # Drop rows with missing values for predictors
     df_nonan = df.dropna(subset=predictors, inplace=False)
-    lr_model = LogisticRegression().fit(df_nonan[predictors].to_numpy().astype('int'), df_nonan[T].to_numpy().astype('int'))
-    data = df_nonan.assign(probability=lr_model.predict_proba(df_nonan[predictors])[:, 1])
+    model = alg.fit(df_nonan[predictors].to_numpy().astype('int'), df_nonan[T].to_numpy().astype('int'))
+    data = df_nonan.assign(probability=model.predict_proba(df_nonan[predictors])[:, 1])
     # write to file
     data.to_csv("data/processed/nudge_probabilty.csv", index=False)
 
@@ -58,8 +69,9 @@ def combine():
 if __name__ == "__main__":
 
     combined_data = combine()
-    predictors = ['age', 'gender', 'nudge_type', 'nudge_domain']
-    result = get_probability(combined_data, predictors)
+    predictors = ["age", "gender", "nudge_type", "nudge_domain"]
+    algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
+    result = get_probability(combined_data, predictors, algorithm)
 
     check_prob(result)
     print(result)
