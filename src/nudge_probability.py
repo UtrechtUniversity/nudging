@@ -3,12 +3,14 @@
 import fileinput
 import glob
 import json
+from itertools import product
 
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.naive_bayes import CategoricalNB
+import matplotlib.pyplot as plt
 
 
 def get_probability(df, predictors, algorithm):
@@ -72,14 +74,41 @@ def combine():
     return dataset
 
 
+def plot_probability(nudge_domain, gender):
+    """Plot propability of nudge success as function of age
+    Args:
+       nudge_domain (int): category of nudge domain
+    """    
+    width = 0.2
+    fig, ax = plt.subplots()
+    colors = ["b", "r", "g", "c", "m", "y", "k"]
+    types = result['nudge_type'].unique()
+    position = 0
+    for i, nudge in enumerate(types): 
+        df = result[(result['nudge_type']==nudge) & (result['gender']==gender) & (result['nudge_domain']==nudge_domain)]
+        if df.empty:
+            continue
+        label = "nudge {}".format(nudge)
+        df.plot(ax=ax, kind='bar', x='age', y='probability', label=label, color=colors[i], width=width, position=position)
+        position += 1
+    ax.set_xlabel('age [decades]')
+    ax.set_ylabel('probability of nudge success')
+    title = "nudge domain {}, gender {}".format(nudge_domain, gender)
+    plt.title(title)
+    plt.show()
+
+
 if __name__ == "__main__":
 
     combined_data = combine()
     predictors = ["nudge_domain", "age", "gender", "nudge_type"]
     algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
     result = get_probability(combined_data, predictors, algorithm)
-    print(result)
 
-    # Todo: Plot results
+    # Plot results
+    domains = result['nudge_domain'].unique()
+    genders = result['gender'].unique()
+    for nudge_domain, gender in list(product(domains, genders)):
+        plot_probability(nudge_domain, gender)
 
     # Todo: Classify: get per subject subgroup, the most effective nudge
