@@ -1,5 +1,6 @@
+""" Determine nudge success per subject using propensity score matching
+"""
 import glob
-import numpy as np
 import pandas as pd
 from reader.pennycook import PennyCook1
 from reader.andreas import Andreas
@@ -10,7 +11,7 @@ def combine(infiles, outfile):
     """Combine csv files"""
 
     dataframes = []
-    print("Combining files:\n")
+    print("\nCombining files:")
     for fin in infiles:
         print(fin)
         dataframes.append(pd.read_csv(fin, encoding="iso-8859-1"))
@@ -35,10 +36,9 @@ if __name__ == "__main__":
 
         print("")
         print("dataset ", name)
-        all_data = eval(name + "('"+ path +"')") #Andreas("data/external/011_andreas/Commuter experiment_simple.csv")
+        all_data = eval(name + "('" + path + "')")
         # Write raw data to csv
-        rawfile = "data/raw/" + name + ".csv"
-        all_data.write_raw(rawfile)
+        all_data.write_raw("data/raw/" + name + ".csv")
         df = all_data.df
         df.reset_index(drop=True, inplace=True)
         # Apply OLS regression and print info
@@ -46,20 +46,27 @@ if __name__ == "__main__":
 
         # calculate propensity score
         df_ps = ps.get_pscore(df)
-        # ps.check_weights(df_ps)    
-        ps.plot_confounding_evidence(df_ps)
-        ps.plot_overlap(df_ps)
 
-        ps.get_ate(df_ps)    
+        # Check is treatment and control groups are well-balanced
+        # ps.check_weights(df_ps)
+
+        # Plots
+        # ps.plot_confounding_evidence(df_ps)
+        # ps.plot_overlap(df_ps)
+
+        # Average Treatment Effect (ATE)
+        ps.get_ate(df_ps)
+
+        # propensity score weigthed ATE
         # ps.get_psw_ate(df_ps)
-        # get_psm_ate(ps)
+
+        # propensity score matched ATE with CausalModel
+        # ps.get_psm_ate(df_ps)
 
         # Cacluate nudge success and write to csv file
         result = ps.match_ps(df_ps)
-        interimfile = "data/interim/" + name + ".csv"
-        all_data._write_interim(result, interimfile)
+        all_data.write_interim(result, "data/interim/" + name + ".csv")
 
     # combine separate csv files to one
-    infiles = glob.glob('data/interim/*.csv')
-    outfile = "data/processed/combined.csv"
-    combine(infiles, outfile)
+    files = glob.glob('data/interim/*.csv')
+    combine(files, "data/processed/combined.csv")

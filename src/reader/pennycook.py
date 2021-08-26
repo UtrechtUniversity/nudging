@@ -34,7 +34,7 @@ class PennyCook1(BaseDataSet):
         return super()._preprocess(df)
 
 
-    def _write_interim(self, df, path):
+    def write_interim(self, df, path):
         df["nudge_type"] = self.nudge_type
         df["nudge_domain"] = self.nudge_domain
         df.to_csv(path, index=False)
