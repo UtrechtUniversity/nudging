@@ -99,6 +99,7 @@ def get_psw_ate(data_ps):
     print("Y1:", y1)
     print("ATE", np.mean(weight * data_ps["outcome"]))   
 
+
 def get_psm_ate(data_ps):
     """Get propensity score matched ATE using CausalModel
     Args:
@@ -113,6 +114,7 @@ def get_psm_ate(data_ps):
     cm.est_via_ols()
     cm.est_via_matching(matches=1, bias_adj=True)
     print(cm.estimates)
+
 
 def perfom_matching(row, indexes, df_data):
     """Match participant from treatment group with particapant from control group
@@ -129,6 +131,7 @@ def perfom_matching(row, indexes, df_data):
         if (current_index != idx) and (row.nudge == 1) and (df_data.loc[idx].nudge == 0):
             return int(idx)
 
+
 def obtain_match_details(row, all_data, attribute):
     """ Get details from matched participant of control group
     Args:
@@ -140,12 +143,13 @@ def obtain_match_details(row, all_data, attribute):
     """
     return all_data.loc[row.matched_element][attribute]         
 
+
 def match_ps(data_ps):
-    """Match participants in treatment group to control group by propensity score 
+    """Match participants in treatment group to control group by propensity score an determine nudge success
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score
     Returns:
-        pandas.DataFrame: 
+        pandas.DataFrame: dataframe with nudge success
     """    
 
     knn = NearestNeighbors(n_neighbors=10 , p = 2)

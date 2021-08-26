@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Use Naive Bayes classifier"""
 import fileinput
-import glob
 import json
 import sys
 from itertools import product
@@ -57,23 +56,6 @@ def check_prob(df):
     total = check.shape[0]
     print("Correct prediction of nudge success for {}% ({} out of {})". format(int(round(correct*100/total, 0)), correct, total))
 
-def combine():
-    """Combine csv files"""
-    filenames = glob.glob('data/interim/*.csv')
-    dataframes = []
-    for fin in filenames:
-        print(fin)
-        dataframes.append(pd.read_csv(fin, encoding="iso-8859-1"))
-    dataset = pd.concat(dataframes)
-
-    # Replace missing values with Nans
-    dataset.replace("", pd.NA, inplace=True)
-
-    # Convert age to decades
-    dataset.age = (dataset.age/10).astype(int)
-    dataset.to_csv("data/processed/combined.csv", index=False)
-    return dataset
-
 
 def plot_probability(nudge_domain, gender):
     """Plot propability of nudge success as function of age
@@ -101,7 +83,7 @@ def plot_probability(nudge_domain, gender):
 
 if __name__ == "__main__":
 
-    combined_data = combine()
+    combined_data = pd.read_csv("data/interim/combined.csv", encoding="iso-8859-1")
     predictors = ["nudge_domain", "age", "gender", "nudge_type"]
     algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
     if len(sys.argv) > 1:

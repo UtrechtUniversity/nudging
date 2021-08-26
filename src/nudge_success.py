@@ -1,7 +1,28 @@
+import glob
 import numpy as np
+import pandas as pd
 from reader.pennycook import PennyCook1
 from reader.andreas import Andreas
 import propensity_score as ps
+
+
+def combine(infiles, outfile):
+    """Combine csv files"""
+
+    dataframes = []
+    print("Combining files:\n")
+    for fin in infiles:
+        print(fin)
+        dataframes.append(pd.read_csv(fin, encoding="iso-8859-1"))
+    dataset = pd.concat(dataframes)
+
+    # Replace missing values with Nans
+    dataset.replace("", pd.NA, inplace=True)
+
+    # Convert age to decades
+    dataset.age = (dataset.age/10).astype(int)
+    dataset.to_csv(outfile, index=False)
+
 
 if __name__ == "__main__":
 
@@ -33,7 +54,12 @@ if __name__ == "__main__":
         # ps.get_psw_ate(df_ps)
         # get_psm_ate(ps)
 
+        # Cacluate nudge success and write to csv file
         result = ps.match_ps(df_ps)
-
         interimfile = "data/interim/" + name + ".csv"
         all_data._write_interim(result, interimfile)
+
+    # combine separate csv files to one
+    infiles = glob.glob('data/interim/*.csv')
+    outfile = "data/interim/combined.csv"
+    combine(infiles, outfile)

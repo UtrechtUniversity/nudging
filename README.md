@@ -59,12 +59,14 @@ The data used in this project is under DVC version control. To get access to the
 
 ### Calculate nudge succes per subject
 `poetry run python src/nudge_success.py`
-This generates a csv file for each study in `data/interim`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
+
+This generates a csv file for each study in `data/interim` and a combined csv file `data/interim/combioned.csv`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
 
 ### Calculate probability of nudge succes per subgroup  
 `poetry run python src/nudge_probability.py`
 
 By default logistic regression is used, but you can also select naive Bayes with:
+
 `poetry run python src/nudge_probability.py naive_bayes`
 
-The predicted nudge probabilty per subgroup is written to `data/processed/nudge_probability.csv`.
+The predicted nudge probability per subgroup is written to `data/processed/nudge_probability.csv`.
