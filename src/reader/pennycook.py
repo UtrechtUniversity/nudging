@@ -8,7 +8,7 @@ class PennyCook1(BaseDataSet):
     file_name = "Pennycook et al._Study 1.csv"
     covariates = ["age", "gender", "education", "hhi", "ethnicity", "political_party",
                   "SciKnow", "MMS", "CRT_ACC"]
-    nudge_type = "[8]"
+    nudge_type = 8
     nudge_domain = 5
     control = 2
     nudge = 1
@@ -34,7 +34,7 @@ class PennyCook1(BaseDataSet):
         return super()._preprocess(df)
 
 
-    def _write_interim(self, df, path):
+    def write_interim(self, df, path):
         df["nudge_type"] = self.nudge_type
         df["nudge_domain"] = self.nudge_domain
         df.to_csv(path, index=False)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Create directories for data downloads in data/raw """
+"""Create directories for data downloads in data/external """
 
 from datetime import date
 from pathlib import Path

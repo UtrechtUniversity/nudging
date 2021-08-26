@@ -1,7 +1,29 @@
-import numpy as np
+""" Determine nudge success per subject using propensity score matching
+"""
+import glob
+import pandas as pd
 from reader.pennycook import PennyCook1
 from reader.andreas import Andreas
 import propensity_score as ps
+
+
+def combine(infiles, outfile):
+    """Combine csv files"""
+
+    dataframes = []
+    print("\nCombining files:")
+    for fin in infiles:
+        print(fin)
+        dataframes.append(pd.read_csv(fin, encoding="iso-8859-1"))
+    dataset = pd.concat(dataframes)
+
+    # Replace missing values with Nans
+    dataset.replace("", pd.NA, inplace=True)
+
+    # Convert age to decades
+    dataset.age = (dataset.age/10).astype(int)
+    dataset.to_csv(outfile, index=False)
+
 
 if __name__ == "__main__":
 
@@ -14,10 +36,9 @@ if __name__ == "__main__":
 
         print("")
         print("dataset ", name)
-        all_data = eval(name + "('"+ path +"')") #Andreas("data/external/011_andreas/Commuter experiment_simple.csv")
+        all_data = eval(name + "('" + path + "')")
         # Write raw data to csv
-        rawfile = "data/raw/" + name + ".csv"
-        all_data.write_raw(rawfile)
+        all_data.write_raw("data/raw/" + name + ".csv")
         df = all_data.df
         df.reset_index(drop=True, inplace=True)
         # Apply OLS regression and print info
@@ -25,15 +46,27 @@ if __name__ == "__main__":
 
         # calculate propensity score
         df_ps = ps.get_pscore(df)
-        # ps.check_weights(df_ps)    
-        ps.plot_confounding_evidence(df_ps)
-        ps.plot_overlap(df_ps)
 
-        ps.get_ate(df_ps)    
+        # Check is treatment and control groups are well-balanced
+        # ps.check_weights(df_ps)
+
+        # Plots
+        # ps.plot_confounding_evidence(df_ps)
+        # ps.plot_overlap(df_ps)
+
+        # Average Treatment Effect (ATE)
+        ps.get_ate(df_ps)
+
+        # propensity score weigthed ATE
         # ps.get_psw_ate(df_ps)
-        # get_psm_ate(ps)
 
+        # propensity score matched ATE with CausalModel
+        # ps.get_psm_ate(df_ps)
+
+        # Cacluate nudge success and write to csv file
         result = ps.match_ps(df_ps)
+        all_data.write_interim(result, "data/interim/" + name + ".csv")
 
-        interimfile = "data/interim/" + name + ".csv"
-        all_data._write_interim(result, interimfile)
+    # combine separate csv files to one
+    files = glob.glob('data/interim/*.csv')
+    combine(files, "data/processed/combined.csv")
