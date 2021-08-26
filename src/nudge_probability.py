@@ -39,7 +39,7 @@ def get_probability(df, predictors, algorithm):
     check_prob(data)
     
     # Calculate probabilties for all subgroups and write to file
-    subgroups = df[predictors].drop_duplicates().sort_values(by=predictors, ignore_index=True)
+    subgroups = df_nonan[predictors].drop_duplicates().sort_values(by=predictors, ignore_index=True)
     result = subgroups.assign(probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
     result.to_csv("data/processed/nudge_probabilty.csv", index=False)
 
@@ -57,18 +57,22 @@ def check_prob(df):
     print("Correct prediction of nudge success for {}% ({} out of {})". format(int(round(correct*100/total, 0)), correct, total))
 
 
-def plot_probability(nudge_domain, gender):
+def plot_probability(labels):
     """Plot propability of nudge success as function of age
     Args:
-       nudge_domain (int): category of nudge domain
+       labels (dict): dict with labels for plotting
     """    
     width = 0.2
     fig, ax = plt.subplots()
     colors = ["b", "r", "g", "c", "m", "y", "k"]
     types = result['nudge_type'].unique()
     position = 0
+    condition = True
+    for label in labels:
+        condition = (result[label]==labels[label]) & condition
+
     for i, nudge in enumerate(types): 
-        df = result[(result['nudge_type']==nudge) & (result['gender']==gender) & (result['nudge_domain']==nudge_domain)]
+        df = result[(result['nudge_type']==nudge) & condition]
         if df.empty:
             continue
         label = "nudge {}".format(nudge)
@@ -76,9 +80,20 @@ def plot_probability(nudge_domain, gender):
         position += 1
     ax.set_xlabel('age [decades]')
     ax.set_ylabel('probability of nudge success')
-    title = "nudge domain {}, gender {}".format(nudge_domain, gender)
+    title = "{}".format(labels)
     plt.title(title)
     plt.show()
+
+
+def flatten(data):
+    result = []
+    for x in data:
+        if isinstance(x, tuple):
+            result = flatten(x)
+        else:    
+            result.append(x)
+
+    return result
 
 
 if __name__ == "__main__":
@@ -91,9 +106,23 @@ if __name__ == "__main__":
     result = get_probability(combined_data, predictors, algorithm)
 
     # Plot results
-    domains = result['nudge_domain'].unique()
-    genders = result['gender'].unique()
-    for nudge_domain, gender in list(product(domains, genders)):
-        plot_probability(nudge_domain, gender)
+    plot_dict = {}
+    for predictor in predictors:
+        if predictor not in ["nudge_type", "age"]:
+            plot_dict[predictor] = result[predictor].unique()
+ 
+    for i, value in enumerate(plot_dict.values()):
+        if i == 0:
+            prod = value
+        else:
+            prod = product(prod, value)
+
+    for p in prod:
+        if isinstance(p, tuple):
+            label = flatten(p)
+        else:
+            label = [p]
+        labels = {key: label[i] for i, key in enumerate(plot_dict.keys())}
+        plot_probability(labels)
 
     # Todo: Classify: get per subject subgroup, the most effective nudge
