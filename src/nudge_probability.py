@@ -83,7 +83,7 @@ def plot_probability(nudge_domain, gender):
 
 if __name__ == "__main__":
 
-    combined_data = pd.read_csv("data/interim/combined.csv", encoding="iso-8859-1")
+    combined_data = pd.read_csv("data/processed/combined.csv", encoding="iso-8859-1")
     predictors = ["nudge_domain", "age", "gender", "nudge_type"]
     algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
     if len(sys.argv) > 1:

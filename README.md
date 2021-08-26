@@ -60,7 +60,7 @@ The data used in this project is under DVC version control. To get access to the
 ### Calculate nudge succes per subject
 `poetry run python src/nudge_success.py`
 
-This generates a csv file for each study in `data/interim` and a combined csv file `data/interim/combioned.csv`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
+This generates a csv file for each study in `data/interim` and a combined csv file `data/processed/combined.csv`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
 
 ### Calculate probability of nudge succes per subgroup  
 `poetry run python src/nudge_probability.py`

@@ -61,5 +61,5 @@ if __name__ == "__main__":
 
     # combine separate csv files to one
     infiles = glob.glob('data/interim/*.csv')
-    outfile = "data/interim/combined.csv"
+    outfile = "data/processed/combined.csv"
     combine(infiles, outfile)
