@@ -41,7 +41,7 @@ Nudge domains (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soc
 
 
 ## Probabilistic classifier for precision nudging
-Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. In this study, we use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn] (https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the traning data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001] (https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
+Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. In this study, we use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the traning data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
 
 
 
@@ -59,8 +59,12 @@ The data used in this project is under DVC version control. To get access to the
 
 ### Calculate nudge succes per subject
 `poetry run python src/nudge_success.py`
+This generates a csv file for each study in `data/interim`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
 
 ### Calculate probability of nudge succes per subgroup  
 `poetry run python src/nudge_probability.py`
 
-By default logistic regression is used, but you can also select naive Bayes.
+By default logistic regression is used, but you can also select naive Bayes with:
+`poetry run python src/nudge_probability.py naive_bayes`
+
+The predicted nudge probabilty per subgroup is written to `data/processed/nudge_probability.csv`.

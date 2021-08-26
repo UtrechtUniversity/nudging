@@ -3,6 +3,7 @@
 import fileinput
 import glob
 import json
+import sys
 from itertools import product
 
 import pandas as pd
@@ -29,7 +30,7 @@ def get_probability(df, predictors, algorithm):
     elif algorithm == "logistic_regression":
         alg = LogisticRegression()
     else:
-        raise RuntimeError('Unknowm algorithm')
+        raise RuntimeError('Unknowm algorithm, choose logistic_regresiion or naive_bayes')
     T = "success"
     # Drop rows with missing values for predictors
     df_nonan = df.dropna(subset=predictors, inplace=False)
@@ -103,6 +104,8 @@ if __name__ == "__main__":
     combined_data = combine()
     predictors = ["nudge_domain", "age", "gender", "nudge_type"]
     algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
+    if len(sys.argv) > 1:
+        algorithm = sys.argv[1]
     result = get_probability(combined_data, predictors, algorithm)
 
     # Plot results
