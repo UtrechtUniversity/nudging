@@ -20,6 +20,12 @@ class PennyCook1(BaseDataSet):
         return pd.read_csv(fp, encoding="iso-8859-1")
 
     def _preprocess(self, df):
+        """Read raw csv and convert to standard format
+        Args:
+            filename (str): name of file to convert
+        Returns:
+            pandas.DataFrame: containing age, gender, outcome, nudge
+        """        
         df.rename(columns={list(df)[0]: "nudge"}, inplace=True)
         df.rename(columns={"Discern": "outcome"}, inplace=True)
         control_idx = np.where(df["nudge"].values == self.control)[0]

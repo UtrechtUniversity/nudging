@@ -2,6 +2,7 @@
 """
 import glob
 import pandas as pd
+from reader.hotard import Hotard
 from reader.pennycook import PennyCook1
 from reader.andreas import Andreas
 import propensity_score as ps
@@ -28,8 +29,9 @@ def combine(infiles, outfile):
 if __name__ == "__main__":
 
     datasets = {
+        "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
-        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv"
+        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv",
     }
 
     for name, path in datasets.items():
@@ -40,6 +42,7 @@ if __name__ == "__main__":
         # Write raw data to csv
         all_data.write_raw("data/raw/" + name + ".csv")
         df = all_data.df
+        print(df)
         df.reset_index(drop=True, inplace=True)
         # Apply OLS regression and print info
         # print(smf.ols("outcome ~ nudge", data=df.apply(pd.to_numeric)).fit().summary().tables[1])
