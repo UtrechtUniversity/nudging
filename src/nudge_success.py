@@ -34,7 +34,7 @@ def combine(infiles, outfile):
 if __name__ == "__main__":
 
     datasets = {
-        "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
+        # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
         "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv",
     }
