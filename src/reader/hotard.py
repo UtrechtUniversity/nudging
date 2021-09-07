@@ -1,3 +1,5 @@
+
+"""DataSet class for Hotard et al 2019 (https://doi.org/10.1038/s41562-019-0572-z)"""
 import numpy as np
 import pandas as pd
 
@@ -5,12 +7,8 @@ from reader.base import BaseDataSet
 
 
 class Hotard(BaseDataSet):
-
-    file_name = "NNYFeeWaiverReplicationData.dta"
-    # covariates = ["mtbany", "educ_HS", "marital_single", "age_Q",
-    #               "hhinc_cap_Q", "hhsize_Q", "gender", "College",
-    #               "lang_Eng", "yearsinus"]
-    covariates = ["mtbany", "educ_HS", "marital_single",
+    """DataSet class for Hotard et al 2019"""
+    covariates = ["age", "gender", "mtbany", "educ_HS", "marital_single",
                   "hhinc_cap_Q", "hhsize_Q",  "College",
                   "lang_Eng", "yearsinus"]
     nudge_type = 8
@@ -19,38 +17,31 @@ class Hotard(BaseDataSet):
     male = "Male"
     female = "Female"
 
+    def _load(self, file_path):
+        # print(pd.read_stata(fp))
+        return pd.read_stata(file_path)
 
-    def _load(self, fp):
-        print(pd.read_stata(fp))
-        return pd.read_stata(fp)
-
-    def _preprocess(self, df_dummy):
+    def _preprocess(self, data_frame):
         """Read raw csv and convert to standard format
         Args:
             filename (str): name of file to convert
         Returns:
             pandas.DataFrame: containing age, gender, outcome, nudge
         """
-        # Put data in DataFrame (remove missing values)
-        df_temp = df_dummy.replace("", np.nan, inplace=False)
-        df_temp = df_temp.dropna(subset=["submitted", "anyfeewaivernote"]).reset_index()
+        # Remove missing values
+        df_out = data_frame.replace("", np.nan, inplace=False)
+        df_out = df_out.dropna(subset=["submitted", "anyfeewaivernote"]).reset_index()
 
-        df = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
-        df["outcome"] = (df_temp["submitted"] == "Submitted").astype('int')
-        df["nudge"] = (df_temp["anyfeewaivernote"] == 1).astype('int')
-        df["age"] = df_temp["age_Q"]
-        for feat in self.covariates:            
-            df[feat] = df_temp[feat]
+        # df_out = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
+        df_out["outcome"] = (df_out["submitted"] == "Submitted").astype('int')
+        df_out["nudge"] = (df_out["anyfeewaivernote"] == 1).astype('int')
 
-        print(df)
+        # Age is given in quartiles, hence this data cannot be used to combine with other studies
+        df_out.rename(columns={"age_Q": "age"}, inplace=True)
+
         # convert gender to female=0, male=1:
-        male_idx = np.where(df_temp["gender_f"].values == self.male)[0]
-        female_idx = np.where(df_temp["gender_f"].values == self.female)[0]
-        df.loc[female_idx, "gender"] = 0
-        df.loc[male_idx, "gender"] = 1  
-        return df
-
-    def write_interim(self, df, path):
-        df["nudge_type"] = self.nudge_type
-        df["nudge_domain"] = self.nudge_domain
-        df.to_csv(path, index=False)
+        male_idx = np.where(df_out["gender_f"].values == self.male)[0]
+        female_idx = np.where(df_out["gender_f"].values == self.female)[0]
+        df_out.loc[female_idx, "gender"] = 0
+        df_out.loc[male_idx, "gender"] = 1
+        return super()._preprocess(df_out)

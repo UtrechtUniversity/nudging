@@ -126,7 +126,7 @@ def perfom_matching(row, indexes, df_data):
     for idx in indexes[current_index, :]:
         if (current_index != idx) and (row.nudge == 1) and (df_data.loc[idx].nudge == 0):
             return int(idx)
-    
+
     return np.nan
 
 

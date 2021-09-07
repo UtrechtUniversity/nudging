@@ -1,65 +1,64 @@
-import numpy as np
-import pandas as pd
+"""DataSet class for Andreas Lieberoth et al 2018 (https://doi.org/10.1016/j.trf.2018.02.016)"""
 import csv
 
+import pandas as pd
 from reader.base import BaseDataSet
 
 
 class Andreas(BaseDataSet):
+    """DataSet class for Andreas Lieberoth et al 2018"""
+    # Columns to keep as covariates
     covariates = ["age", "gender"]
     nudge_type = 3
     nudge_domain = 3
+    # Control and nudge classes in original data:
     control = "control"
     nudge = "nudge"
-    male = 1
-    female = 8
+    # Gender classes in original data:
+    male = "1"
+    female = "8"
 
     def _load(self, file_path):
+        """ Read file and return data in dataframe
+        Args:
+            file_path (str): path of file
+        Returns:
+            pandas.DataFrame: raw data in dataframe
+        """
         return pd.read_csv(file_path, encoding="iso-8859-1")
 
-
-    def _preprocess(self, df_dummy):
-        """Read raw csv and convert to standard format
+    def _preprocess(self, data_frame):
+        """Convert original data to dataframe with standard format
         Args:
-            filename (str): name of file to convert
+            data_frame (pandas.DataFrame): original data
         Returns:
-            pandas.DataFrame: containing age, gender, outcome, nudge
+            pandas.DataFrame: dataframe containing covariates, outcome, nudge
         """
         # Put data in DataFrame
-        df = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
+        df_out = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
         with open(self.filename, newline='') as csvfile:
             reader = csv.reader(csvfile)
-            swipes = {}
             index = 0
-            for i, row in enumerate(reader):
-                if row[0] == 'control':
+            for row in reader:
+                if row[0] == self.control:
                     nudge = 0
-                elif row[0] == 'nudge':
+                elif row[0] == self.nudge:
                     nudge = 1
                 else:
                     continue
-                if row[2] == "1":
-                    # male
+                if row[2] == self.male:
                     gender = 1
-                elif row[2] == "8":
-                    # female
+                elif row[2] == self.female:
                     gender = 0
                 else:
                     gender = " "
+                # remove data with undefined gender
                 if row[1] == " " or gender == " ":
                     continue
                 age = int(float(row[1]))
                 outcome = int(row[9])
-                df.loc[index] = [age, gender, outcome, nudge]
+                df_out.loc[index] = [age, gender, outcome, nudge]
                 index += 1
 
-        df = df.apply(pd.to_numeric)
-
-        return df
-
-
-
-    def write_interim(self, df, path):
-        df["nudge_type"] = self.nudge_type
-        df["nudge_domain"] = self.nudge_domain
-        df.to_csv(path, index=False)
+        # this removes unused columns of original data
+        return super()._preprocess(df_out)
