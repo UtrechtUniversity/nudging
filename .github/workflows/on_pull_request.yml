@@ -27,14 +27,11 @@ jobs:
           restore-keys: poetry-
 
       - name: Install Dependencies using Poetry
-        working-directory: data_extractor
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Pylint
-        working-directory: data_extractor
         run: poetry run pylint src
 
       - name: Flake8
-        working-directory: data_extractor
         run: poetry run flake8 src
