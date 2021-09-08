@@ -1,15 +1,21 @@
 """ Determine nudge success per subject using propensity score matching
 """
+# pylint: disable=eval-used
+# pylint: disable=unused-import
 import glob
+import os
+
 import pandas as pd
-from reader.pennycook import PennyCook1
-from reader.andreas import Andreas
+from reader import Hotard, PennyCook1, Andreas # noqa
 import propensity_score as ps
 
 
 def combine(infiles, outfile):
-    """Combine csv files"""
-
+    """Combine csv files
+    Args:
+        infiles (list): list of inputfiles
+        outfile (str): name of outputfile
+    """
     dataframes = []
     print("\nCombining files:")
     for fin in infiles:
@@ -28,19 +34,32 @@ def combine(infiles, outfile):
 if __name__ == "__main__":
 
     datasets = {
+        # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
-        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv"
+        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv",
     }
 
+    # Cleanup old data
+    files = glob.glob("data/raw/*")
+    files = files + glob.glob("data/interim/*")
+    files = files + glob.glob("data/processed/*")
+    for f in files:
+        os.remove(f)
+
+    # Read and convert each dataset
     for name, path in datasets.items():
 
         print("")
         print("dataset ", name)
-        all_data = eval(name + "('" + path + "')")
+        data = eval(name + "('" + path + "')")
         # Write raw data to csv
-        all_data.write_raw("data/raw/" + name + ".csv")
-        df = all_data.df
+        data.write_raw("data/raw/" + name + ".csv")
+
+        # Convert data to standard format (with columns covariates, nudge, outcome)
+        df = data.standard_df
+        print(df)
         df.reset_index(drop=True, inplace=True)
+
         # Apply OLS regression and print info
         # print(smf.ols("outcome ~ nudge", data=df.apply(pd.to_numeric)).fit().summary().tables[1])
 
@@ -65,7 +84,7 @@ if __name__ == "__main__":
 
         # Cacluate nudge success and write to csv file
         result = ps.match_ps(df_ps)
-        all_data.write_interim(result, "data/interim/" + name + ".csv")
+        data.write_interim(result, "data/interim/" + name + ".csv")
 
     # combine separate csv files to one
     files = glob.glob('data/interim/*.csv')

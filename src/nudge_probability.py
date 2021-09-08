@@ -1,128 +1,143 @@
 #!/usr/bin/env python
 """Use Naive Bayes classifier"""
-import fileinput
-import json
 import sys
 from itertools import product
 
 import pandas as pd
-import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
 from sklearn.naive_bayes import CategoricalNB
 import matplotlib.pyplot as plt
 
 
-def get_probability(df, predictors, algorithm):
+def get_probability(data, predictors, method="logistic_regression"):
     """Calculate propability of nudge success with logistic regression
     Args:
-        df (pandas.DataFrame):
+        data (pandas.DataFrame): dataframe with nudge success per subject
         predictors (list): list with predictor variable names
-        algorithm (str): Choose naive_bayes or logistic_regression
+        method (str): Choose logistic_regression or naive_bayes
     Returns:
         pandas.DataFrame: dataframe with probabilities
     Raises:
-        RuntimeError: if requested algorithm is unknown
+        RuntimeError: if requested method is unknown
     """
-    if algorithm == "naive_bayes":
+    if method == "naive_bayes":
         alg = CategoricalNB()
-    elif algorithm == "logistic_regression":
+    elif method == "logistic_regression":
         alg = LogisticRegression()
     else:
-        raise RuntimeError('Unknowm algorithm, choose logistic_regresiion or naive_bayes')
-    T = "success"
+        raise RuntimeError('Unknowm method, choose logistic_regression or naive_bayes')
     # Drop rows with missing values for predictors
-    df_nonan = df.dropna(subset=predictors, inplace=False)
-    model = alg.fit(df_nonan[predictors].to_numpy().astype('int'), df_nonan[T].to_numpy().astype('int'))
-    # Calculate probabilties for all subjects and check results
+    df_nonan = data.dropna(subset=predictors, inplace=False)
+    model = alg.fit(
+        df_nonan[predictors].to_numpy().astype('int'), df_nonan["success"].to_numpy().astype('int'))
+    # Calculate probabilities for all subjects and check results
     data = df_nonan.assign(probability=model.predict_proba(df_nonan[predictors])[:, 1])
     check_prob(data)
-    
+
     # Calculate probabilties for all subgroups and write to file
     subgroups = df_nonan[predictors].drop_duplicates().sort_values(by=predictors, ignore_index=True)
-    result = subgroups.assign(probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
+    result = subgroups.assign(
+        probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
     result.to_csv("data/processed/nudge_probabilty.csv", index=False)
 
     return result
 
 
-def check_prob(df):
+def check_prob(data):
     """Calculate accuracy of logistic regression model
     Args:
-        df (pandas.DataFrame): dataframe with nudge success and probability
+        data (pandas.DataFrame): dataframe with nudge success and probability
     """
-    check = round(df['probability'])==df['success']
+    check = round(data['probability']) == data['success']
     correct = sum(check)
     total = check.shape[0]
-    print("Correct prediction of nudge success for {}% ({} out of {})". format(int(round(correct*100/total, 0)), correct, total))
+    print("Correct prediction of nudge success for {}% ({} out of {})". format(
+        int(round(correct*100/total, 0)), correct, total))
 
 
-def plot_probability(labels):
-    """Plot propability of nudge success as function of age
+def plot_probability(data, labels):
+    """Plot nudge effectiveness (probability of success) as function of age for each nudge type
     Args:
-       labels (dict): dict with labels for plotting
-    """    
+       data (pandas.DataFrame): dataframe with nudge effectiveness
+       labels (dict): dict with labels to choose what to plot
+    """
     width = 0.2
-    fig, ax = plt.subplots()
+    _, axis = plt.subplots()
     colors = ["b", "r", "g", "c", "m", "y", "k"]
-    types = result['nudge_type'].unique()
+    types = data['nudge_type'].unique()
     position = 0
     condition = True
     for label in labels:
-        condition = (result[label]==labels[label]) & condition
+        condition = (data[label] == labels[label]) & condition
 
-    for i, nudge in enumerate(types): 
-        df = result[(result['nudge_type']==nudge) & condition]
-        if df.empty:
+    for i, nudge in enumerate(types):
+        dataset = data[(data['nudge_type'] == nudge) & condition]
+        if dataset.empty:
             continue
         label = "nudge {}".format(nudge)
-        df.plot(ax=ax, kind='bar', x='age', y='probability', label=label, color=colors[i], width=width, position=position)
+        dataset.plot(
+            ax=axis, kind='bar', x='age', y='probability', label=label,
+            color=colors[i], width=width, position=position)
         position += 1
-    ax.set_xlabel('age [decades]')
-    ax.set_ylabel('probability of nudge success')
+    axis.set_xlabel('age [decades]')
+    axis.set_ylabel('probability of nudge success')
     title = "{}".format(labels)
     plt.title(title)
     plt.show()
 
 
 def flatten(data):
+    """ Flatten list of tuples or tuple of tuples
+    Args:
+        data (list or tuple): list/tuple of data to flatten
+    Returns:
+        list: flattened list
+    """
     result = []
-    for x in data:
-        if isinstance(x, tuple):
-            result = flatten(x)
-        else:    
-            result.append(x)
+    for var in data:
+        if isinstance(var, tuple):
+            result = flatten(var)
+        else:
+            result.append(var)
 
     return result
 
 
-if __name__ == "__main__":
-
-    combined_data = pd.read_csv("data/processed/combined.csv", encoding="iso-8859-1")
-    predictors = ["nudge_domain", "age", "gender", "nudge_type"]
-    algorithm = "logistic_regression" # choose naive_bayes or logistic regression"
-    if len(sys.argv) > 1:
-        algorithm = sys.argv[1]
-    result = get_probability(combined_data, predictors, algorithm)
-
-    # Plot results
+def plot_data(data, predictors):
+    """Make plots of nudge effectiveness for each subject subgroup
+    Args:
+       predictors (list): list of predictors
+       data (pandas.DataFrame): dataframe with nudge effectivenedd for all subgroups
+    """
     plot_dict = {}
     for predictor in predictors:
         if predictor not in ["nudge_type", "age"]:
-            plot_dict[predictor] = result[predictor].unique()
- 
+            plot_dict[predictor] = data[predictor].unique()
+
     for i, value in enumerate(plot_dict.values()):
         if i == 0:
             prod = value
         else:
             prod = product(prod, value)
 
-    for p in prod:
-        if isinstance(p, tuple):
-            label = flatten(p)
+    for term in prod:
+        if isinstance(term, tuple):
+            label = flatten(term)
         else:
-            label = [p]
+            label = [term]
         labels = {key: label[i] for i, key in enumerate(plot_dict.keys())}
-        plot_probability(labels)
+        plot_probability(data, labels)
 
-    # Todo: Classify: get per subject subgroup, the most effective nudge
+
+if __name__ == "__main__":
+
+    combined_data = pd.read_csv("data/processed/combined.csv", encoding="iso-8859-1")
+    features = ["nudge_domain", "age", "gender", "nudge_type"]
+    # Use commandline specified algorithm if given or default
+    if len(sys.argv) > 1:
+        algorithm = sys.argv[1]
+        data_frame = get_probability(combined_data, features, algorithm)
+    else:
+        data_frame = get_probability(combined_data, features)
+
+    plot_data(data_frame, features)
