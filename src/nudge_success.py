@@ -6,7 +6,7 @@ import glob
 import os
 
 import pandas as pd
-from reader import Hotard, PennyCook1, Andreas # noqa
+from reader import Hotard, PennyCook1, Lieberoth # noqa
 import propensity_score as ps
 
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     datasets = {
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
-        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv",
+        "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
     }
 
     # Cleanup old data
