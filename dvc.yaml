@@ -1,0 +1,9 @@
+stages:
+  prepare:
+    cmd: poetry run python src/nudge_success.py
+    deps:
+    - data/external
+    - src/nudge_success.py
+    outs:
+    - data/interim
+    - data/raw

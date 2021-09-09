@@ -1,0 +1,21 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: poetry run python src/nudge_success.py
+    deps:
+    - path: data/external
+      md5: 18b85973de0dbc97082d9f6c3edc19ed.dir
+      size: 203814654
+      nfiles: 368
+    - path: src/nudge_success.py
+      md5: 0fbc463c8555cbab55478141c79cb8da
+      size: 2841
+    outs:
+    - path: data/interim
+      md5: f456878264d6c645618b32be30d3a1cc.dir
+      size: 22773
+      nfiles: 2
+    - path: data/raw
+      md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
+      size: 34898032
+      nfiles: 2

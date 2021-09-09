@@ -40,11 +40,15 @@ if __name__ == "__main__":
     }
 
     # Cleanup old data
-    files = glob.glob("data/raw/*")
-    files = files + glob.glob("data/interim/*")
-    files = files + glob.glob("data/processed/*")
-    for f in files:
-        os.remove(f)
+    outdirs = ["data/raw", "data/interim", "data/processed"]
+    # Make sure output dirs exist and are empty
+    for dir_ in outdirs:
+        if os.path.exists(dir_):
+            files = glob.glob(f"{dir}/*")
+            for f in files:
+                os.remove(f)
+        else:
+            os.mkdir(dir_)
 
     # Read and convert each dataset
     for name, path in datasets.items():
