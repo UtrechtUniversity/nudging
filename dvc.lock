@@ -19,3 +19,18 @@ stages:
       md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
       size: 34898032
       nfiles: 2
+  train:
+    cmd: poetry run python src/nudge_probability.py
+    deps:
+    - path: data/interim
+      md5: 86ce86e886adc37a422b38c6095ca53d.dir
+      size: 48760
+      nfiles: 3
+    - path: src/nudge_probability.py
+      md5: 9682b6252d8721b8009d59a47916770e
+      size: 5220
+    outs:
+    - path: data/processed
+      md5: 82acd113591ce017ca652079a1ddfd34.dir
+      size: 835
+      nfiles: 1

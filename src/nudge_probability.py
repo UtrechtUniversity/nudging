@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Use Naive Bayes classifier"""
+import os
 import sys
 from itertools import product
 
@@ -130,6 +131,17 @@ def plot_data(data, predictors):
 
 
 if __name__ == "__main__":
+
+    # Cleanup old data
+    outdirs = ["data/processed"]
+    # Make sure output dirs exist and are empty
+    for dir_ in outdirs:
+        if os.path.exists(dir_):
+            files = glob.glob(f"{dir}/*")
+            for f in files:
+                os.remove(f)
+        else:
+            os.mkdir(dir_)
 
     combined_data = pd.read_csv("data/interim/combined.csv", encoding="iso-8859-1")
     features = ["nudge_domain", "age", "gender", "nudge_type"]
