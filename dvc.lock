@@ -4,17 +4,21 @@ stages:
     cmd: poetry run python src/nudge_success.py
     deps:
     - path: data/external
-      md5: 18b85973de0dbc97082d9f6c3edc19ed.dir
-      size: 203814654
-      nfiles: 368
+      md5: be28a584a2c695040f3aa860e9c8542e.dir
+      size: 203815004
+      nfiles: 369
     - path: src/nudge_success.py
-      md5: 0fbc463c8555cbab55478141c79cb8da
-      size: 2841
+      md5: 4971754be3b05f52e93d4cb1b41d6b20
+      size: 2837
     outs:
     - path: data/interim
       md5: f456878264d6c645618b32be30d3a1cc.dir
       size: 22773
       nfiles: 2
+    - path: data/processed
+      md5: 38d9339fb3b0251e7dc1752897ce72b8.dir
+      size: 25987
+      nfiles: 1
     - path: data/raw
       md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
       size: 34898032

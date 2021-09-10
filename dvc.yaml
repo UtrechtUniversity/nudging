@@ -6,4 +6,5 @@ stages:
     - src/nudge_success.py
     outs:
     - data/interim
+    - data/processed
     - data/raw
