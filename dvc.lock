@@ -8,17 +8,13 @@ stages:
       size: 203815004
       nfiles: 369
     - path: src/nudge_success.py
-      md5: 4971754be3b05f52e93d4cb1b41d6b20
-      size: 2837
+      md5: 8e0089a131c245e65b216e2ff390678c
+      size: 2828
     outs:
     - path: data/interim
-      md5: f456878264d6c645618b32be30d3a1cc.dir
-      size: 22773
-      nfiles: 2
-    - path: data/processed
-      md5: 38d9339fb3b0251e7dc1752897ce72b8.dir
-      size: 25987
-      nfiles: 1
+      md5: 86ce86e886adc37a422b38c6095ca53d.dir
+      size: 48760
+      nfiles: 3
     - path: data/raw
       md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
       size: 34898032

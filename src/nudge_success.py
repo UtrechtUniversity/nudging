@@ -40,7 +40,7 @@ if __name__ == "__main__":
     }
 
     # Cleanup old data
-    outdirs = ["data/raw", "data/interim", "data/processed"]
+    outdirs = ["data/raw", "data/interim"]
     # Make sure output dirs exist and are empty
     for dir_ in outdirs:
         if os.path.exists(dir_):
@@ -91,5 +91,5 @@ if __name__ == "__main__":
         data.write_interim(result, "data/interim/" + name + ".csv")
 
     # combine separate csv files to one
-    files = glob.glob('data/interim/*.csv')
-    combine(files, "data/processed/combined.csv")
+    files = glob.glob('data/interim/[!combined.csv]*')
+    combine(files, "data/interim/combined.csv")
