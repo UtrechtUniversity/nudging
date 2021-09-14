@@ -23,7 +23,7 @@ if __name__ == "__main__":
     df_nonan = read_data("data/interim/combined.csv", features)
 
     # Load model
-    model = load("models/lg.joblib")
+    model = load("models/nudging.joblib")
 
     # Calculate probabilities and check results
     dataset = df_nonan.assign(probability=model.predict_proba(df_nonan[features])[:, 1])
