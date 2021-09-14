@@ -3,11 +3,12 @@
 # pylint: disable=eval-used
 # pylint: disable=unused-import
 import glob
-import os
 
 import pandas as pd
-from reader import Hotard, PennyCook1, Andreas # noqa
+
 import propensity_score as ps
+from reader import Hotard, PennyCook1, Lieberoth # noqa
+from utils import clean_dirs
 
 
 def combine(infiles, outfile):
@@ -36,15 +37,13 @@ if __name__ == "__main__":
     datasets = {
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
-        "Andreas": "data/external/011_andreas/Commuter experiment_simple.csv",
+        "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
     }
 
     # Cleanup old data
-    files = glob.glob("data/raw/*")
-    files = files + glob.glob("data/interim/*")
-    files = files + glob.glob("data/processed/*")
-    for f in files:
-        os.remove(f)
+    outdirs = ["data/raw", "data/interim"]
+    # Make sure output dirs exist and are empty
+    clean_dirs(outdirs)
 
     # Read and convert each dataset
     for name, path in datasets.items():
@@ -57,7 +56,6 @@ if __name__ == "__main__":
 
         # Convert data to standard format (with columns covariates, nudge, outcome)
         df = data.standard_df
-        print(df)
         df.reset_index(drop=True, inplace=True)
 
         # Apply OLS regression and print info
@@ -87,5 +85,5 @@ if __name__ == "__main__":
         data.write_interim(result, "data/interim/" + name + ".csv")
 
     # combine separate csv files to one
-    files = glob.glob('data/interim/*.csv')
-    combine(files, "data/processed/combined.csv")
+    files = glob.glob('data/interim/[!combined.csv]*')
+    combine(files, "data/interim/combined.csv")

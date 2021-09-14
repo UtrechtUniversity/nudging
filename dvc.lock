@@ -1,0 +1,71 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: poetry run python src/prepare.py
+    deps:
+    - path: data/external
+      md5: 8667858ddb3dfe4d6a36802f391cdbcd.dir
+      size: 203836616
+      nfiles: 370
+    - path: src/prepare.py
+      md5: 22c8f376fba22faa7511f3b7f7a448b7
+      size: 2656
+    - path: src/propensity_score.py
+      md5: ac0f05ee4f100970b7b7ce6284d8dd61
+      size: 7582
+    - path: src/reader
+      md5: e770b25bddad85644c32eec1fd07613b.dir
+      size: 16882
+      nfiles: 11
+    - path: src/utils.py
+      md5: 7a14e178be6689edefcc2fd6b85ab183
+      size: 965
+    outs:
+    - path: data/interim
+      md5: 84bbc9a3db552d10750c35ba397b0799.dir
+      size: 49210
+      nfiles: 3
+    - path: data/raw
+      md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
+      size: 34898032
+      nfiles: 2
+  train:
+    cmd: poetry run python src/train.py
+    deps:
+    - path: data/interim
+      md5: 84bbc9a3db552d10750c35ba397b0799.dir
+      size: 49210
+      nfiles: 3
+    - path: src/train.py
+      md5: 8274c0e3ede40b2f1931546c070401e7
+      size: 1834
+    - path: src/utils.py
+      md5: 7a14e178be6689edefcc2fd6b85ab183
+      size: 965
+    outs:
+    - path: models
+      md5: 2721a8008f4e98491f7dc20232a7d5ca.dir
+      size: 814
+      nfiles: 1
+  predict:
+    cmd: poetry run python src/predict.py
+    deps:
+    - path: data/interim
+      md5: 84bbc9a3db552d10750c35ba397b0799.dir
+      size: 49210
+      nfiles: 3
+    - path: models
+      md5: 2721a8008f4e98491f7dc20232a7d5ca.dir
+      size: 814
+      nfiles: 1
+    - path: src/predict.py
+      md5: 190dd9795049c7d81c624c0abea8cc56
+      size: 3217
+    - path: src/utils.py
+      md5: 7a14e178be6689edefcc2fd6b85ab183
+      size: 965
+    outs:
+    - path: data/processed
+      md5: 53f2cde4a290f62e9f6131f91b14b0ab.dir
+      size: 836
+      nfiles: 1

@@ -1,0 +1,29 @@
+stages:
+  prepare:
+    cmd: poetry run python src/prepare.py
+    deps:
+    - data/external
+    - src/prepare.py
+    - src/propensity_score.py
+    - src/utils.py
+    - src/reader
+    outs:
+    - data/interim
+    - data/raw
+  train:
+    cmd: poetry run python src/train.py
+    deps:
+    - data/interim
+    - src/train.py
+    - src/utils.py
+    outs:
+    - models
+  predict:
+    cmd: poetry run python src/predict.py
+    deps:
+    - data/interim
+    - models
+    - src/predict.py
+    - src/utils.py
+    outs:
+    - data/processed

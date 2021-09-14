@@ -5,7 +5,7 @@ import pandas as pd
 from reader.base import BaseDataSet
 
 
-class Andreas(BaseDataSet):
+class Lieberoth(BaseDataSet):
     """DataSet class for Andreas Lieberoth et al 2018"""
     # Columns to keep as covariates
     covariates = ["age", "gender"]
