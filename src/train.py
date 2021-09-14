@@ -1,26 +1,11 @@
 """Train nudging model using probabilistic classifier"""
-import os
-import glob
 import sys
 
-import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import CategoricalNB
 from joblib import dump
 
-
-def read_data(filename, features):
-    """ Read data from file and return dataframe for selected features
-    Args:
-        filename (str): name of csv file
-        features (list): list of string with feature names
-    """
-    # Read combined dataset, note this is the same as used for training
-    data = pd.read_csv(filename, encoding="iso-8859-1")
-    # Drop rows with missing values for features
-    df_nonan = data.dropna(subset=features, inplace=False)
-
-    return df_nonan
+from utils import clean_dirs, read_data
 
 
 def train_model(data, predictors_, method="logistic_regression"):
@@ -54,13 +39,7 @@ if __name__ == "__main__":
     # Cleanup old data
     outdirs = ["models"]
     # Make sure output dirs exist and are empty
-    for dir_ in outdirs:
-        if os.path.exists(dir_):
-            files = glob.glob(f"{dir}/*")
-            for f in files:
-                os.remove(f)
-        else:
-            os.mkdir(dir_)
+    clean_dirs(outdirs)
 
     predictors = ["nudge_domain", "age", "gender", "nudge_type"]
     dataset = read_data("data/interim/combined.csv", predictors)

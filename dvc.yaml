@@ -5,6 +5,8 @@ stages:
     - data/external
     - src/prepare.py
     - src/propensity_score.py
+    - src/utils.py
+    - src/reader
     outs:
     - data/interim
     - data/raw
@@ -13,6 +15,7 @@ stages:
     deps:
     - data/interim
     - src/train.py
+    - src/utils.py
     outs:
     - models
   predict:
@@ -21,5 +24,6 @@ stages:
     - data/interim
     - models
     - src/predict.py
+    - src/utils.py
     outs:
     - data/processed

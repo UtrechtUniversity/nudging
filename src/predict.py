@@ -1,10 +1,10 @@
 """Predict nudge effectiveness for subgroups"""
 from itertools import product
+
 from joblib import load
 import matplotlib.pyplot as plt
-import os
 
-from train import read_data
+from utils import clean_dirs, read_data
 
 
 def flatten(data):
@@ -86,13 +86,7 @@ if __name__ == "__main__":
     # Cleanup old data
     outdirs = ["data/processed"]
     # Make sure output dirs exist and are empty
-    for dir_ in outdirs:
-        if os.path.exists(dir_):
-            files = glob.glob(f"{dir}/*")
-            for f in files:
-                os.remove(f)
-        else:
-            os.mkdir(dir_)
+    clean_dirs(outdirs)
 
     # Read combined dataset, note this is the same as used for training
     features = ["nudge_domain", "age", "gender", "nudge_type"]

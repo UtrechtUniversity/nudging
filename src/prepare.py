@@ -3,11 +3,12 @@
 # pylint: disable=eval-used
 # pylint: disable=unused-import
 import glob
-import os
 
 import pandas as pd
-from reader import Hotard, PennyCook1, Lieberoth # noqa
+
 import propensity_score as ps
+from reader import Hotard, PennyCook1, Lieberoth # noqa
+from utils import clean_dirs
 
 
 def combine(infiles, outfile):
@@ -42,13 +43,7 @@ if __name__ == "__main__":
     # Cleanup old data
     outdirs = ["data/raw", "data/interim"]
     # Make sure output dirs exist and are empty
-    for dir_ in outdirs:
-        if os.path.exists(dir_):
-            files = glob.glob(f"{dir}/*")
-            for f in files:
-                os.remove(f)
-        else:
-            os.mkdir(dir_)
+    clean_dirs(outdirs)
 
     # Read and convert each dataset
     for name, path in datasets.items():
