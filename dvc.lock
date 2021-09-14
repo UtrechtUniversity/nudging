@@ -10,6 +10,9 @@ stages:
     - path: src/prepare.py
       md5: b306388a45af7f27e1e56c255621b912
       size: 2810
+    - path: src/propensity_score.py
+      md5: ac0f05ee4f100970b7b7ce6284d8dd61
+      size: 7582
     outs:
     - path: data/interim
       md5: 84bbc9a3db552d10750c35ba397b0799.dir

@@ -4,6 +4,7 @@ stages:
     deps:
     - data/external
     - src/prepare.py
+    - src/propensity_score.py
     outs:
     - data/interim
     - data/raw
