@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Use Naive Bayes classifier"""
 import os
+import glob
 import sys
 from itertools import product
 

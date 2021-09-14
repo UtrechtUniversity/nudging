@@ -61,7 +61,6 @@ if __name__ == "__main__":
 
         # Convert data to standard format (with columns covariates, nudge, outcome)
         df = data.standard_df
-        print(df)
         df.reset_index(drop=True, inplace=True)
 
         # Apply OLS regression and print info

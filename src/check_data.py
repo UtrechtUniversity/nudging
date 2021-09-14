@@ -67,7 +67,7 @@ def read_info(info_fp):
 def summarize_info():
     """Summarize and print info on datasets
     """
-    all_data_dir = sorted(Path("data/external").glob("[!.]*/"))
+    all_data_dir = sorted(Path("data/external").glob("[!Database]*/"))
     data = defaultdict(lambda: [])
     no_info = []
     for data_dir in all_data_dir:
@@ -100,7 +100,7 @@ def summarize_info():
 if __name__ == "__main__":
 
     # Create folders for all dataset entries in excel sheet
-    create_data_dirs('data/Database search_OPEN DATA_Precision Nudging.xlsx')
+    create_data_dirs('data/external/Database search_OPEN DATA_Precision Nudging.xlsx')
 
     # print summary to screen
     summarize_info()
