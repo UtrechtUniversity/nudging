@@ -70,17 +70,19 @@ def summarize_info():
     all_data_dir = sorted(Path("data/external").glob("[!Database]*/"))
     data = defaultdict(lambda: [])
     no_info = []
+    print("Usable datasets:")
     for data_dir in all_data_dir:
-
         info_data = read_info(Path(data_dir, "data_info.json"))
         if not info_data:
             no_info.append(data_dir)
             continue
         data["downloaded"].append(info_data.get("data_downloaded"))
         data["available"].append(info_data.get("data_availability"))
-        data["usable"].append(info_data.get("data_usability", np.nan))
+        usable = info_data.get("data_usability", False)
+        data["usable"].append(usable)
         data["n_participants"].append(info_data.get("number_of_participants", np.nan))
-        data["personal_info"].append(info_data.get("personal_info", []))
+        if usable:
+            print(data_dir)
 
     data = dict(data)
     data.update({k: np.array(v) for k, v in data.items()
@@ -90,7 +92,7 @@ def summarize_info():
     n_usable = np.nansum(data["usable"])
     participant_list = data["n_participants"][np.where(data["usable"])[0]]
     total_participants = np.nansum(participant_list)
-    print(f"# Folders: {len(all_data_dir)}")
+    print(f"\n# Folders: {len(all_data_dir)}")
     print(f"# Downloaded: {n_downloaded}")
     print(f"# Available: {n_available}")
     print(f"# Usable: {int(n_usable)}")

@@ -1,16 +1,24 @@
 stages:
   prepare:
-    cmd: poetry run python src/nudge_success.py
+    cmd: poetry run python src/prepare.py
     deps:
     - data/external
-    - src/nudge_success.py
+    - src/prepare.py
     outs:
     - data/interim
     - data/raw
   train:
-    cmd: poetry run python src/nudge_probability.py
+    cmd: poetry run python src/train.py
     deps:
     - data/interim
-    - src/nudge_probability.py
+    - src/train.py
+    outs:
+    - models
+  predict:
+    cmd: poetry run python src/predict.py
+    deps:
+    - data/interim
+    - models
+    - src/predict.py
     outs:
     - data/processed
