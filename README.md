@@ -16,7 +16,7 @@ The propensity score is the probability of treatment assignment, given observed 
 
 For each study separately, we estimate the propensity score by logistic regression. This is a statistical model used to predict the probability that an event occurs. In logistic regression, the dependent variable is binary; in our case, we have Z=1 for the treated subjects and Z=0 for the untreated subjects. We can then derive the logistic regression model and subsequently use it to calculate the propensity score for each subject. Propensity score matching is done by nearest neighbour matching of treated and untreated subjects, so that matched subjects have similar values of the propensity score.
 
-When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increases or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
+When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increased or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
 
 Finally, we record for each subject in the treatment group the following:
 - age (in decades)
@@ -66,7 +66,7 @@ The data used in this project is under [DVC](https://dvc.org/) version control. 
 
 `poetry run python src/check_data.py`
 
-This should give a summary of the datasets in `data/external`.
+This should give a summary of the datasets stored in `data/external`.
 
 ### Prepare
 Calculate nudge succes per subject with:
@@ -98,4 +98,4 @@ Predict nudge effectiveness using the trained model:
 
 `poetry run python src/predict.py`
 
-The predicted nudge probability per subgroup is written to `data/processed/nudge_probability.csv`.
+The predicted nudge effectiveness per subgroup is written to `data/processed/nudge_probability.csv`. Also, plots of the nudge effectiveness are generated and stored in the `plots` folder.
