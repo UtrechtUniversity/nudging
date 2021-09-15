@@ -16,7 +16,7 @@ The propensity score is the probability of treatment assignment, given observed 
 
 For each study separately, we estimate the propensity score by logistic regression. This is a statistical model used to predict the probability that an event occurs. In logistic regression, the dependent variable is binary; in our case, we have Z=1 for the treated subjects and Z=0 for the untreated subjects. We can then derive the logistic regression model and subsequently use it to calculate the propensity score for each subject. Propensity score matching is done by nearest neighbour matching of treated and untreated subjects, so that matched subjects have similar values of the propensity score.
 
-When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increases or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
+When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increased or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
 
 Finally, we record for each subject in the treatment group the following:
 - age (in decades)
@@ -47,23 +47,26 @@ Nudge domains (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soc
 
 
 ## Probabilistic classifier for precision nudging
-Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probabilty of nudge success.
+Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probability of nudge success.
 
 We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the traning data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes' Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
 
 
 ## Installation
-This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) for managing dependencies. You can simply install the dependencies with: 
+This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) for managing dependencies. You can simply install the dependencies with 
+`poetry install` in the projects root folder.
 
-`poetry install`
-
-Note that the `poetry run` command executes the given command inside the project’s virtualenv.
+Note that the `poetry run` command executes the given command inside the project’s virtual environment.
 
 ## Run software
-The data processing pipleine consists of several stages which we describe below.
+The data processing pipeline consists of several stages which we describe below.
 
 ### Get data
-The data used in this project is under DVC version control. To get access to the data contact one of the repo contributors. The following assumes that the external data has been downloaded.
+The data used in this project is under [DVC](https://dvc.org/) version control. To get access to the data contact one of the repo contributors. The following assumes that the external data has been downloaded. To check the downloaded data:
+
+`poetry run python src/check_data.py`
+
+This should give a summary of the datasets stored in `data/external`.
 
 ### Prepare
 Calculate nudge succes per subject with:
@@ -95,4 +98,4 @@ Predict nudge effectiveness using the trained model:
 
 `poetry run python src/predict.py`
 
-The predicted nudge probability per subgroup is written to `data/processed/nudge_probability.csv`.
+The predicted nudge effectiveness per subgroup is written to `data/processed/nudge_probability.csv`. Also, plots of the nudge effectiveness are generated and stored in the `plots` folder.
