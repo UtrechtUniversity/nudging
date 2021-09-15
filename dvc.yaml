@@ -27,3 +27,4 @@ stages:
     - src/utils.py
     outs:
     - data/processed
+    - plots

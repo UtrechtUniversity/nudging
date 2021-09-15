@@ -1,5 +1,6 @@
 """Predict nudge effectiveness for subgroups"""
 from itertools import product
+from pathlib import Path
 
 from joblib import load
 import matplotlib.pyplot as plt
@@ -24,11 +25,12 @@ def flatten(data):
     return result
 
 
-def plot_probability(data, labels):
+def plot_probability(data, labels, outdir):
     """Plot nudge effectiveness (probability of success) as function of age for each nudge type
     Args:
        data (pandas.DataFrame): dataframe with nudge effectiveness
        labels (dict): dict with labels to choose what to plot
+       outdir (str): folder name to save plots
     """
     width = 0.2
     _, axis = plt.subplots()
@@ -50,16 +52,21 @@ def plot_probability(data, labels):
         position += 1
     axis.set_xlabel('age [decades]')
     axis.set_ylabel('probability of nudge success')
-    title = "{}".format(labels)
-    plt.title(title)
-    plt.show()
+    name = ""
+    for key, value in labels.items():
+        name = name + f"{key}_{value}_"
+    name = name[:-1]
+    plt.title(name)
+    filename = Path(outdir, name + ".png")
+    plt.savefig(filename)
 
 
-def plot_data(data, predictors):
+def plot_data(data, predictors, outdir):
     """Make plots of nudge effectiveness for each subject subgroup
     Args:
-       predictors (list): list of predictors
-       data (pandas.DataFrame): dataframe with nudge effectivenedd for all subgroups
+        predictors (list): list of predictors
+        data (pandas.DataFrame): dataframe with nudge effectivenedd for all subgroups
+        outdir (str): folder name to save plots
     """
     plot_dict = {}
     for predictor in predictors:
@@ -78,13 +85,13 @@ def plot_data(data, predictors):
         else:
             label = [term]
         labels = {key: label[i] for i, key in enumerate(plot_dict.keys())}
-        plot_probability(data, labels)
+        plot_probability(data, labels, outdir)
 
 
 if __name__ == "__main__":
 
     # Cleanup old data
-    outdirs = ["data/processed"]
+    outdirs = ["data/processed", "plots"]
     # Make sure output dirs exist and are empty
     clean_dirs(outdirs)
 
@@ -101,4 +108,4 @@ if __name__ == "__main__":
         probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
     prob.to_csv("data/processed/nudge_probabilty.csv", index=False)
 
-    plot_data(prob, features)
+    plot_data(prob, features, "plots")
