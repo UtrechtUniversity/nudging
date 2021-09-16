@@ -28,7 +28,7 @@ def clean_dirs(outdirs):
     """
     for dir_ in outdirs:
         if os.path.exists(dir_):
-            files = glob.glob(f"{dir}/*")
+            files = glob.glob(f"{dir_}/*")
             for file_ in files:
                 os.remove(file_)
         else:
