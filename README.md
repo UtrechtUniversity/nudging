@@ -6,17 +6,17 @@
 
 - [Table of Contents](#table-of-contents)
 - [About the Project](#about-the-project)
-   - [Combining Data] (#combining-data)
-   - [Probabilistic Classifier] (#probabilistic-classifier)
+   - [Combining Data](#combining-data)
+   - [Probabilistic Classifier](#probabilistic-classifier)
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
 - [Usage](#usage)
-   - Get Data (#get-data)
-   - Prepare (#prepare)
-   - Train (#train)
-   - Evaluate (#evaluate)
-   - Predict (#predict)
+   - [Get Data](#get-data)
+   - [Prepare](#prepare)
+   - [Train] (#train)
+   - [Evaluate](#evaluate)
+   - [Predict](#predict)
 - [Contributing](#contributing)
 - [Contact](#contact)
 
@@ -86,7 +86,7 @@ Note that the `poetry run` command executes the given command inside the project
 ## Usage
 The data processing pipeline consists of several stages which we describe below.
 
-### Get data
+### Get Data
 The data used in this project is under [DVC](https://dvc.org/) version control. To get access to the data contact one of the repo contributors. The following assumes that the external data has been downloaded. To check the downloaded data:
 
 `poetry run python src/check_data.py`
