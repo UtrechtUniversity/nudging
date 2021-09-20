@@ -1,6 +1,27 @@
 # Precision nudging with Machine Learning
 
-## Introduction
+
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [About the Project](#about-the-project)
+   - [Combining Data] (#combining-data)
+   - [Probabilistic Classifier] (#probabilistic-classifier)
+- [Getting Started](#getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installation](#installation)
+- [Usage](#usage)
+   - Get Data (#get-data)
+   - Prepare (#prepare)
+   - Train (#train)
+   - Evaluate (#evaluate)
+   - Predict (#predict)
+- [Contributing](#contributing)
+- [Contact](#contact)
+
+
+## About the Project
 This is the code for the Precision Nudging project. The scientific aim of this project is to develop predictive models with Machine Learning in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning helps us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from nudging studies to train our model. 
 
 Our method consists of two steps: 
@@ -9,7 +30,7 @@ Our method consists of two steps:
 
 In the sections below, we elaborate on these two steps.
 
-## Combining data from different studies
+### Combining Data
 One of the main challenges is how to combine the data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, typically the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
 
 The propensity score is the probability of treatment assignment, given observed baseline characteristics. The propensity score can be used to balance the treatment and control groups to make them comparable. [Rosenbaum and Rubin (1983)](https://academic.oup.com/biomet/article/70/1/41/240879) showed that treated and untreated subjects with the same propensity scores have identical distributions for all baseline variables. Thus, the propensity score allows one to analyze an observational study as if it were a randomized controlled trial. In our case, the treatment group is the group that received a nudge and the control is the group that didn't. The observed baseline characterics are currently the age and gender of the subject, although these could easily be expanded depending on included studies.
@@ -46,19 +67,23 @@ Nudge domains (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soc
 4. Amount donated 
 
 
-## Probabilistic classifier for precision nudging
+### Probabilistic Classifier
 Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although as said before we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probability of nudge success.
 
 We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the traning data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes' Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
 
+## Getting Started
 
-## Installation
-This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) for managing dependencies. You can simply install the dependencies with 
+### Prerequisites
+This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) for managing dependencies. 
+
+### Installation
+You can simply install the dependencies with 
 `poetry install` in the projects root folder.
 
 Note that the `poetry run` command executes the given command inside the project’s virtual environment.
 
-## Run software
+## Usage
 The data processing pipeline consists of several stages which we describe below.
 
 ### Get data
@@ -99,3 +124,22 @@ Predict nudge effectiveness using the trained model:
 `poetry run python src/predict.py`
 
 The predicted nudge effectiveness per subgroup is written to `data/processed/nudge_probability.csv`. Also, plots of the nudge effectiveness are generated and stored in the `plots` folder.
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+To contribute:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+<!-- CONTACT -->
+## Contact
+UU Research Engineering team - research.engineering@uu.nl
