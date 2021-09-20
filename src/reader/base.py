@@ -1,6 +1,7 @@
 """Base class for DataSet """
 from abc import ABC, abstractmethod
 
+import numpy as np
 import pandas as pd
 
 
@@ -9,6 +10,7 @@ class BaseDataSet(ABC):
     covariates = []
     nudge_type = None
     nudge_domain = None
+    compare = lambda a, b: None
 
     def __init__(self, file_path):
         self.filename = file_path
@@ -41,3 +43,16 @@ class BaseDataSet(ABC):
         data_frame["nudge_type"] = self.nudge_type
         data_frame["nudge_domain"] = self.nudge_domain
         data_frame.to_csv(path, index=False)
+
+    def get_success(self, data_frame):
+        """Convert outcome to nudge success"""
+        if self.compare not in [np.greater, np.less]:
+            raise RuntimeError(
+                f'Comparing outcome failed with {self.compare}, \
+                self.compare should be np.greater or np.less')
+
+
+        data_frame["success"] = self.compare(
+            data_frame["outcome"], data_frame["control"]).astype(int)
+        result = data_frame.drop(columns=["outcome", "control"])
+        return result

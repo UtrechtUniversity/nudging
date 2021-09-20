@@ -80,8 +80,9 @@ if __name__ == "__main__":
         # propensity score matched ATE with CausalModel
         # ps.get_psm_ate(df_ps)
 
-        # Cacluate nudge success and write to csv file
+        # Cacculate nudge success and write to csv file
         result = ps.match_ps(df_ps)
+        result = data.get_success(result)
         data.write_interim(result, "data/interim/" + name + ".csv")
 
     # combine separate csv files to one

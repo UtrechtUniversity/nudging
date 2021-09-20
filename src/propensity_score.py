@@ -199,11 +199,6 @@ def match_ps(data_ps):
 
     result = treated_matched_data
     result["control"] = untreated_outcome.values
-    # tmp = pd.DataFrame(
-    #     data = {
-    #         'treated_outcome': treated_outcome.values,
-    #         'untreated_outcome': untreated_outcome.values})
-    result["success"] = (result["outcome"] > result["control"]).astype(int)
 
-    result = result.drop(columns=["nudge", "pscore", "outcome", "control", "matched_element"])
+    result = result.drop(columns=["nudge", "pscore", "matched_element"])
     return result
