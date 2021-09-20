@@ -3,8 +3,6 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
-
-- [Table of Contents](#table-of-contents)
 - [About the Project](#about-the-project)
    - [Combining Data](#combining-data)
    - [Probabilistic Classifier](#probabilistic-classifier)
@@ -14,7 +12,7 @@
 - [Usage](#usage)
    - [Get Data](#get-data)
    - [Prepare](#prepare)
-   - [Train] (#train)
+   - [Train](#train)
    - [Evaluate](#evaluate)
    - [Predict](#predict)
 - [Contributing](#contributing)
@@ -48,7 +46,7 @@ Finally, we record for each subject in the treatment group the following:
 
 The latter two, nudge domain and nudge type, can differ per study. We distinguish the following categories in this study:
 
-Nudge types (see [Sunstein (2014)](https://link.springer.com/article/10.1007/s10603-014-9273-1)):
+**Nudge types** (see [Sunstein (2014)](https://link.springer.com/article/10.1007/s10603-014-9273-1)):
 1. Default. For instance automatic enrollment in programs 
 2. Simplification 
 3. Social norms 
@@ -60,7 +58,7 @@ Nudge types (see [Sunstein (2014)](https://link.springer.com/article/10.1007/s10
 9. Eliciting implementation intentions 
 10. Feedback: Informing people of the nature and consequences of their own past choices 
 
-Nudge domains (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soceco/v80y2019icp47-58.html)):
+**Nudge domains** (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soceco/v80y2019icp47-58.html)):
 1. Energy consumption 
 2. Healthy products 
 3. Environmentally friendly products 
@@ -142,4 +140,4 @@ To contribute:
 
 <!-- CONTACT -->
 ## Contact
-UU Research Engineering team - research.engineering@uu.nl
+[UU Research Engineering team](https://github.com/orgs/UtrechtUniversity/teams/research-engineering) - research.engineering@uu.nl
