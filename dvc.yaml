@@ -1,30 +1,30 @@
 stages:
   prepare:
-    cmd: poetry run python src/prepare.py
+    cmd: poetry run python nudging/prepare.py
     deps:
     - data/external
-    - src/prepare.py
-    - src/propensity_score.py
-    - src/utils.py
-    - src/reader
+    - nudging/prepare.py
+    - nudging/propensity_score.py
+    - nudging/utils.py
+    - nudging/reader
     outs:
     - data/interim
     - data/raw
   train:
-    cmd: poetry run python src/train.py
+    cmd: poetry run python nudging/train.py
     deps:
     - data/interim
-    - src/train.py
-    - src/utils.py
+    - nudging/train.py
+    - nudging/utils.py
     outs:
     - models
   predict:
-    cmd: poetry run python src/predict.py
+    cmd: poetry run python nudging/predict.py
     deps:
     - data/interim
     - models
-    - src/predict.py
-    - src/utils.py
+    - nudging/predict.py
+    - nudging/utils.py
     outs:
     - data/processed
     - plots
