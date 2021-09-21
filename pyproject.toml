@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "nudging-code"
+name = "nudging"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
@@ -20,6 +20,7 @@ h5py = "^3.4.0"
 [tool.poetry.dev-dependencies]
 pylint = "^2.8.2"
 flake8 = "^3.9.2"
+pytest = "^6.2.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

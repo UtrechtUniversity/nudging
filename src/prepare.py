@@ -67,7 +67,7 @@ if __name__ == "__main__":
         # calculate propensity score
         df_ps = ps.get_pscore(df)
 
-        # Check is treatment and control groups are well-balanced
+        # Check if treatment and control groups are well-balanced
         # ps.check_weights(df_ps)
 
         # Plots

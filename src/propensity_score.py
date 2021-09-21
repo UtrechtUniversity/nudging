@@ -33,7 +33,7 @@ def get_pscore(data_frame):
 def check_weights(data_ps):
     """Check if sum of propensity score weights match sample size
     Args:
-        data_ps (pandas.DataFrame): dataframe with propesnity score
+        data_ps (pandas.DataFrame): dataframe with propensity score
     """
     weight_t = 1/data_ps.query("nudge==1")["pscore"]
     weight_nt = 1/(1-data_ps.query("nudge==0")["pscore"])
