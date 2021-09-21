@@ -1,8 +1,8 @@
 """DataSet class for Andreas Lieberoth et al 2018 (https://doi.org/10.1016/j.trf.2018.02.016)"""
 import csv
 
-import numpy as np
 import pandas as pd
+
 from reader.base import BaseDataSet
 
 
@@ -19,7 +19,7 @@ class Lieberoth(BaseDataSet):
     male = "1"
     female = "8"
     # nudge is successfull if outcome increased
-    compare = np.greater
+    goal = "increase"
 
     def _load(self, file_path):
         """ Read file and return data in dataframe

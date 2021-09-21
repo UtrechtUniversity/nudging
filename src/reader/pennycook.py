@@ -21,7 +21,7 @@ class PennyCook1(BaseDataSet):
     female = 2
 
     # nudge is successfull if outcome increased
-    compare = np.greater
+    goal = "increase"
 
     def _load(self, file_path):
         """ Read file and return data in dataframe

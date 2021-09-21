@@ -17,7 +17,7 @@ class Hotard(BaseDataSet):
     male = "Male"
     female = "Female"
     # nudge is successfull if outcome increased
-    compare = np.greater
+    goal = "increase"
 
     def _load(self, file_path):
         # print(pd.read_stata(fp))
