@@ -6,9 +6,9 @@ import glob
 
 import pandas as pd
 
-import src.propensity_score as ps
-from src.reader import Hotard, PennyCook1, Lieberoth, Simulated # noqa
-from src.utils import clean_dirs
+import nudging.propensity_score as ps
+from nudging.reader import Hotard, PennyCook1, Lieberoth, Simulated # noqa
+from nudging.utils import clean_dirs
 
 
 def combine(infiles, outfile):

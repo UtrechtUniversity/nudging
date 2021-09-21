@@ -34,6 +34,8 @@ def check_weights(data_ps):
     """Check if sum of propensity score weights match sample size
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score
+    Return:
+        tuple: sample size, treated size from weigths, untreated size froms weigths
     """
     weight_t = 1/data_ps.query("nudge==1")["pscore"]
     weight_nt = 1/(1-data_ps.query("nudge==0")["pscore"])
@@ -73,12 +75,17 @@ def get_ate(data_ps):
     """Get ATE without bias correction
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score
+    Returns:
+        float: average treatment effect
     """
     result = data_ps.groupby("nudge")["outcome"].mean()
+    ate = result[1] - result[0]
     print("Calculate Average Treatment Effect:")
     print("Y0:", result[0])
     print("Y1:", result[1])
-    print("ATE", result[1] - result[0])
+    print("ATE", ate)
+
+    return ate
 
 
 def get_psw_ate(data_ps):
@@ -92,11 +99,14 @@ def get_psw_ate(data_ps):
 
     treatment = sum(data_ps.query("nudge==1")["outcome"]*weight_t) / len(data_ps)
     control = sum(data_ps.query("nudge==0")["outcome"]*weight_nt) / len(data_ps)
+    ate = np.mean(weight * data_ps["outcome"])
 
     print("Propensity score weighted:")
     print("Control group:", control)
     print("Treatment group:", treatment)
-    print("ATE", np.mean(weight * data_ps["outcome"]))
+    print("ATE", ate)
+
+    return ate
 
 
 def get_psm_ate(data_ps):

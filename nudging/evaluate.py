@@ -1,7 +1,7 @@
 """Evaluate nudging model"""
 from joblib import load
 
-from src.train import read_data
+from nudging.train import read_data
 
 
 def evaluate_probabilities(data):
