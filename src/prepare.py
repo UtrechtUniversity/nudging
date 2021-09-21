@@ -7,7 +7,7 @@ import glob
 import pandas as pd
 
 import propensity_score as ps
-from reader import Hotard, PennyCook1, Lieberoth # noqa
+from reader import Hotard, PennyCook1, Lieberoth, Simulated # noqa
 from utils import clean_dirs
 
 
@@ -37,6 +37,7 @@ def combine(infiles, outfile):
 if __name__ == "__main__":
 
     datasets = {
+        # "Simulated": "data/external/simulated/simulated.csv",
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
         "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
