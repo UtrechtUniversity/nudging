@@ -3,7 +3,7 @@ import csv
 
 import pandas as pd
 
-from reader.base import BaseDataSet
+from src.reader.base import BaseDataSet
 
 
 class Lieberoth(BaseDataSet):

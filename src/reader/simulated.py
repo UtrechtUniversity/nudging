@@ -1,7 +1,7 @@
 """DataSet class for simulated data"""
 import pandas as pd
 
-from reader.base import BaseDataSet
+from src.reader.base import BaseDataSet
 
 
 class Simulated(BaseDataSet):

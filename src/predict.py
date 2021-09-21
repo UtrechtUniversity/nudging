@@ -5,7 +5,7 @@ from pathlib import Path
 from joblib import load
 import matplotlib.pyplot as plt
 
-from utils import clean_dirs, read_data
+from src.utils import clean_dirs, read_data
 
 
 def flatten(data):
