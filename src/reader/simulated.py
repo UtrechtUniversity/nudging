@@ -1,6 +1,4 @@
-"""DataSet class for Pennycook et al 2020
-(https://journals.sagepub.com/doi/10.1177/0956797620939054)"""
-import numpy as np
+"""DataSet class for simulated data"""
 import pandas as pd
 
 from reader.base import BaseDataSet
@@ -10,7 +8,7 @@ class Simulated(BaseDataSet):
     """DataSet class for Pennycook et al 2020 """
     # Columns to keep as covariates
     covariates = ["age", "gender"]
-
+    goal = "increase"
 
     def _load(self, file_path):
         """ Read file and return data in dataframe
