@@ -31,6 +31,8 @@ def combine(infiles, outfile):
     dataset.age = (dataset.age/10).astype(int)
     dataset.to_csv(outfile, index=False)
 
+    print(f"Combined dataset in {outfile}")
+
 
 if __name__ == "__main__":
 

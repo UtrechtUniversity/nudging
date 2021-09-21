@@ -60,7 +60,7 @@ class BaseDataSet(ABC):
             raise RuntimeError(
                 f'Comparing outcome failed with goal {self.goal}, \
                 should be increase or decrease')
-        print("type result", result)
+
         return result
 
     def get_success(self, data_frame):
