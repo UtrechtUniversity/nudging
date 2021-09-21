@@ -41,6 +41,8 @@ def check_weights(data_ps):
     print("Treated Population Sample Size", sum(weight_t))
     print("Untreated Population Sample Size", sum(weight_nt))
 
+    return data_ps.shape[0], sum(weight_t), sum(weight_nt)
+
 
 def plot_confounding_evidence(data_ps):
     """Use the propensity score to find evidence of confounding
