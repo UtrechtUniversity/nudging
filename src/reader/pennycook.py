@@ -20,6 +20,9 @@ class PennyCook1(BaseDataSet):
     male = 1
     female = 2
 
+    # nudge is successfull if outcome increased
+    goal = "increase"
+
     def _load(self, file_path):
         """ Read file and return data in dataframe
         Args:

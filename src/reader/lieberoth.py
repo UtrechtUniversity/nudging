@@ -2,6 +2,7 @@
 import csv
 
 import pandas as pd
+
 from reader.base import BaseDataSet
 
 
@@ -17,6 +18,8 @@ class Lieberoth(BaseDataSet):
     # Gender classes in original data:
     male = "1"
     female = "8"
+    # nudge is successfull if outcome increased
+    goal = "increase"
 
     def _load(self, file_path):
         """ Read file and return data in dataframe

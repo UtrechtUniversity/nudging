@@ -53,3 +53,4 @@ if __name__ == "__main__":
 
     # Save trained model
     dump(nudging_model, "models/nudging.joblib")
+    print("Model saved to models/nudging.joblib")
