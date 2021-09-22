@@ -8,14 +8,14 @@ stages:
       size: 215354774
       nfiles: 371
     - path: nudging/prepare.py
-      md5: 02ffe46412bbcbf84896bf4b3dc31019
-      size: 2843
+      md5: 54885370f1863debe9207fd18c5599e0
+      size: 1911
     - path: nudging/propensity_score.py
-      md5: d52b84c38c397b7b85dcb4c930cd4ec3
-      size: 7589
+      md5: 639244b51238c7a0865b4e75c473e55d
+      size: 7434
     - path: nudging/reader
-      md5: da2e26c5ba2fb5e621a8a15e5a99c233.dir
-      size: 19323
+      md5: d8d473d68bb80e1f2f7ed79b25912d1a.dir
+      size: 21340
       nfiles: 12
     - path: nudging/utils.py
       md5: bc01d2b1a70243fe3226e5e4329b0f8d
