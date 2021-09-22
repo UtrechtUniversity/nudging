@@ -17,7 +17,7 @@ def evaluate_probabilities(data):
     accuracy = int(round(correct*100/total, 0))
     print("Correct prediction of nudge success for {}% ({} out of {})". format(
         accuracy, correct, total))
-    
+
     return accuracy
 
 

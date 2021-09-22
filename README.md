@@ -9,6 +9,7 @@
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
+   - [Testing](#testing)
 - [Usage](#usage)
    - [Get Data](#get-data)
    - [Prepare](#prepare)
@@ -78,6 +79,10 @@ This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) 
 ### Installation
 You can simply install the dependencies with 
 `poetry install` in the projects root folder.
+
+### Testing
+The test are located in the `tests` folder. To run the tests execute:
+`poetry run pytest tests`
 
 Note that the `poetry run` command executes the given command inside the project’s virtual environment.
 

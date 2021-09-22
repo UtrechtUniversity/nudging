@@ -11,9 +11,9 @@ def read_data(filename, features):
         filename (str): name of csv file
         features (list): list of string with feature names
     Returns:
-        DataFrame: data of csv file in dataframe
+        pandas.DataFrame: data of csv file in dataframe
     """
-    # Read combined dataset, note this is the same as used for training
+    # Read data from csv into DataFrame
     data = pd.read_csv(filename, encoding="iso-8859-1")
     # Drop rows with missing values for features
     df_nonan = data.dropna(subset=features, inplace=False)
