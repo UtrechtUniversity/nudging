@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import CategoricalNB
 from joblib import dump
 
-from utils import clean_dirs, read_data
+from nudging.utils import clean_dirs, read_data
 
 
 def train_model(data, predictors_, method="logistic_regression"):

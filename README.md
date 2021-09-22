@@ -9,6 +9,7 @@
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
+   - [Testing](#testing)
 - [Usage](#usage)
    - [Get Data](#get-data)
    - [Prepare](#prepare)
@@ -79,6 +80,10 @@ This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) 
 You can simply install the dependencies with 
 `poetry install` in the projects root folder.
 
+### Testing
+The test are located in the `tests` folder. To run the tests execute:
+`poetry run pytest tests`
+
 Note that the `poetry run` command executes the given command inside the project’s virtual environment.
 
 ## Usage
@@ -87,39 +92,39 @@ The data processing pipeline consists of several stages which we describe below.
 ### Get Data
 The data used in this project is under [DVC](https://dvc.org/) version control. To get access to the data contact one of the repo contributors. The following assumes that the external data has been downloaded. To check the downloaded data:
 
-`poetry run python src/check_data.py`
+`poetry run python nudging/check_data.py`
 
 This should give a summary of the datasets stored in `data/external`.
 
 ### Prepare
 Calculate nudge succes per subject with:
 
-`poetry run python src/prepare.py`
+`poetry run python snudging//prepare.py`
 
 This generates a csv file for each study in `data/interim` and a combined csv file `data/interim/combined.csv`. Each row represents a subject and contains personal information and nudge success calculated using propensity score matching.
 
 ### Train
 Train a probabilisitic classifier on the combined dataset:
 
-`poetry run python src/train.py`
+`poetry run python nudging//train.py`
 
 By default logistic regression is used, but you can also select naive Bayes with:
 
-`poetry run python src/train.py naive_bayes`
+`poetry run python nudging/train.py naive_bayes`
 
 The trained model is written to `models/nudging.joblib`.
 
 ### Evaluate
 Evaluate the trained model using the combined dataset:
 
-`poetry run python src/evaluate.py`
+`poetry run python nudging//evaluate.py`
 
  Note that we have not (yet) split off the dataset for training and evaluation. This means we apply the model on the same dataset we trained on. The computed probability is rounded to 0 or 1 and compared to the nudge success. TO DO: evaluate on unused data.
 
 ### Predict
 Predict nudge effectiveness using the trained model:
 
-`poetry run python src/predict.py`
+`poetry run python nudging/predict.py`
 
 The predicted nudge effectiveness per subgroup is written to `data/processed/nudge_probability.csv`. Also, plots of the nudge effectiveness are generated and stored in the `plots` folder.
 

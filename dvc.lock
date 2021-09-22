@@ -1,23 +1,23 @@
 schema: '2.0'
 stages:
   prepare:
-    cmd: poetry run python src/prepare.py
+    cmd: poetry run python nudging/prepare.py
     deps:
     - path: data/external
       md5: 3eaf89488e87ff5e40a2afe61854bc82.dir
       size: 215354774
       nfiles: 371
-    - path: src/prepare.py
-      md5: 0c38221651a61d1f17302e1bc0ef30f9
-      size: 2819
-    - path: src/propensity_score.py
-      md5: 0e46b4ef81972e56954b9000673332b5
-      size: 7320
-    - path: src/reader
-      md5: a4dc544f6d6af404241f1a6f2682a293.dir
-      size: 21100
-      nfiles: 13
-    - path: src/utils.py
+    - path: nudging/prepare.py
+      md5: 54885370f1863debe9207fd18c5599e0
+      size: 1911
+    - path: nudging/propensity_score.py
+      md5: 639244b51238c7a0865b4e75c473e55d
+      size: 7434
+    - path: nudging/reader
+      md5: d8d473d68bb80e1f2f7ed79b25912d1a.dir
+      size: 21340
+      nfiles: 12
+    - path: nudging/utils.py
       md5: bc01d2b1a70243fe3226e5e4329b0f8d
       size: 966
     outs:
@@ -30,16 +30,16 @@ stages:
       size: 34898032
       nfiles: 2
   train:
-    cmd: poetry run python src/train.py
+    cmd: poetry run python nudging/train.py
     deps:
     - path: data/interim
       md5: 84bbc9a3db552d10750c35ba397b0799.dir
       size: 49210
       nfiles: 3
-    - path: src/train.py
-      md5: caa1454fd02c881a1358e3c66e0df1be
-      size: 1884
-    - path: src/utils.py
+    - path: nudging/train.py
+      md5: c640f3388e30754f903eda2e68f12eac
+      size: 1892
+    - path: nudging/utils.py
       md5: bc01d2b1a70243fe3226e5e4329b0f8d
       size: 966
     outs:
@@ -48,7 +48,7 @@ stages:
       size: 814
       nfiles: 1
   predict:
-    cmd: poetry run python src/predict.py
+    cmd: poetry run python nudging/predict.py
     deps:
     - path: data/interim
       md5: 84bbc9a3db552d10750c35ba397b0799.dir
@@ -58,10 +58,10 @@ stages:
       md5: 2721a8008f4e98491f7dc20232a7d5ca.dir
       size: 814
       nfiles: 1
-    - path: src/predict.py
-      md5: eaab39082731468080b378354a3a2cb4
-      size: 3515
-    - path: src/utils.py
+    - path: nudging/predict.py
+      md5: 997e68b298bf2101313af07bb030a050
+      size: 3523
+    - path: nudging/utils.py
       md5: bc01d2b1a70243fe3226e5e4329b0f8d
       size: 966
     outs:
