@@ -78,7 +78,7 @@ if __name__ == "__main__":
         ps.get_ate(df_ps)
 
         # propensity score weigthed ATE
-        # ps.get_psw_ate(df_ps)
+        ps.get_psw_ate(df_ps)
 
         # propensity score matched ATE with CausalModel
         # ps.get_psm_ate(df_ps)

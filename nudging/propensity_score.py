@@ -37,11 +37,13 @@ def check_weights(data_ps):
     Return:
         tuple: sample size, treated size from weigths, untreated size froms weigths
     """
-    weight_t = 1/data_ps.query("nudge==1")["pscore"]
-    weight_nt = 1/(1-data_ps.query("nudge==0")["pscore"])
-    print("Original Sample Size", data_ps.shape[0])
-    print("Treated Population Sample Size", sum(weight_t))
-    print("Untreated Population Sample Size", sum(weight_nt))
+    weight_t = 1./data_ps.query("nudge==1")["pscore"]
+    weight_nt = 1./(1.-data_ps.query("nudge==0")["pscore"])
+    print(f"Original sample size {data_ps.shape[0]}")
+    print("Original treatment sample size", data_ps.query("nudge==1").shape[0])
+    print("Original control sample size", data_ps.query("nudge==0").shape[0])
+    print(f"Weighted treatment sample size {round(sum(weight_t), 1)}")
+    print(f"Weighted control sample size {round(sum(weight_nt), 1)}")
 
     return data_ps.shape[0], sum(weight_t), sum(weight_nt)
 
@@ -81,9 +83,9 @@ def get_ate(data_ps):
     result = data_ps.groupby("nudge")["outcome"].mean()
     ate = result[1] - result[0]
     print("Calculate Average Treatment Effect:")
-    print("Y0:", result[0])
-    print("Y1:", result[1])
-    print("ATE", ate)
+    print(f"Control: {round(result[0], 3)}")
+    print(f"Treatment: {round(result[1], 3)}")
+    print(f"ATE: {round(ate, 3)}")
 
     return ate
 
@@ -93,18 +95,17 @@ def get_psw_ate(data_ps):
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score
     """
-    weight_t = 1/data_ps.query("nudge==1")["pscore"]
-    weight_nt = 1/(1-data_ps.query("nudge==0")["pscore"])
-    weight = ((data_ps["nudge"]-data_ps["pscore"]) / (data_ps["pscore"]*(1-data_ps["pscore"])))
 
-    treatment = sum(data_ps.query("nudge==1")["outcome"]*weight_t) / len(data_ps)
-    control = sum(data_ps.query("nudge==0")["outcome"]*weight_nt) / len(data_ps)
+    weight = ((data_ps["nudge"] - data_ps["pscore"]) / (data_ps["pscore"]*(1. - data_ps["pscore"])))
     ate = np.mean(weight * data_ps["outcome"])
 
-    print("Propensity score weighted:")
-    print("Control group:", control)
-    print("Treatment group:", treatment)
-    print("ATE", ate)
+    # weight_t = 1./data_ps.query("nudge==1")["pscore"]
+    # weight_nt = 1./(1.-data_ps.query("nudge==0")["pscore"])
+    # treatment = sum(data_ps.query("nudge==1")["outcome"]*weight_t) / len(data_ps)
+    # control = sum(data_ps.query("nudge==0")["outcome"]*weight_nt) / len(data_ps)
+    # ate = treatment - control
+
+    print(f"Propensity score weighted ATE: {round(ate, 3)}")
 
     return ate
 
@@ -125,7 +126,7 @@ def get_psm_ate(data_ps):
     print(cmodel.estimates)
 
 
-def perfom_matching(row, indexes, df_data):
+def perform_matching(row, indexes, df_data):
     """Match subject from treatment group with subject from control group
     Args:
         row (pandas.Series): row of dataframe to perform matching on
@@ -155,12 +156,11 @@ def obtain_match_details(row, all_data, attribute):
 
 
 def match_ps(data_ps):
-    """Match participants in treatment group to control group
-    by propensity score and determine nudge success
+    """Match participants in treatment group to control group by propensity score
     Args:
         data_ps (pandas.DataFrame): dataframe with propensity score
     Returns:
-        pandas.DataFrame: dataframe with nudge success
+        pandas.DataFrame: dataframe with 'matched_element' column
     """
 
     knn = NearestNeighbors(n_neighbors=10, p=2)
@@ -172,18 +172,9 @@ def match_ps(data_ps):
         n_neighbors=10
     )
 
-    # print('For item 0, the 4 closest distances are (first item is self):')
-    # for ds in distances[0,0:4]:
-    #     print('Element distance: {:4f}'.format(ds))
-    # print('...')
-    # print('For item 0, the 4 closest indexes are (first item is self):')
-    # for idx in indexes[0,0:4]:
-    #     print('Element index: {}'.format(idx))
-    # print('...')
-
     # Add index of match to dataframe
     data_ps['matched_element'] = data_ps.reset_index().apply(
-        perfom_matching, axis=1, args=(indexes, data_ps))
+        perform_matching, axis=1, args=(indexes, data_ps))
 
     treated_with_match = ~data_ps.matched_element.isna()
     treated_matched_data = data_ps[treated_with_match][data_ps.columns]
@@ -204,13 +195,13 @@ def match_ps(data_ps):
     treated_outcome = overview['outcome']['mean'][1]
     treated_counterfactual_outcome = overview['outcome']['mean'][0]
     att = treated_outcome - treated_counterfactual_outcome
-    print('ATE after propensity score matching: {:.4f}'.format(att))
+    print('Propensity score matched ATE: {:.4f}'.format(att))
 
     treated_outcome = treated_matched_data.outcome
     untreated_outcome = untreated_matched_data.outcome
 
     result = treated_matched_data
-    result["control"] = untreated_outcome.values
+    result["control"] = untreated_outcome.values.astype(treated_outcome.dtype)
 
     result = result.drop(columns=["nudge", "pscore", "matched_element"])
     return result
