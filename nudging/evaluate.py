@@ -8,12 +8,17 @@ def evaluate_probabilities(data):
     """Calculate accuracy of logistic regression model
     Args:
         data (pandas.DataFrame): dataframe with nudge success and probability
+    Returns:
+        int: accuracy in percentage
     """
     check = round(data['probability']) == data['success']
     correct = sum(check)
     total = check.shape[0]
+    accuracy = int(round(correct*100/total, 0))
     print("Correct prediction of nudge success for {}% ({} out of {})". format(
-        int(round(correct*100/total, 0)), correct, total))
+        accuracy, correct, total))
+    
+    return accuracy
 
 
 if __name__ == "__main__":
