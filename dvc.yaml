@@ -14,14 +14,16 @@ stages:
     cmd: poetry run python nudging/train.py
     deps:
     - data/interim
+    - config.yaml  
     - nudging/train.py
     - nudging/utils.py
     outs:
     - models
   predict:
     cmd: poetry run python nudging/predict.py
-    deps:
+    deps:  
     - data/interim
+    - config.yaml  
     - models
     - nudging/predict.py
     - nudging/utils.py

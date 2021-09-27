@@ -14,8 +14,8 @@ stages:
       md5: a771024fedbfe2f6e63094bc0fc8cc48
       size: 7407
     - path: nudging/reader
-      md5: fb8cfe4d8d68faa9445331f7e9787323.dir
-      size: 24141
+      md5: 64a5abc3e73ea72d45924453378cd017.dir
+      size: 24187
       nfiles: 14
     - path: nudging/utils.py
       md5: d9caff8c0db2570f63b82230adf2de89
@@ -32,6 +32,9 @@ stages:
   train:
     cmd: poetry run python nudging/train.py
     deps:
+    - path: config.yaml
+      md5: 79081acb729dc059006862cd6f0ad46b
+      size: 60
     - path: data/interim
       md5: 84bbc9a3db552d10750c35ba397b0799.dir
       size: 49210
@@ -50,6 +53,9 @@ stages:
   predict:
     cmd: poetry run python nudging/predict.py
     deps:
+    - path: config.yaml
+      md5: 79081acb729dc059006862cd6f0ad46b
+      size: 60
     - path: data/interim
       md5: 84bbc9a3db552d10750c35ba397b0799.dir
       size: 49210
