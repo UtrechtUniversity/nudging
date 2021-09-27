@@ -4,6 +4,7 @@ from pathlib import Path
 
 from joblib import load
 import matplotlib.pyplot as plt
+import yaml
 
 from nudging.utils import clean_dirs, read_data
 
@@ -96,7 +97,8 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Read combined dataset, note this is the same as used for training
-    features = ["nudge_domain", "age", "gender", "nudge_type"]
+    config = yaml.safe_load(open("config.yaml"))
+    features = config["features"]
     df_nonan = read_data("data/interim/combined.csv", features)
     subgroups = df_nonan[features].drop_duplicates().sort_values(by=features, ignore_index=True)
 

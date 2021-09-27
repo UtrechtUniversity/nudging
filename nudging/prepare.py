@@ -5,7 +5,7 @@
 import glob
 import pandas as pd
 
-from nudging.reader import Hotard, PennyCook1, Lieberoth, Simulated # noqa
+from nudging.reader import Balaban, Hotard, PennyCook1, Lieberoth, Simulated # noqa
 from nudging.utils import clean_dirs
 
 
@@ -39,6 +39,7 @@ if __name__ == "__main__":
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
         "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
+        # "Balaban": "data/external/008_balaban/anon1.dta"
     }
 
     # Cleanup old data

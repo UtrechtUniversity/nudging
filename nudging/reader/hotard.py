@@ -20,7 +20,6 @@ class Hotard(BaseDataSet):
     goal = "increase"
 
     def _load(self, file_path):
-        # print(pd.read_stata(fp))
         return pd.read_stata(file_path)
 
     def _preprocess(self, data_frame):
