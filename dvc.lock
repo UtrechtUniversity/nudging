@@ -8,27 +8,27 @@ stages:
       size: 215354774
       nfiles: 371
     - path: nudging/prepare.py
-      md5: 945a1607627a9113ec9433772c2ffd30
-      size: 1979
+      md5: 81ab6f502426d40cedb5fbd83cbc5065
+      size: 1904
     - path: nudging/propensity_score.py
-      md5: a771024fedbfe2f6e63094bc0fc8cc48
-      size: 7407
+      md5: 1f223bfe278d8e76026c8df3ebf5085f
+      size: 7468
     - path: nudging/reader
-      md5: 64a5abc3e73ea72d45924453378cd017.dir
-      size: 24187
+      md5: e5ee4c3e7185555196d3cf51d9fa8746.dir
+      size: 23918
       nfiles: 14
     - path: nudging/utils.py
       md5: d9caff8c0db2570f63b82230adf2de89
       size: 941
     outs:
     - path: data/interim
-      md5: 84bbc9a3db552d10750c35ba397b0799.dir
-      size: 49210
-      nfiles: 3
+      md5: 2b79903631881e25a2201a4f846d27da.dir
+      size: 119190
+      nfiles: 5
     - path: data/raw
-      md5: 5ed7862a78663c85e6f86c1647ba2c46.dir
-      size: 34898032
-      nfiles: 2
+      md5: 8b3781b623d24c60998ead489877ed08.dir
+      size: 35147391
+      nfiles: 4
   train:
     cmd: poetry run python nudging/train.py
     deps:
@@ -36,9 +36,9 @@ stages:
       md5: 79081acb729dc059006862cd6f0ad46b
       size: 60
     - path: data/interim
-      md5: 84bbc9a3db552d10750c35ba397b0799.dir
-      size: 49210
-      nfiles: 3
+      md5: 2b79903631881e25a2201a4f846d27da.dir
+      size: 119190
+      nfiles: 5
     - path: nudging/train.py
       md5: 03ed49d056dcfd3a7412e8cca52ac777
       size: 1962
@@ -57,9 +57,9 @@ stages:
       md5: 79081acb729dc059006862cd6f0ad46b
       size: 60
     - path: data/interim
-      md5: 84bbc9a3db552d10750c35ba397b0799.dir
-      size: 49210
-      nfiles: 3
+      md5: 2b79903631881e25a2201a4f846d27da.dir
+      size: 119190
+      nfiles: 5
     - path: models
       md5: bc8aea06a9ac81ad532ba8e297b11ba2.dir
       size: 814
@@ -72,10 +72,10 @@ stages:
       size: 941
     outs:
     - path: data/processed
-      md5: 0dc8d532e0bf48441baa0c8c8022bc6b.dir
-      size: 836
+      md5: c8a2c3b858b3d216eee6344dfd0f1c96.dir
+      size: 945
       nfiles: 1
     - path: plots
-      md5: ec05803377cfc3587e6ff2ab7cb568c7.dir
-      size: 82248
+      md5: 39d40eb6a368809c8ae6efcc48ff3fda.dir
+      size: 86542
       nfiles: 4

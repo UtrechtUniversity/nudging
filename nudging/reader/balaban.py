@@ -1,5 +1,4 @@
 """DataSet class for Balaban"""
-import numpy as np
 import pandas as pd
 
 from nudging.reader.base import BaseDataSet
@@ -25,9 +24,8 @@ class Balaban(BaseDataSet):
         Returns:
             pandas.DataFrame: containing age, gender, outcome, nudge
         """
-        person = np.array(data_frame['anon'])
-        person_ids = np.unique(person)
-
+        # person = np.array(data_frame['anon'])
+        # person_ids = np.unique(person)
         df_out = data_frame[data_frame['time'] == 3]
         df_out.rename(columns={"MDH": "outcome"}, inplace=True)
         df_out.rename(columns={"Nudge_EA": "nudge"}, inplace=True)
