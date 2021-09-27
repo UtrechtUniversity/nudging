@@ -43,7 +43,7 @@ class BaseDataSet(ABC):
         """Write interim data (standard format) to csv file"""
         data_frame["nudge_type"] = self.nudge_type
         data_frame["nudge_domain"] = self.nudge_domain
-        # Convert age to decades
+        # Convert age to decades if present
         if 'age' in data_frame.columns:
             data_frame["age"] = (data_frame["age"]/10.).astype(int)
         data_frame.to_csv(path, index=False)

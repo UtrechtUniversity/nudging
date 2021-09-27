@@ -27,12 +27,10 @@ class Balaban(BaseDataSet):
         """
         person = np.array(data_frame['anon'])
         person_ids = np.unique(person)
-        print(len(person_ids), person_ids)
 
         df_out = data_frame[data_frame['time'] == 3]
         df_out.rename(columns={"MDH": "outcome"}, inplace=True)
         df_out.rename(columns={"Nudge_EA": "nudge"}, inplace=True)
-        df_out.rename(columns={"Female": "gender"}, inplace=True)
-        df_out['gender'] = 1 - df_out['gender']
+        df_out['gender'] = 1 - data_frame['Female']
 
         return super()._preprocess(df_out)

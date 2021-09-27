@@ -8,6 +8,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from causalinference import CausalModel
 
+pd.options.mode.chained_assignment = None  # default='warn'
 
 def get_pscore(data_frame):
     """Calculate propensity score with logistic regression
