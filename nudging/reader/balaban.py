@@ -6,7 +6,7 @@ from nudging.reader.base import BaseDataSet
 
 
 class Balaban(BaseDataSet):
-    """DataSet class for Hotard et al 2019"""
+    """DataSet class for Balaban and Conway 2020"""
     covariates = ["age", "gender", "Fyear", "PofC"]
     nudge_type = 8
     nudge_domain = 5
