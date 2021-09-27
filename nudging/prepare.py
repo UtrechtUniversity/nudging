@@ -25,8 +25,6 @@ def combine(infiles, outfile):
     # Replace missing values with Nans
     data.replace("", pd.NA, inplace=True)
 
-    # Convert age to decades
-    data.age = (data.age/10.).astype(int)
     data.to_csv(outfile, index=False)
 
     print(f"Combined dataset in {outfile}")
@@ -39,7 +37,7 @@ if __name__ == "__main__":
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
         "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
-        # "Balaban": "data/external/008_balaban/anon1.dta"
+        "Balaban": "data/external/008_balaban/anon1.dta"
     }
 
     # Cleanup old data

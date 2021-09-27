@@ -7,7 +7,7 @@ from nudging.reader.base import BaseDataSet
 
 class Balaban(BaseDataSet):
     """DataSet class for Balaban and Conway 2020"""
-    covariates = ["age", "gender", "Fyear", "PofC"]
+    covariates = ["ACThybrid", "gender", "Fyear", "PofC"]
     nudge_type = 8
     nudge_domain = 5
 
@@ -34,9 +34,5 @@ class Balaban(BaseDataSet):
         df_out.rename(columns={"Nudge_EA": "nudge"}, inplace=True)
         df_out.rename(columns={"Female": "gender"}, inplace=True)
         df_out['gender'] = 1 - df_out['gender']
-
-        # TODO: remove age as default covariate
-        df_out.rename(columns={"ACThybrid": "age"}, inplace=True)
-        print(df_out)
 
         return super()._preprocess(df_out)
