@@ -1,0 +1,7 @@
+features:
+  - nudge_domain
+  - nudge_type
+  - gender
+  - age
+plot:
+  x: age

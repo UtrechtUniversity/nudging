@@ -1,5 +1,6 @@
 """Evaluate nudging model"""
 from joblib import load
+import yaml
 
 from nudging.train import read_data
 
@@ -24,7 +25,8 @@ def evaluate_probabilities(data):
 if __name__ == "__main__":
 
     # Read combined dataset, note this is the same as used for training
-    features = ["nudge_domain", "age", "gender", "nudge_type"]
+    config = yaml.safe_load(open("config.yaml"))
+    features = config["features"]
     df_nonan = read_data("data/interim/combined.csv", features)
 
     # Load model

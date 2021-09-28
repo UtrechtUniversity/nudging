@@ -8,7 +8,7 @@ from nudging.reader.base import BaseDataSet
 
 class Hotard(BaseDataSet):
     """DataSet class for Hotard et al 2019"""
-    covariates = ["age", "gender", "mtbany", "educ_HS", "marital_single",
+    covariates = ["age_Q", "gender", "mtbany", "educ_HS", "marital_single",
                   "hhinc_cap_Q", "hhsize_Q",  "College",
                   "lang_Eng", "yearsinus"]
     nudge_type = 8
@@ -20,7 +20,6 @@ class Hotard(BaseDataSet):
     goal = "increase"
 
     def _load(self, file_path):
-        # print(pd.read_stata(fp))
         return pd.read_stata(file_path)
 
     def _preprocess(self, data_frame):
@@ -39,7 +38,7 @@ class Hotard(BaseDataSet):
         df_out["nudge"] = (df_out["anyfeewaivernote"] == 1).astype('int')
 
         # Age is given in quartiles, hence this data cannot be used to combine with other studies
-        df_out.rename(columns={"age_Q": "age"}, inplace=True)
+        # df_out.rename(columns={"age_Q": "age"}, inplace=True)
 
         # convert gender to female=0, male=1:
         male_idx = np.where(df_out["gender_f"].values == self.male)[0]

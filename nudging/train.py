@@ -4,6 +4,7 @@ import sys
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import CategoricalNB
 from joblib import dump
+import yaml
 
 from nudging.utils import clean_dirs, read_data
 
@@ -41,7 +42,9 @@ if __name__ == "__main__":
     # Make sure output dirs exist and are empty
     clean_dirs(outdirs)
 
-    predictors = ["nudge_domain", "age", "gender", "nudge_type"]
+    # Get predictors from config.yaml
+    config = yaml.safe_load(open("config.yaml"))
+    predictors = config["features"]
     dataset = read_data("data/interim/combined.csv", predictors)
 
     # Use commandline specified algorithm if given or default

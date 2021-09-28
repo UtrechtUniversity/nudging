@@ -8,6 +8,8 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from causalinference import CausalModel
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
 
 def get_pscore(data_frame):
     """Calculate propensity score with logistic regression
@@ -180,7 +182,7 @@ def match_ps(data_ps):
     treated_matched_data = data_ps[treated_with_match][data_ps.columns]
     untreated_matched_data = pd.DataFrame(data=treated_matched_data.matched_element)
 
-    attributes = ['age', 'gender', 'outcome', 'nudge', 'pscore']
+    attributes = ['outcome', 'nudge']
     for attr in attributes:
         untreated_matched_data[attr] = untreated_matched_data.apply(
             obtain_match_details, axis=1, all_data=data_ps, attribute=attr)

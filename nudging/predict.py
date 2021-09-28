@@ -4,6 +4,7 @@ from pathlib import Path
 
 from joblib import load
 import matplotlib.pyplot as plt
+import yaml
 
 from nudging.utils import clean_dirs, read_data
 
@@ -25,12 +26,13 @@ def flatten(data):
     return result
 
 
-def plot_probability(data, labels, outdir):
-    """Plot nudge effectiveness (probability of success) as function of age for each nudge type
+def plot_probability(data, labels, outdir, xaxis):
+    """Plot nudge effectiveness (probability of success) as function of x for each nudge type
     Args:
        data (pandas.DataFrame): dataframe with nudge effectiveness
        labels (dict): dict with labels to choose what to plot
        outdir (str): folder name to save plots
+       xaxis (str): feature to use as x-axis
     """
     width = 0.2
     _, axis = plt.subplots()
@@ -47,31 +49,41 @@ def plot_probability(data, labels, outdir):
             continue
         label = "nudge {}".format(nudge)
         dataset.plot(
-            ax=axis, kind='bar', x='age', y='probability', label=label,
+            ax=axis, kind='bar', x=xaxis, y='probability', label=label,
             color=colors[i], width=width, position=position)
         position += 1
-    axis.set_xlabel('age [decades]')
-    axis.set_ylabel('probability of nudge success')
+    axis.set_xlabel(xaxis)
+    axis.set_ylabel('nudge effectiveness')
+    axis.set_ylim([0, 1])
+
     name = ""
     for key, value in labels.items():
         name = name + f"{key}_{value}_"
-    name = name[:-1]
-    plt.title(name)
+    if len(name) > 0:
+        name = name[:-1]
+    else:
+        name = "nudge"
     filename = Path(outdir, name + ".png")
     plt.savefig(filename)
+    print(f"Plot generated: {filename}")
 
 
-def plot_data(data, predictors, outdir):
+def plot_data(data, predictors, outdir, xaxis):
     """Make plots of nudge effectiveness for each subject subgroup
     Args:
         predictors (list): list of predictors
         data (pandas.DataFrame): dataframe with nudge effectivenedd for all subgroups
         outdir (str): folder name to save plots
+        xaxis (str): feature to use as x-axis
     """
     plot_dict = {}
+    prod = []
+    labels = {}
     for predictor in predictors:
-        if predictor not in ["nudge_type", "age"]:
+        if predictor not in ["nudge_type", xaxis]:
             plot_dict[predictor] = data[predictor].unique()
+    if not plot_dict:
+        plot_probability(data, labels, outdir, xaxis)
 
     for i, value in enumerate(plot_dict.values()):
         if i == 0:
@@ -85,7 +97,7 @@ def plot_data(data, predictors, outdir):
         else:
             label = [term]
         labels = {key: label[i] for i, key in enumerate(plot_dict.keys())}
-        plot_probability(data, labels, outdir)
+        plot_probability(data, labels, outdir, xaxis)
 
 
 if __name__ == "__main__":
@@ -96,7 +108,9 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Read combined dataset, note this is the same as used for training
-    features = ["nudge_domain", "age", "gender", "nudge_type"]
+    config = yaml.safe_load(open("config.yaml"))
+    features = config["features"]
+    x_axis = config["plot"]["x"]
     df_nonan = read_data("data/interim/combined.csv", features)
     subgroups = df_nonan[features].drop_duplicates().sort_values(by=features, ignore_index=True)
 
@@ -107,5 +121,5 @@ if __name__ == "__main__":
     prob = subgroups.assign(
         probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
     prob.to_csv("data/processed/nudge_probabilty.csv", index=False)
-
-    plot_data(prob, features, "plots")
+    print("Output written to data/processed/nudge_probabilty.csv")
+    plot_data(prob, features, "plots", x_axis)
