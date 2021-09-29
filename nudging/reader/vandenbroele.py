@@ -1,9 +1,11 @@
-"""DataSet class for Vandenbroele  et al 2021 (https://doi.org/10.1016/j.obhdp.2019.09.004)
-The data used here is from study 2 of this paper:
+"""DataSet class for Vandenbroele  et al 2021,
+"Mock meat in the butchery: Nudging consumers toward meat substitutes"
+(https://doi.org/10.1016/j.obhdp.2019.09.004)
+The data used here is from study 2 of this paper (no data available for study 1):
 "Effects of product visibility and pairwise presentation on meat and meat substitute sales"
 The outcome variable is the percentage of vegetarion purchases
-The nudge applied is product visibilitu and/or pairwise presentation
-There are 231 participants (undergraduate students), of which 111 male)
+The nudge applied is product visibility and/or pairwise presentation
+There are 231 participants (undergraduate students), of which 111 male
 """
 import pyreadstat
 import numpy as np

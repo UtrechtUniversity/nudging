@@ -5,7 +5,8 @@
 import glob
 import pandas as pd
 
-from nudging.reader import Balaban, Hotard, PennyCook1, Lieberoth, Vandenbroele, Simulated # noqa
+from nudging.reader import Balaban, Hotard, Pennycook1, Pennycook2,\
+    Lieberoth, Vandenbroele, Simulated # noqa
 from nudging.utils import clean_dirs
 
 
@@ -35,7 +36,8 @@ if __name__ == "__main__":
     datasets = {
         # "Simulated": "data/external/simulated/simulated.csv",
         "Vandenbroele": "data/external/016_vandenbroele/S2_OpenAccess.sav",
-        "PennyCook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
+        "Pennycook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
+        "Pennycook2": "data/external/002_pennycook/Pennycook et al._Study 2.csv",
         "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         "Balaban": "data/external/008_balaban/anon1.dta",
         "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
