@@ -40,6 +40,7 @@ def plot_probability(data, labels, outdir, xaxis):
     types = data['nudge_type'].unique()
     position = 0
     condition = True
+    xticks = []
     for label in labels:
         condition = (data[label] == labels[label]) & condition
 
@@ -51,7 +52,13 @@ def plot_probability(data, labels, outdir, xaxis):
         dataset.plot(
             ax=axis, kind='bar', x=xaxis, y='probability', label=label,
             color=colors[i], width=width, position=position)
+        # get ticks of largest range
+        if len(axis.get_xticks()) > len(xticks):
+            xticks = axis.get_xticks()
         position += 1
+
+    axis.set_xticks(xticks)
+    axis.set_xticklabels(axis.get_xmajorticklabels())
     axis.set_xlabel(xaxis)
     axis.set_ylabel('nudge effectiveness')
     axis.set_ylim([0, 1])
@@ -64,6 +71,7 @@ def plot_probability(data, labels, outdir, xaxis):
     else:
         name = "nudge"
     filename = Path(outdir, name + ".png")
+    plt.autoscale(axis='x')
     plt.savefig(filename)
     print(f"Plot generated: {filename}")
 

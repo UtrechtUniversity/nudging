@@ -3,6 +3,8 @@ from nudging.reader.balaban import Balaban
 from nudging.reader.hotard import Hotard
 from nudging.reader.pennycook import PennyCook1
 from nudging.reader.lieberoth import Lieberoth
+from nudging.reader.vandenbroele import Vandenbroele
 from nudging.reader.simulated import Simulated
 
-__all__ = ['Balaban', 'Hotard', 'PennyCook1', 'Lieberoth', 'Simulated']
+
+__all__ = ['Balaban', 'Hotard', 'PennyCook1', 'Lieberoth', 'Vandenbroele', 'Simulated']
