@@ -22,7 +22,7 @@ def get_pscore(data_frame):
     treatment = 'nudge'
     outcome = 'outcome'
     predictors = data_frame.columns.drop([treatment, outcome])
-    ps_model = LogisticRegression(max_iter=150).fit(
+    ps_model = LogisticRegression(max_iter=200).fit(
         data_frame[predictors].to_numpy().astype('int'),
         data_frame[treatment].to_numpy().astype('int')
     )
