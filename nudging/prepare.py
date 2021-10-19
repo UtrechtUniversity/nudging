@@ -35,12 +35,12 @@ if __name__ == "__main__":
 
     datasets = {
         # "Simulated": "data/external/simulated/simulated.csv",
-        "Vandenbroele": "data/external/016_vandenbroele/S2_OpenAccess.sav",
+        # "Vandenbroele": "data/external/016_vandenbroele/S2_OpenAccess.sav",
         "Pennycook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
-        "Pennycook2": "data/external/002_pennycook/Pennycook et al._Study 2.csv",
-        "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
-        "Balaban": "data/external/008_balaban/anon1.dta",
-        "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
+        # "Pennycook2": "data/external/002_pennycook/Pennycook et al._Study 2.csv",
+        # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
+        # "Balaban": "data/external/008_balaban/anon1.dta",
+        # "Lieberoth": "data/external/011_lieberoth/Commuter experiment_simple.csv",
     }
 
     # Cleanup old data
@@ -56,9 +56,5 @@ if __name__ == "__main__":
         dataset.write_raw("data/raw/" + name + ".csv")
 
         # Write interim data to csv
-        result = dataset.convert()
-        dataset.write_interim(result, "data/interim/" + name + ".csv")
+        dataset.write_interim("data/interim/" + name + ".csv")
 
-    # combine separate csv files to one
-    files = glob.glob('data/interim/[!combined.csv]*')
-    combine(files, "data/interim/combined.csv")

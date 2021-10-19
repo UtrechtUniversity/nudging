@@ -8,7 +8,7 @@ import nudging.propensity_score as ps
 
 class BaseDataSet(ABC):
     """Base class for DataSet """
-    covariates = []
+
     nudge_type = None
     nudge_domain = None
     goal = None
@@ -22,16 +22,36 @@ class BaseDataSet(ABC):
     def _load(self, file_path):
         raise NotImplementedError
 
+    def __getattr__(self, item):
+        """Easier access to nudge and outcomes"""
+        if item in ["nudge", "outcome"]:
+            return self.df[item].values
+        return super().__getattr__(self, item)
+
     def _preprocess(self, data_frame):
+        """Do some general preprocessing after reading the file"""
         # Remove unused columns
         used_columns = self.covariates + ["nudge", "outcome"]
         data_frame = data_frame.loc[:, used_columns]
-
+        
         # Convert to a numeric type
         data_frame = data_frame.apply(pd.to_numeric)
+        data_frame["nudge"] = data_frame["nudge"].astype(int)
+        data_frame["outcome"] = data_frame["outcome"].astype(float)
+
+        # Set nudge type and domain
+        if "nudge_type" not in data_frame.columns:    
+            data_frame["nudge_type"] = self.nudge_type
+        if "nudge_domain" not in data_frame.columns:   
+            data_frame["nudge_domain"] = self.nudge_domain
 
         # Remove rows with NA in them
         data_frame = data_frame.dropna()
+        data_frame = remove_duplicate_cols(data_frame)
+
+        # shuffle rows
+        np.random.seed(1234123)
+        data_frame = data_frame.sample(frac=1)
 
         return data_frame
 
@@ -39,80 +59,103 @@ class BaseDataSet(ABC):
         """Write raw data to csv file"""
         self.raw_df.to_csv(path, index=False)
 
-    def write_interim(self, data_frame, path):
+    def write_interim(self, path):
         """Write interim data (standard format) to csv file"""
-        data_frame["nudge_type"] = self.nudge_type
-        data_frame["nudge_domain"] = self.nudge_domain
-        # Convert age to decades if present
-        if 'age' in data_frame.columns:
-            data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        data_frame.to_csv(path, index=False)
+        if self.goal == "decrease":
+            self.standard_df["outcome"] = - self.standard_df["outcome"] 
 
-    def _compare(self, value1, value2):
-        """Compare value1 against value, depending on nudge goal returns 0 or 1
-        Args:
-            value1 (pandas.Series)
-            value2 (pandas.Series)
-        Returns:
-            pandas.Series: 0 or 1
-        """
-        if self.goal == "increase":
-            result = np.greater(value1, value2).astype(int)
-        elif self.goal == "decrease":
-            result = np.greater(value1, value2).astype(int)
-        else:
-            raise RuntimeError(
-                f'Comparing outcome failed with goal {self.goal}, \
-                should be increase or decrease')
+        self.standard_df.to_csv(path, index=False)
 
-        return result
+    @property
+    def ate(self):
+        """Compute the Average Treatment Effect"""
+        ones = np.where(self.nudge == 1)[0]
+        zeros = np.where(self.nudge == 0)[0]
+        return np.mean(self.outcome[ones])-np.mean(self.outcome[zeros])
 
-    def _get_success(self, data_frame):
-        """Convert outcome to nudge success"""
-        data_frame["success"] = self._compare(
-            data_frame["outcome"], data_frame["control"])
-        result = data_frame.drop(columns=["outcome", "control"])
-        return result
+    @property
+    def data(self):
+        """Split the data into FM + outcome + nudge"""
+        return split_df(self.df)
 
-    def convert(self):
-        """Convert raw dataset to standard-format csv file with nudge succes
-        Args:
-            name (str): name of reader
-            path (str): path to original dataset
-        Returns:
-            pandas.DataFrame: dataframe with nudge success for subjects in treatment group
-        """
-        # Convert data to standard format (with columns covariates, nudge, outcome)
-        data_frame = self.standard_df
+    @property
+    def shape(self):
+        return (self.df.shape[0], self.df.shape[1])
 
-        data_frame.reset_index(drop=True, inplace=True)
+    @property
+    def covariates(self):
+        """By defaults all columns (ex. nudge/outcome) are covariates."""
+        return [x for x in list(self.df) if x not in ["nudge", "outcome"]]
 
-        # Apply OLS regression and print info
-        # print(
-        #    smf.ols("outcome ~ nudge",
-        # data=data_frame.apply(pd.to_numeric)).fit().summary().tables[1])
+    def kfolds(self, k=10):
+        """Generator for k-folds"""
+        zeros = np.where(self.df["nudge"].values == 0)[0]
+        ones = np.where(self.df["nudge"].values == 1)[0]
+        np.random.shuffle(zeros)
+        np.random.shuffle(ones)
 
-        # calculate propensity score
-        df_ps = ps.get_pscore(data_frame)
+        one_split = np.array_split(ones, k)
+        zero_split = np.array_split(zeros, k)
+        for i_split in range(k):
+            test_idx = np.append(one_split[i_split], zero_split[i_split])
+            train_idx = np.delete(np.arange(len(self)), test_idx)
+            yield split_df(self.df, train_idx, test_idx)
 
-        # Check if treatment and control groups are well-balanced
-        # ps.check_weights(df_ps)
+    def __len__(self):
+        """Number of samples in de dataset"""
+        return len(self.df)
 
-        # Plots
-        # ps.plot_confounding_evidence(df_ps)
-        # ps.plot_overlap(df_ps)
+    def split(self, train=0.7):
+        """Split the data into training and test set"""
+        train_idx = np.random.choice(len(self), size=int(train*len(self)),
+                                     replace=False)
+        test_idx = np.delete(np.arange(len(self)), train_idx)
+        return split_df(self.df, train_idx, test_idx)
 
-        # Average Treatment Effect (ATE)
-        ps.get_ate(df_ps)
 
-        # propensity score weigthed ATE
-        ps.get_psw_ate(df_ps)
+def split_df(df, *idx_set):
+    """Split the dataset into multiple datasets."""
+    if len(idx_set) == 0:
+        return convert_df(df)
+    return [convert_df(df.iloc[idx], idx) for idx in idx_set]
 
-        # propensity score matched ATE with CausalModel
-        # ps.get_psm_ate(df_ps)
 
-        # Calculate nudge success
-        result = ps.match_ps(df_ps)
-        result = self._get_success(result)
+def convert_df(df, idx=None):
+    """Split the dataset into FM/outcome/nudge"""
+    if idx is None:
+        idx = np.arange(len(df))
+    nudge = df["nudge"].values
+    outcome = df["outcome"].values
+    X = df.drop(["nudge", "outcome"], axis=1).values.astype(float)
+    return {"X": X, "outcome": outcome, "nudge": nudge, "idx": idx}
 
-        return result
+
+def remove_duplicate_cols(df):
+    """Some columns may be duplications of each other, remove them."""
+    cols = list(df.columns)
+    unq_cols, counts = np.unique(cols, return_counts=True)
+    if len(unq_cols) == len(cols):
+        return df
+
+    df = df.copy()
+    unq_zip = dict(zip(unq_cols, counts))
+    for col_name, count in unq_zip.items():
+        if count == 1:
+            continue
+        col_pos = np.where(np.array(cols) == col_name)[0]
+        new_cols = np.copy(cols)
+        for i, i_pos in enumerate(col_pos):
+            new_cols[i_pos] = col_name+"_"+str(i)
+        df.columns = new_cols
+        for i, i_pos in enumerate(col_pos):
+            all_same = np.all(df[col_name+"_"+str(i)].values == df[col_name+"_"+str(0)].values)
+            if not all_same:
+                raise ValueError("Reading two columns with the same name, but different data")
+            if i > 0:
+                df.drop([col_name+"_"+str(i)], inplace=True, axis=1)
+        df.rename(columns={col_name+"_0": col_name}, inplace=True)
+        cols = df.columns
+    return df
+
+
+
