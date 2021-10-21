@@ -4,10 +4,12 @@ import glob
 
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import BayesianRidge
 from sklearn.naive_bayes import CategoricalNB
 from joblib import dump
 import yaml
 
+from nudging.model.base import BaseBiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
@@ -45,8 +47,9 @@ if __name__ == "__main__":
     predictors = config["features"]
 
     # Choose model
-    # model = BaseBiRegressor(BayesianRidge)
-    model = ProbModel(LogisticRegression)
+    model = BaseBiRegressor(BayesianRidge)
+    # model = ProbModel(LogisticRegression)
+
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')

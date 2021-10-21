@@ -84,10 +84,10 @@ def get_ate(data_ps):
     """
     result = data_ps.groupby("nudge")["outcome"].mean()
     ate = result[1] - result[0]
-    print("Calculate Average Treatment Effect:")
-    print(f"Control: {round(result[0], 3)}")
-    print(f"Treatment: {round(result[1], 3)}")
-    print(f"ATE: {round(ate, 3)}")
+    # print("Calculate Average Treatment Effect:")
+    # print(f"Control: {round(result[0], 3)}")
+    # print(f"Treatment: {round(result[1], 3)}")
+    # print(f"ATE: {round(ate, 3)}")
 
     return ate
 
@@ -107,7 +107,7 @@ def get_psw_ate(data_ps):
     # control = sum(data_ps.query("nudge==0")["outcome"]*weight_nt) / len(data_ps)
     # ate = treatment - control
 
-    print(f"Propensity score weighted ATE: {round(ate, 3)}")
+    # print(f"Propensity score weighted ATE: {round(ate, 3)}")
 
     return ate
 
@@ -197,7 +197,7 @@ def match_ps(data_ps):
     treated_outcome = overview['outcome']['mean'][1]
     treated_counterfactual_outcome = overview['outcome']['mean'][0]
     att = treated_outcome - treated_counterfactual_outcome
-    print('Propensity score matched ATE: {:.4f}'.format(att))
+    # print('Propensity score matched ATE: {:.4f}'.format(att))
 
     treated_outcome = treated_matched_data.outcome
     untreated_outcome = untreated_matched_data.outcome

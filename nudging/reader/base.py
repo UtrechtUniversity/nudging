@@ -112,6 +112,20 @@ class BaseDataSet(ABC):
         test_idx = np.delete(np.arange(len(self)), train_idx)
         return split_df(self.df, train_idx, test_idx)
 
+    def obs_cate(self, features, min_count=10):
+        # observed cate
+        data_obs = self.standard_df[self.standard_df["nudge"] == 1].groupby(features, as_index=False)["outcome"].mean()
+        data_obs["cate_obs"] = data_obs["outcome"] - self.standard_df[self.standard_df["nudge"] == 0].groupby(
+            features, as_index=False)["outcome"].mean()["outcome"]
+        data_obs["count_nudge"] = self.standard_df[self.standard_df["nudge"] == 1].groupby(
+            features, as_index=False)["outcome"].size()["size"]
+        data_obs["count_control"] = self.standard_df[self.standard_df["nudge"] == 0].groupby(
+            features, as_index=False)["outcome"].size()["size"]
+
+        data_obs= data_obs[(data_obs["count_nudge"] > min_count) & (data_obs["count_control"] > min_count)]
+
+        return data_obs["cate_obs"]
+
 
 def split_df(df, *idx_set):
     """Split the dataset into multiple datasets."""
@@ -124,9 +138,9 @@ def convert_df(df, idx=None):
     """Split the dataset into FM/outcome/nudge"""
     if idx is None:
         idx = np.arange(len(df))
-    nudge = df["nudge"].values
-    outcome = df["outcome"].values
-    X = df.drop(["nudge", "outcome"], axis=1).values.astype(float)
+    nudge = df["nudge"]
+    outcome = df["outcome"]
+    X = df.drop(["nudge", "outcome"], axis=1)
     return {"X": X, "outcome": outcome, "nudge": nudge, "idx": idx}
 
 
