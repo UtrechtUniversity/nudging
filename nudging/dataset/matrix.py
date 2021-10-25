@@ -1,4 +1,4 @@
-from nudging.reader.base import BaseDataSet
+from nudging.dataset.base import BaseDataSet
 from pandas import DataFrame
 
 import yaml

@@ -1,5 +1,5 @@
 import numpy as np
-from nudging.reader.matrix import MatrixData
+from nudging.dataset.matrix import MatrixData
 
 
 def features_from_cmatrix(

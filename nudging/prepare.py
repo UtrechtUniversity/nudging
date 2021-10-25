@@ -5,7 +5,7 @@
 import glob
 import pandas as pd
 
-from nudging.reader import Balaban, Hotard, Pennycook1, Pennycook2,\
+from nudging.dataset import Balaban, Hotard, Pennycook1, Pennycook2,\
     Lieberoth, Vandenbroele, Simulated # noqa
 from nudging.utils import clean_dirs
 

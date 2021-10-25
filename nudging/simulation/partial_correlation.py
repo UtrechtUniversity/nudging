@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 # from protosc.feature_matrix import FeatureMatrix
-from nudging.reader.matrix import MatrixData
+from nudging.dataset.matrix import MatrixData
 
 
 def _slightly_correlated_data(n_features=20, n_samples=500, nudge_avg=0.1,
