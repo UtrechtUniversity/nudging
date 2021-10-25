@@ -1,7 +1,6 @@
 import numpy as np
 
-from nudging.simulation.mixed_features import create_corr_matrix
-from nudging.simulation.utils import features_from_cmatrix
+from nudging.simulation.utils import create_corr_matrix, features_from_cmatrix
 
 
 def rescale(var, min_value, max_value):

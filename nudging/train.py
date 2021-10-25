@@ -47,9 +47,8 @@ if __name__ == "__main__":
     predictors = config["features"]
 
     # Choose model
-    model = BaseBiRegressor(BayesianRidge)
-    # model = ProbModel(LogisticRegression)
-
+    # model = BaseBiRegressor(BayesianRidge)
+    model = ProbModel(LogisticRegression)
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')
