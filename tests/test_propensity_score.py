@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pandas._testing import assert_frame_equal
 
-from nudging.propensity_score import get_pscore, check_weights, get_ate, get_psw_ate, \
+from nudging.model.propensity_score import get_pscore, check_weights, get_ate, get_psw_ate, \
 	perform_matching, obtain_match_details, match_ps
 
 # Create DataFrame

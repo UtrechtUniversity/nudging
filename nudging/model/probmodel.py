@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from nudging.model.base import BaseModel
-import nudging.propensity_score as ps
+import nudging.model.propensity_score as ps
 
 class ProbModel(BaseModel):
     """class for Probalistic model"""

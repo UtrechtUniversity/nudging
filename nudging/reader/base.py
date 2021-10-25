@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
-import nudging.propensity_score as ps
+import nudging.model.propensity_score as ps
 
 
 class BaseDataSet(ABC):
