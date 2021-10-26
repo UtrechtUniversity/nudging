@@ -61,9 +61,6 @@ class BaseDataSet(ABC):
 
     def write_interim(self, path):
         """Write interim data (standard format) to csv file"""
-        # Convert age to decades if present
-        if 'age' in self.standard_df.columns:
-            self.standard_df["age"] = (self.standard_df["age"]/10.).astype(int)
         if self.goal == "decrease":
             self.standard_df["outcome"] = - self.standard_df["outcome"] 
 

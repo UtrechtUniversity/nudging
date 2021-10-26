@@ -40,7 +40,7 @@ class Lieberoth(BaseDataSet):
         # Put data in DataFrame
         df_out = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
         with open(self.filename, newline='') as csvfile:
-            dataset = csv.dataset(csvfile)
+            dataset = csv.reader(csvfile)
             index = 0
             for row in dataset:
                 if row[0] == self.control:

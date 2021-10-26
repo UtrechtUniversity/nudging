@@ -52,6 +52,10 @@ class ProbModel(BaseModel):
         # Calculate nudge success
         result = ps.match_ps(df_ps)
         result = self._get_success(result)
+                
+        # Convert age to decades if present
+        if 'age' in result.columns:
+            result["age"] = (result["age"]/10.).astype(int)
 
         return result
 
