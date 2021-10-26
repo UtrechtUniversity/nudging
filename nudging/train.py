@@ -60,7 +60,7 @@ if __name__ == "__main__":
     dataset = pd.concat(datasets)
 
     # train model
-    nudging_model = train_model(dataset, predictors, model)
+    nudging_model = train_model(dataset, predictors, model.model)
 
     # Save trained model
     dump(nudging_model, "models/nudging.joblib")
