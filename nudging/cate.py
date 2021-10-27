@@ -55,7 +55,6 @@ def get_cate_correlations(dataset, true_cate, model, k=10, n=10):
         List of spearman correlation coefficients for each of the folds
         and repeats.
     """
-    # true_cate = dataset.truth["cate"]
     all_correlations = []
     for _ in range(n):
         cate_results = get_cate(dataset, model, k=k)

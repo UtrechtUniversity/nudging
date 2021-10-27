@@ -53,21 +53,29 @@ class ProbModel(BaseModel):
         result = ps.match_ps(df_ps)
         result = self._get_success(result)
                 
-        # Convert age to decades if present
-        if 'age' in result.columns:
-            result["age"] = (result["age"]/10.).astype(int)
-
         return result
 
     def train(self, data):
         # Drop rows with missing values for predictors
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
+        # Convert age to decades if present
+        if 'age' in df_nonan.columns:
+            df_nonan["age"] = (df_nonan["age"]/10.).astype(int)
+
         self.model.fit(
             df_nonan[self.predictors].to_numpy().astype('int'),
             df_nonan["outcome"].to_numpy().astype('int')
         )
 
+    def predict_outcome(self, data):
+        # Convert age to decades if present
+        if 'age' in data.columns:
+            data["age"] = (data["age"]/10.).astype(int)
+        return self.model.predict_proba(data[self.predictors])[:, 1]
 
-    def predict_cate(self, X):
-        return self.model.predict_proba(X[self.predictors])[:, 1]
+    def predict_cate(self, data):
+        # Convert age to decades if present
+        if 'age' in data.columns:
+            data["age"] = (data["age"]/10.).astype(int)
+        return self.model.predict_proba(data[self.predictors])[:, 1]
 
