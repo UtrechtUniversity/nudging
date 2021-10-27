@@ -9,10 +9,10 @@ class ProbModel(BaseModel):
 
     def _get_success(self, data_frame):
         """Convert outcome to nudge success"""
-        data_frame["success"] = np.greater(
+        result = data_frame.copy(deep=True)
+        result["outcome"] = np.greater(
             data_frame["outcome"], data_frame["control"]).astype(int)
-        result = data_frame.drop(columns=["outcome", "control"])
-        return result
+        return result.drop(columns=["control"])
 
     def preprocess(self, data_frame):
         """Convert raw dataset to standard-format csv file with nudge succes
@@ -60,22 +60,6 @@ class ProbModel(BaseModel):
         return result
 
 
-    def fit_nudge(self, X, outcome, nudge):
-
-        data_frame = X.copy(deep=True)
-        data_frame["outcome"] = outcome
-        data_frame["nudge"] = nudge
-        data_frame = self.preprocess(data_frame)
-
-        outcome = data_frame["success"]
-        X_new = data_frame.drop(columns=["success"])
-
-        df_nonan = data_frame.dropna(subset=self.predictors, inplace=False)
-        self.model.fit(
-            df_nonan[self.predictors].to_numpy().astype('int'),
-            df_nonan["success"].to_numpy().astype('int'))
-
     def predict_cate(self, X):
-
         return self.model.predict_proba(X[self.predictors])[:, 1]
 

@@ -14,27 +14,6 @@ from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
 
-def train_model(data, predictors_, model):
-    """Calculate propability of nudge success with logistic regression
-    Args:
-        data (pandas.DataFrame): dataframe with nudge success per subject
-        predictors_ (list): list with predictor variable names
-        model (BaseModel): ML model to use for training
-    Returns:
-        model: trained model
-    Raises:
-        RuntimeError: if requested method is unknown
-    """
-    # Drop rows with missing values for predictors
-    df_nonan = data.dropna(subset=predictors_, inplace=False)
-
-    model.fit(
-        df_nonan[predictors_].to_numpy().astype('int'),
-        df_nonan["success"].to_numpy().astype('int'))
-
-    return model
-
-
 if __name__ == "__main__":
 
     # Cleanup old data
@@ -47,8 +26,9 @@ if __name__ == "__main__":
     predictors = config["features"]
 
     # Choose model
-    # model = BaseBiRegressor(BayesianRidge)
-    model = ProbModel(LogisticRegression)
+    # model = BaseBiRegressor(BayesianRidge())
+    model = ProbModel(LogisticRegression())
+    model.predictors = config["features"]
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')
@@ -60,10 +40,10 @@ if __name__ == "__main__":
     dataset = pd.concat(datasets)
 
     # train model
-    nudging_model = train_model(dataset, predictors, model.model)
+    nudging_model = model.train(dataset)
 
     # Save trained model
-    dump(nudging_model, "models/nudging.joblib")
+    dump(model, "models/nudging.joblib")
     print("Model saved to models/nudging.joblib")
 
     # save training data

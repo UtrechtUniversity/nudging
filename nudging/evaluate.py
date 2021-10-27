@@ -3,7 +3,8 @@ from joblib import load
 import yaml
 
 from nudging.train import read_data
-
+from nudging.model.base import BaseBiRegressor
+from nudging.model.probmodel import ProbModel
 
 def evaluate_probabilities(data):
     """Calculate accuracy of logistic regression model
@@ -12,7 +13,7 @@ def evaluate_probabilities(data):
     Returns:
         int: accuracy in percentage
     """
-    check = round(data['probability']) == data['success']
+    check = round(data['probability']) == data['outcome']
     correct = sum(check)
     total = check.shape[0]
     accuracy = int(round(correct*100/total, 0))
@@ -31,7 +32,8 @@ if __name__ == "__main__":
 
     # Load model
     model = load("models/nudging.joblib")
+    model.predictors = config["features"]
 
     # Calculate probabilities and check results
-    dataset = df_nonan.assign(probability=model.predict_proba(df_nonan[features])[:, 1])
+    dataset = df_nonan.assign(probability=model.predict_outcome(df_nonan))
     evaluate_probabilities(dataset)
