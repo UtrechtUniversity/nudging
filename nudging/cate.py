@@ -26,7 +26,7 @@ def get_cate(dataset, model, k=10):
     results = []
     for data_train, data_test in dataset.kfolds(k=k):
         data = pd.concat([data_train["X"], data_train["outcome"], data_train["nudge"]], axis=1)
-        model.train(data)
+        model.train(model.preprocess(data))
         cur_cate = model.predict_cate(data_test["X"])
         results.append((cur_cate, data_test["idx"]))
     return results

@@ -59,6 +59,14 @@ class ProbModel(BaseModel):
 
         return result
 
+    def train(self, data):
+        # Drop rows with missing values for predictors
+        df_nonan = data.dropna(subset=self.predictors, inplace=False)
+        self.model.fit(
+            df_nonan[self.predictors].to_numpy().astype('int'),
+            df_nonan["outcome"].to_numpy().astype('int')
+        )
+
 
     def predict_cate(self, X):
         return self.model.predict_proba(X[self.predictors])[:, 1]

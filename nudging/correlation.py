@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 # Generate simulated datasets
 np.random.seed(9817274)
-datasets = generate_multi_dataset(1000, n_nudge_type=1, n_nudge_domain=1, dataset_weight=1)
+datasets = generate_multi_dataset(1, n_nudge_type=1, n_nudge_domain=1, dataset_weight=1)
 
 # Choose model
 model = BaseBiRegressor(BayesianRidge())
