@@ -1,7 +1,6 @@
-import numpy as np
+"""Module for calculating conditional average treatment effect (cate) """
 import pandas as pd
-from scipy.stats import spearmanr, pearsonr
-from scipy.stats.mstats_basic import linregress
+from scipy.stats import spearmanr
 
 
 def get_cate(dataset, model, k=10):
@@ -32,7 +31,7 @@ def get_cate(dataset, model, k=10):
     return results
 
 
-def get_cate_correlations(dataset, true_cate, model, k=10, n=10):
+def get_cate_correlations(dataset, true_cate, model, k=10, ntimes=10):
     """Compute the correlations of the CATE to its modelled estimate
 
     This only works for simulated datasets, because the true CATE must
@@ -46,7 +45,7 @@ def get_cate_correlations(dataset, true_cate, model, k=10, n=10):
         Model to train and validate with.
     k: int
         Number of folds.
-    n: int
+    ntimes: int
         Number of times to perform k-fold validation.
 
     Returns
@@ -56,10 +55,9 @@ def get_cate_correlations(dataset, true_cate, model, k=10, n=10):
         and repeats.
     """
     all_correlations = []
-    for _ in range(n):
+    for _ in range(ntimes):
         cate_results = get_cate(dataset, model, k=k)
         new_correlations = [spearmanr(x[0], true_cate[x[1]]).correlation
                             for x in cate_results]
         all_correlations.extend(new_correlations)
     return all_correlations
-

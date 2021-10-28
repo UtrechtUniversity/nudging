@@ -3,8 +3,7 @@ from joblib import load
 import yaml
 
 from nudging.train import read_data
-from nudging.model.base import BaseBiRegressor
-from nudging.model.probmodel import ProbModel
+
 
 def evaluate_probabilities(data):
     """Calculate accuracy of logistic regression model

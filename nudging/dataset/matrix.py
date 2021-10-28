@@ -1,32 +1,33 @@
-from nudging.dataset.base import BaseDataSet
-from pandas import DataFrame
-
-import yaml
-import json
+"""DataSet class for simlated matrix data"""
 from copy import deepcopy
+import json
 
+from pandas import DataFrame
+import yaml
+
+from nudging.dataset.base import BaseDataSet
 
 class MatrixData(BaseDataSet):
+    """Class MatrixData"""
     def __init__(self, X, outcome, nudge, names=None):
-        self.df = DataFrame(X)
+        self.standard_df = DataFrame(X)
         if names is not None:
-            self.df.set_axis(names, axis=1, inplace=True)
+            self.standard_df.set_axis(names, axis=1, inplace=True)
         else:
-            self.df.set_axis([str(x) for x in list(self.df)], axis=1,
+            self.standard_df.set_axis([str(x) for x in list(self.standard_df)], axis=1,
                              inplace=True)
-        self.df["outcome"] = outcome
-        self.df["nudge"] = nudge
-        self.standard_df = self.df
+        self.standard_df["outcome"] = outcome
+        self.standard_df["nudge"] = nudge
 
-    def _load(self, fp):
-        pass
+        super().__init__()
+
 
     def to_csv(self, csv_fp, config_fp, truth_fp=None):
         """Write to file in a format that can be easily read from file."""
         covariates = self.covariates
         try:
             # If there is a truth, add nudge type and nudge domain
-            new_df = self.df.copy()
+            new_df = self.standard_df.copy()
             if "nudge_type" in self.truth:
                 new_df["nudge_type"] = self.truth["nudge_type"]
                 covariates.append("nudge_type")
@@ -34,7 +35,7 @@ class MatrixData(BaseDataSet):
                 new_df["nudge_domain"] = self.truth["nudge_domain"]
                 covariates.append("nudge_domain")
         except AttributeError:
-            new_df = self.df
+            new_df = self.standard_df
 
         # Write to CSV
         new_df.to_csv(csv_fp, index=False)
@@ -42,12 +43,12 @@ class MatrixData(BaseDataSet):
                         "plot": {"x": "age"}}
 
         # Create the configuration file
-        with open(config_fp, "w") as f:
-            yaml.dump(feature_dict, f)
+        with open(config_fp, "w") as file_:
+            yaml.dump(feature_dict, file_)
 
         # Create the truth/json file.
-        t = deepcopy(self.truth)
-        t["cate"] = t["cate"].tolist()
+        truth = deepcopy(self.truth)
+        truth["cate"] = truth["cate"].tolist()
         if truth_fp is not None:
-            with open(truth_fp, "w") as f:
-                json.dump(t, f)
+            with open(truth_fp, "w") as file_:
+                json.dump(truth, file_)

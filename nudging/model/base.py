@@ -12,11 +12,13 @@ class BaseModel(ABC):
     def __init__(self, model):
         self.model = model
 
-    def preprocess(self, data_frame):
+    @staticmethod
+    def preprocess(data_frame):
         """Standardize outcome"""
         return data_frame
-   
+
     def train(self, data):
+        """Train model"""
         # Drop rows with missing values for predictors
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         self.model.fit(
@@ -25,9 +27,11 @@ class BaseModel(ABC):
         )
 
     def predict_outcome(self, data):
+        """Predict outcome"""
         return self.model.predict_proba(data[self.predictors])[:, 1]
 
     def predict_cate(self, data):
+        """Predict conditional averagte treatment effect"""
         nudge_data = data[self.predictors].copy(deep=True)
         nudge_data["nudge"] = 1
         control_data = data[self.predictors].copy(deep=True)
@@ -61,5 +65,5 @@ class BaseBiRegressor(BaseModel):
             result[nudge_idx] = self.model_nudge.predict(data[self.predictors][nudge_idx])
         if control_idx.any():
             result[control_idx] = self.model_control.predict(data[self.predictors][control_idx])
-        
+
         return result

@@ -57,4 +57,3 @@ if __name__ == "__main__":
 
         # Write interim data to csv
         dataset.write_interim("data/interim/" + name + ".csv")
-

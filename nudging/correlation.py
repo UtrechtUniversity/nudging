@@ -1,20 +1,20 @@
+"""Get correlation between predicted cate/probabilty and observed/modelled cate"""
 import numpy as np
-from nudging.simulation.multidata import generate_multi_dataset
+from matplotlib import pyplot as plt
 from sklearn.linear_model import BayesianRidge
-from sklearn.linear_model import LogisticRegression
+# from sklearn.linear_model import LogisticRegression
+from tqdm import tqdm
 import yaml
 
 from nudging.model.base import BaseBiRegressor
-from nudging.model.probmodel import ProbModel
-from nudging.cate import get_cate, get_cate_correlations
-from scipy.stats import spearmanr
-from matplotlib import pyplot as plt
-from tqdm import tqdm
+# from nudging.model.probmodel import ProbModel
+from nudging.cate import get_cate_correlations
+from nudging.simulation.multidata import generate_multi_dataset
 
 
 # Generate simulated datasets
 np.random.seed(9817274)
-datasets = generate_multi_dataset(1, n_nudge_type=1, n_nudge_domain=1, dataset_weight=1)
+datasets = generate_multi_dataset(1000, n_nudge_type=1, n_nudge_domain=1, dataset_weight=1)
 
 # Choose model
 model = BaseBiRegressor(BayesianRidge())
@@ -36,4 +36,3 @@ for d in tqdm(datasets):
 plt.scatter(correlations, std_correlations)
 plt.savefig("correlation.png")
 plt.show()
-

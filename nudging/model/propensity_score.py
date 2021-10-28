@@ -143,7 +143,6 @@ def match_ps(data_ps):
                    direction='nearest', 
                    suffixes=['', '_control'])
 
-
     columns = list(df1) + ['control'] 
     result = result.rename(columns={"outcome_control": "control"})
     result = result[columns].sort_values('index').reset_index(drop=True).drop(columns=['index', 'nudge', 'pscore'])

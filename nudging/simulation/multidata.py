@@ -108,10 +108,10 @@ def generate_multi_dataset(
         X.truth["nudge_type"] = nudge_type
         all_matrices.append(X)
         if n_features_uncorrelated >= 2:
-            X.df["0"] = rescale(X.df["0"].values, 18, 80)
-            X.df["1"] = rescale(X.df["1"].values, 0, 2)
+            X.standard_df["0"] = rescale(X.standard_df["0"].values, 18, 80)
+            X.standard_df["1"] = rescale(X.standard_df["1"].values, 0, 2)
             rename_dict = {"0": "age", "1": "gender"}
-            X.df.rename(columns=rename_dict, inplace=True)
+            X.standard_df.rename(columns=rename_dict, inplace=True)
     return all_matrices
 
 

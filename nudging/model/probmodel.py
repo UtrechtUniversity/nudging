@@ -1,5 +1,5 @@
+"""Probabilistic model class"""
 import numpy as np
-import pandas as pd
 
 from nudging.model.base import BaseModel
 import nudging.model.propensity_score as ps
@@ -7,7 +7,8 @@ import nudging.model.propensity_score as ps
 class ProbModel(BaseModel):
     """class for Probalistic model"""
 
-    def _get_success(self, data_frame):
+    @staticmethod
+    def _get_success(data_frame):
         """Convert outcome to nudge success"""
         result = data_frame.copy(deep=True)
         result["outcome"] = np.greater(
@@ -52,7 +53,7 @@ class ProbModel(BaseModel):
         # Calculate nudge success
         result = ps.match_ps(df_ps)
         result = self._get_success(result)
-                
+
         return result
 
     def train(self, data):
@@ -78,4 +79,3 @@ class ProbModel(BaseModel):
         if 'age' in data.columns:
             data["age"] = (data["age"]/10.).astype(int)
         return self.model.predict_proba(data[self.predictors])[:, 1]
-
