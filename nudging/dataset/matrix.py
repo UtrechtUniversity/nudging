@@ -7,6 +7,7 @@ import yaml
 
 from nudging.dataset.base import BaseDataSet
 
+
 class MatrixData(BaseDataSet):
     """Class MatrixData"""
     def __init__(self, X, outcome, nudge, names=None):
@@ -14,13 +15,11 @@ class MatrixData(BaseDataSet):
         if names is not None:
             self.standard_df.set_axis(names, axis=1, inplace=True)
         else:
-            self.standard_df.set_axis([str(x) for x in list(self.standard_df)], axis=1,
-                             inplace=True)
+            self.standard_df.set_axis(
+                [str(x) for x in list(self.standard_df)], axis=1, inplace=True)
         self.standard_df["outcome"] = outcome
         self.standard_df["nudge"] = nudge
-
         super().__init__()
-
 
     def to_csv(self, csv_fp, config_fp, truth_fp=None):
         """Write to file in a format that can be easily read from file."""

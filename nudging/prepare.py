@@ -2,7 +2,6 @@
 """
 # pylint: disable=eval-used
 # pylint: disable=unused-import
-import glob
 import pandas as pd
 
 from nudging.dataset import Balaban, Hotard, Pennycook1, Pennycook2,\

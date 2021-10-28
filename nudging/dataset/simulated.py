@@ -19,7 +19,6 @@ class Simulated(BaseDataSet):
         """
         return pd.read_csv(file_path, encoding="iso-8859-1")
 
-
     def write_interim(self, path):
         """Write interim data (standard format) to csv file"""
         self.standard_df["nudge_type"] = self.raw_df["nudge_type"]
