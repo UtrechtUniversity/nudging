@@ -11,7 +11,7 @@ from causalinference import CausalModel
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-def get_pscore(data_frame):
+def get_pscore(data_frame, solver='liblinear'):
     """Calculate propensity score with logistic regression
     Args:
         data_frame (pandas.DataFrame): dataframe with input data
@@ -22,7 +22,7 @@ def get_pscore(data_frame):
     treatment = 'nudge'
     outcome = 'outcome'
     predictors = data_frame.columns.drop([treatment, outcome])
-    ps_model = LogisticRegression(solver='liblinear').fit(
+    ps_model = LogisticRegression(solver=solver).fit(
         data_frame[predictors].to_numpy().astype('int'),
         data_frame[treatment].to_numpy().astype('int')
     )
@@ -128,82 +128,24 @@ def get_psm_ate(data_ps):
     print(cmodel.estimates)
 
 
-def perform_matching(row, indexes, df_data):
-    """Match subject from treatment group with subject from control group
-    Args:
-        row (pandas.Series): row of dataframe to perform matching on
-        indexes (numpy.ndarray): array of indexes of nearest neighbours
-        df_data (pandas.DataFrame): dataframe with all subjects
-    Returns:
-        integer: index of matched subject from control group
-    """
-    current_index = int(row['index'])  # Use index-named column, not the actual DF index.
-    for idx in indexes[current_index, :]:
-        if (current_index != idx) and (row.nudge == 1) and (df_data.loc[idx].nudge == 0):
-            return int(idx)
-
-    return np.nan
-
-
-def obtain_match_details(row, all_data, attribute):
-    """ Get details from matched participant of control group
-    Args:
-        row (pandas.Series): row of dataframe with particpant of treatment group
-        all_data (pandas.dataframe): dataframe with all data (from treatment and control)
-        attribute (str): name of column to get details for
-    Returns:
-        value of attribute of matched participant in control group
-    """
-    return all_data.loc[row.matched_element][attribute]
-
-
 def match_ps(data_ps):
     """Match participants in treatment group to control group by propensity score
     Args:
-        data_ps (pandas.DataFrame): dataframe with propensity score
+        data_ps (pandas.DataFrame): dataframe with propensity score of all participants
     Returns:
-        pandas.DataFrame: dataframe with 'matched_element' column
+        pandas.DataFrame: dataframe with nudged participants and matched control
     """
+    df1 = data_ps.reset_index()[data_ps["nudge"]==1]
+    df2 = data_ps.reset_index()[data_ps["nudge"]==0]
+    result = pd.merge_asof(df1.sort_values('pscore'),
+                   df2.sort_values('pscore'),
+                   on='pscore', 
+                   direction='nearest', 
+                   suffixes=['', '_control'])
 
-    knn = NearestNeighbors(n_neighbors=10, p=2)
-    knn.fit(data_ps[['pscore']].to_numpy())
 
-    # Common support distances and indexes
-    _, indexes = knn.kneighbors(
-        data_ps[['pscore']].to_numpy(),
-        n_neighbors=10
-    )
+    columns = list(df1) + ['control'] 
+    result = result.rename(columns={"outcome_control": "control"})
+    result = result[columns].sort_values('index').reset_index(drop=True).drop(columns=['index', 'nudge', 'pscore'])
 
-    # Add index of match to dataframe
-    data_ps['matched_element'] = data_ps.reset_index().apply(
-        perform_matching, axis=1, args=(indexes, data_ps))
-
-    treated_with_match = ~data_ps.matched_element.isna()
-    treated_matched_data = data_ps[treated_with_match][data_ps.columns]
-    untreated_matched_data = pd.DataFrame(data=treated_matched_data.matched_element)
-
-    attributes = ['outcome', 'nudge']
-    for attr in attributes:
-        untreated_matched_data[attr] = untreated_matched_data.apply(
-            obtain_match_details, axis=1, all_data=data_ps, attribute=attr)
-
-    untreated_matched_data = untreated_matched_data.set_index('matched_element')
-
-    all_matched_data = pd.concat([treated_matched_data, untreated_matched_data])
-
-    # Get statistics of treatment and control group
-    overview = all_matched_data[['outcome', 'nudge']].groupby(
-        by=['nudge']).aggregate([np.mean, np.var, np.std, 'count'])
-    treated_outcome = overview['outcome']['mean'][1]
-    treated_counterfactual_outcome = overview['outcome']['mean'][0]
-    att = treated_outcome - treated_counterfactual_outcome
-    # print('Propensity score matched ATE: {:.4f}'.format(att))
-
-    treated_outcome = treated_matched_data.outcome
-    untreated_outcome = untreated_matched_data.outcome
-
-    result = treated_matched_data
-    result["control"] = untreated_outcome.values.astype(treated_outcome.dtype)
-
-    result = result.drop(columns=["nudge", "pscore", "matched_element"])
     return result
