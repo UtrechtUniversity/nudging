@@ -21,6 +21,9 @@ class MatrixData(BaseDataSet):
         self.standard_df["nudge"] = nudge
         super().__init__()
 
+    def _load(self, file_path):
+        pass
+
     def to_csv(self, csv_fp, config_fp, truth_fp=None):
         """Write to file in a format that can be easily read from file."""
         covariates = self.covariates
