@@ -4,8 +4,6 @@ from pandas._testing import assert_frame_equal
 
 from nudging.model.propensity_score import get_pscore, check_weights, get_ate, get_psw_ate, match_ps
 
-# Create DataFrame
-
 
 def test_get_pscore_same_age():
 	data_frame = pd.DataFrame({

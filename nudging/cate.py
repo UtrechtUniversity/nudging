@@ -31,14 +31,13 @@ def get_cate(dataset, model, k=10):
     return results
 
 
-def get_cate_subgroups(X, model):
-
-
+def get_cate_subgroups(dataset, model):
+    """Calculate CATE per subgroup"""
     # Train model
-    model.train(model.preprocess(X.standard_df))
+    model.train(model.preprocess(dataset.standard_df))
 
     # Get observed cate
-    data = X.standard_df.copy(deep=True)
+    data = dataset.standard_df.copy(deep=True)
     data["age"] = (data["age"]/10.).astype(int)
     data_obs = data[data["nudge"] == 1].groupby(model.predictors, as_index=False)["outcome"].mean()
     data_obs["cate_exp"] = data_obs["outcome"] - data[data["nudge"] == 0].groupby(
@@ -49,13 +48,13 @@ def get_cate_subgroups(X, model):
         model.predictors, as_index=False)["outcome"].size()["size"]
 
     # get subgroups in terms of model.predictors
-    subgroups = X.standard_df[model.predictors].drop_duplicates().sort_values(
+    subgroups = dataset.standard_df[model.predictors].drop_duplicates().sort_values(
         by=model.predictors, ignore_index=True)
 
     # Calculate nudge effectiveness for all subgroups
     proba = subgroups.assign(
         probability=model.predict_cate(subgroups))
-    
+
     # Use age in decades for subgroups
     proba["age"] = (proba["age"]/10.).astype(int)
     prob = proba.groupby(model.predictors, as_index=False)["probability"].mean()
@@ -70,7 +69,8 @@ def get_cate_subgroups(X, model):
     # print(merged.to_string())
 
     # Get correlation nudge effectiveness and cate
-    result = merged.drop(columns=["count_nudge", "count_control"]).corr(method='spearman', min_periods=1)
+    result = merged.drop(
+        columns=["count_nudge", "count_control"]).corr(method='spearman', min_periods=1)
     # print("Corelation matrix:\n", result)
     # print("correlation cate_obs", result["cate_exp"]["probability"])
 
