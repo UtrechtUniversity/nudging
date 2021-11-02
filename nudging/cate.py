@@ -77,7 +77,6 @@ def get_cate_subgroups(dataset, model):
     return result["cate_exp"]["probability"]
 
 
-
 def get_cate_correlations(dataset, true_cate, model, k=10, ntimes=10):
     """Compute the correlations of the CATE to its modelled estimate
 
