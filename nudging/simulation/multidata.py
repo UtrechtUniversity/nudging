@@ -99,7 +99,7 @@ def generate_multi_dataset(
         feature_kwargs = kwargs_from_settings(settings)
 
         # Number of samples is independent on the nudge type/domain.
-        feature_kwargs["n_samples"] = np.random.randint(300, 5000)
+        feature_kwargs["n_samples"] = np.random.randint(500, 5000)
         X, truth = features_from_cmatrix(corr_matrix, **feature_kwargs)
         truth.update(feature_kwargs)
         truth.update(corr_kwargs)
@@ -112,6 +112,10 @@ def generate_multi_dataset(
             X.standard_df["1"] = rescale(X.standard_df["1"].values, 0, 2)
             rename_dict = {"0": "age", "1": "gender"}
             X.standard_df.rename(columns=rename_dict, inplace=True)
+        if "2" in X.standard_df.columns:
+            X.standard_df["2"] = rescale(X.standard_df["2"].values, 0, 3)
+        if "3" in X.standard_df.columns:
+            X.standard_df["3"] = rescale(X.standard_df["3"].values, 0, 3)
     return all_matrices
 
 

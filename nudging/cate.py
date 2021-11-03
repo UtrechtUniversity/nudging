@@ -31,7 +31,7 @@ def get_cate(dataset, model, k=10):
     return results
 
 
-def get_cate_subgroups(dataset, model):
+def get_cate_subgroups(model, dataset, true_cate=None):
     """Calculate CATE per subgroup"""
     # Train model
     model.train(model.preprocess(dataset.standard_df))
@@ -39,12 +39,13 @@ def get_cate_subgroups(dataset, model):
     # Get observed cate
     data = dataset.standard_df.copy(deep=True)
     data["age"] = (data["age"]/10.).astype(int)
-    data_obs = data[data["nudge"] == 1].groupby(model.predictors, as_index=False)["outcome"].mean()
-    data_obs["cate_exp"] = data_obs["outcome"] - data[data["nudge"] == 0].groupby(
+    data_subgroups = data[data["nudge"] == 1].groupby(
+        model.predictors, as_index=False)["outcome"].mean()
+    data_subgroups["cate_obs"] = data_subgroups["outcome"] - data[data["nudge"] == 0].groupby(
         model.predictors, as_index=False)["outcome"].mean()["outcome"]
-    data_obs["count_nudge"] = data[data["nudge"] == 1].groupby(
+    data_subgroups["count_nudge"] = data[data["nudge"] == 1].groupby(
         model.predictors, as_index=False)["outcome"].size()["size"]
-    data_obs["count_control"] = data[data["nudge"] == 0].groupby(
+    data_subgroups["count_control"] = data[data["nudge"] == 0].groupby(
         model.predictors, as_index=False)["outcome"].size()["size"]
 
     # get subgroups in terms of model.predictors
@@ -63,21 +64,28 @@ def get_cate_subgroups(dataset, model):
 
     prob = prob.sort_values(by=model.predictors, ignore_index=True)
 
-    merged = pd.merge(prob, data_obs).drop(columns=['outcome'])
+    cate = "cate_obs"
+    if true_cate is not None:
+        cate = "cate_model"
+        data["cate"] = true_cate
+        data_subgroups["cate_model"] = data[data["nudge"] == 1].groupby(
+            model.predictors, as_index=False)["cate"].mean()["cate"]
+
+    merged = pd.merge(prob, data_subgroups).drop(columns=['outcome'])
+    # print("merged\n", merged.to_string())
     # Only keep subgroups with more than 10 subjects
     merged = merged[(merged["count_nudge"] > 10) & (merged["count_control"] > 10)]
-    # print(merged.to_string())
 
     # Get correlation nudge effectiveness and cate
     result = merged.drop(
         columns=["count_nudge", "count_control"]).corr(method='spearman', min_periods=1)
     # print("Corelation matrix:\n", result)
-    # print("correlation cate_obs", result["cate_exp"]["probability"])
+    # print("correlation cate_obs", result["cate_obs"]["probability"])
 
-    return result["cate_exp"]["probability"]
+    return result[cate]["probability"]
 
 
-def get_cate_correlations(dataset, true_cate, model, k=10, ntimes=10):
+def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
     """Compute the correlations of the CATE to its modelled estimate
 
     This only works for simulated datasets, because the true CATE must
@@ -85,10 +93,10 @@ def get_cate_correlations(dataset, true_cate, model, k=10, ntimes=10):
 
     Arguments
     ---------
-    dataset: BaseDataSet
-        Dataset to train and validate on.
     model: BaseModel
         Model to train and validate with.
+    dataset: BaseDataSet
+        Dataset to train and validate on.
     k: int
         Number of folds.
     ntimes: int
