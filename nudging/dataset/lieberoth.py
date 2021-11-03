@@ -3,7 +3,7 @@ import csv
 
 import pandas as pd
 
-from nudging.reader.base import BaseDataSet
+from nudging.dataset.base import BaseDataSet
 
 
 class Lieberoth(BaseDataSet):
@@ -40,9 +40,9 @@ class Lieberoth(BaseDataSet):
         # Put data in DataFrame
         df_out = pd.DataFrame(columns=('age', 'gender', 'outcome', 'nudge'))
         with open(self.filename, newline='') as csvfile:
-            reader = csv.reader(csvfile)
+            dataset = csv.reader(csvfile)
             index = 0
-            for row in reader:
+            for row in dataset:
                 if row[0] == self.control:
                     nudge = 0
                 elif row[0] == self.nudge:

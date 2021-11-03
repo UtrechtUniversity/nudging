@@ -1,7 +1,7 @@
 """DataSet class for Balaban"""
 import pandas as pd
 
-from nudging.reader.base import BaseDataSet
+from nudging.dataset.base import BaseDataSet
 
 
 class Balaban(BaseDataSet):

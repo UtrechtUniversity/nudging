@@ -37,4 +37,4 @@ jobs:
         run: poetry run flake8 nudging
 
       - name: Pytest  
-        run: poetry run pytest -v --cov=nudging --cov-fail-under=15
+        run: poetry run pytest -v --cov=nudging --cov-fail-under=8

@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from nudging.reader.base import BaseDataSet
+from nudging.dataset.base import BaseDataSet
 
 
 class Hotard(BaseDataSet):

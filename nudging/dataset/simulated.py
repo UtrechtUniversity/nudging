@@ -1,7 +1,7 @@
 """DataSet class for simulated data"""
 import pandas as pd
 
-from nudging.reader.base import BaseDataSet
+from nudging.dataset.base import BaseDataSet
 
 
 class Simulated(BaseDataSet):
@@ -19,8 +19,9 @@ class Simulated(BaseDataSet):
         """
         return pd.read_csv(file_path, encoding="iso-8859-1")
 
-    def write_interim(self, data_frame, path):
+    def write_interim(self, path):
         """Write interim data (standard format) to csv file"""
-        data_frame["nudge_type"] = self.raw_df["nudge_type"]
-        data_frame["nudge_domain"] = self.raw_df["nudge_domain"]
-        data_frame.to_csv(path, index=False)
+        self.standard_df["nudge_type"] = self.raw_df["nudge_type"]
+        self.standard_df["nudge_domain"] = self.raw_df["nudge_domain"]
+
+        super().write_interim(path)
