@@ -79,7 +79,7 @@ def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
 if __name__ == "__main__":
 
     # Plot correlation for subgroups if True (observed), else individuals (modelled)
-    SUBGROUPS = True
+    SUBGROUPS = False
 
     # Choose model
     model1 = BaseBiRegressor(BayesianRidge())
@@ -98,10 +98,10 @@ if __name__ == "__main__":
         n_nudge_domain=1,
         dataset_weight=1,
         eigen_power=2.,
-        n_features_correlated=2,
+        n_features_correlated=8,
         n_features_uncorrelated=2)
 
-    # Compute correla
+    # Compute correlations
     correlations1 = []
     correlations2 = []
 
