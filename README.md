@@ -76,10 +76,20 @@ We implemented both a logistic regression and a naive Bayes classifier using [sc
 
 
 ### Simulations
-We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the conditional average treatment effect (cate). If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the cate. Note that in this case, our goal is not to predict the cate but find a proxy of the cate that we use on combined studies/datasets with different outcome variables.
+We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the conditional average treatment effect (cate). If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the cate. Note that our goal is not to predict the cate but find a proxy of the cate that we use on combined studies/datasets with different outcome variables.
 
-For the simulated datasets, we know the cate that was used as model input, we call this cate_model. We can also derive the "observed" cate (cate_obs) per subgroup by mean (treatment) - mean (control). While cate_model is known both for individuals and subgroups, cate_obs can only be derived for subgroups.
+For the simulated datasets, we know the cate that was used as model input, we call this cate_model. We can also derive the "observed" cate (cate_obs) per subgroup by mean(treatment) - mean(control). While cate_model is known both for individuals and subgroups, cate_obs can only be derived for subgroups. We show the correlation for all three types of cate.
 
+Except for the method as described above (based on propensity score matching per dataset and combining datasets to determine nudge effectiveness), we also apply a regressor model that predicts the outcome and cate directly, as described [here](nudging/model/README.md). We expect the regressor model to be more accurate in predicting the outcome/cate within one dataset, but it can only be applied to combined studies if the outcome variables are standardized.
+
+# Correlation with cate_obs for subgroups
+![subgroups_cate_obs](plots_subgroups_cate_obs/noise_frac.png)
+
+# Correlation with cate_model for subgroups
+![subgroups_cate_model](plots_subgroups_cate_model/noise_frac.png)
+
+# Correlation with cate_model for indivuduals
+![ind_cate_obs](plots_ind_cate_model/noise_frac.png)
 
 ## Getting Started
 
