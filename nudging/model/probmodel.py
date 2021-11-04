@@ -79,4 +79,5 @@ class ProbModel(BaseModel):
             return self.model.predict(data_frame[self.predictors])
 
     def predict_cate(self, data):
+        return self.predict_outcome(data)
 

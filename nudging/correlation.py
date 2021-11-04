@@ -5,7 +5,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
 from tqdm import tqdm
 import yaml
 
