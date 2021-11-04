@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
 import yaml
 
-from nudging.model.base import BaseBiRegressor
+from nudging.model.regressor import BaseBiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
 from nudging.simulation.multidata import generate_multi_dataset

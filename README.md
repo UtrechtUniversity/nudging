@@ -76,7 +76,9 @@ We implemented both a logistic regression and a naive Bayes classifier using [sc
 
 
 ### Simulations
-The proceduce of how the simulated datasets are generated is described [here](nudging/simulation/README.md).
+We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the conditional average treatment effect (cate). If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the cate. Note that in this case, our goal is not to predict the cate but find a proxy of the cate that we use on combined studies/datasets with different outcome variables.
+
+For the simulated datasets, we know the cate that was used as model input, we call this cate_model. We can also derive the "observed" cate (cate_obs) per subgroup by mean (treatment) - mean (control). While cate_model is known both for individuals and subgroups, cate_obs can only be derived for subgroups.
 
 
 ## Getting Started
