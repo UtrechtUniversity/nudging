@@ -5,7 +5,7 @@
 ## Table of Contents
 - [About the Project](#about-the-project)
    - [Combining Data](#combining-data)
-   - [Machine Learning Model](#machine-learning-model)
+   - [Probabilistic Model](#probabilistic-model)
    - [Simulations](#simulations)
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
@@ -22,17 +22,22 @@
 
 
 ## About the Project
-This is the code for the Precision Nudging project. The scientific aim of this project is to develop predictive models with Machine Learning in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning in combination with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
+This software package is under development within the Precision Nudging project. The scientific aim of this project is to use open data to develop predictive models with Machine Learning, in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. 
+
+Thus, we are interested in the heterogeneous treatment effect of nudges. Conventionally, heterogeneous treatment effects are found by dividing the study data into subgroups (e.g., men and women, or by age) and compare the conditional average treatment effect (CATE) between subgroups. A challenge with this approach is that each subgroup may have substantially less data than the study as a whole, and there may not be enough data to accurately estimate the effects on subgroups. Recently and increasingly, however, machine learning is used to estimate heterogeneous treatment effects, even on the level of individuals, see e.g. [Künzel et al. 2019](https://www.pnas.org/content/116/10/4156).
+
+Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning combined with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
 
 The project can be split in several steps: 
 1) We combine open data from different, published studies. 
-2) We train a machine learning model (probablistic classifier) on the combined dataset to determine the most effective nudge per subject group.
+2) We train a machine learning model on the combined dataset to determine the most effective nudge per subject group.
 3) We simulate datasets to test the model and compare against other methods.
 
 In the sections below, we elaborate on these steps.
 
 ### Combining Data
-One of the main challenges is how to combine the data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, in some studies, the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
+
+One of the main challenges is how to combine data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, in some studies, the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
 
 The propensity score is the probability of treatment assignment, given observed baseline characteristics. The propensity score can be used to balance the treatment and control groups to make them comparable. [Rosenbaum and Rubin (1983)](https://academic.oup.com/biomet/article/70/1/41/240879) showed that treated and untreated subjects with the same propensity scores have identical distributions for all baseline variables. Thus, the propensity score allows one to analyze an observational study as if it were a randomized controlled trial. In our case, the treatment group is the group that received a nudge and the control is the group that didn't. The observed baseline characteristics are specified per study, and typically include age and gender of the subject.
 
@@ -41,7 +46,7 @@ For each study separately, we estimate the propensity score by logistic regressi
 When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increased or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
 
 Finally, we record for each subject in the treatment group the following:
-- age (in decades)
+- age
 - gender (0=female, 1=male)
 - other relevant personal characteristics
 - nudge success (0=failure, 1=success)
@@ -69,20 +74,20 @@ Note that the nudge domain and nudge type can differ per study. We distinguish t
 4. Amount donated 
 
 
-### Machine Learning Model
+### Probabilistic Model
 Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probability of nudge success.
 
 We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the tranining data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes' Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
 
 
 ### Simulations
-We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the conditional average treatment effect (cate). If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the cate. Note that our goal is not to predict the cate but find a proxy of the cate that we use on combined studies/datasets with different outcome variables.
+We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the CATE. If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the CATE. Note that our goal is not to predict the CATE but to find a proxy of the VATE that we use on combined studies/datasets with different outcome variables.
 
-For the simulated datasets, we know the cate that was used as model input, we call this cate_model. We can also derive the "observed" cate (cate_obs) per subgroup by mean(treatment) - mean(control). While cate_model is known both for individuals and subgroups, cate_obs can only be derived for subgroups. We show the correlation for all three types of cate.
+For the simulated datasets, we know the CATE that was used as model input, we call this cate_model. We can also derive the "observed" VATE (cate_obs) per subgroup by mean(treatment) - mean(control). While cate_model is known both for individuals and subgroups, cate_obs can only be derived for subgroups. We show the correlation for all three types of CATEs.
 
-Except for the method as described above (based on propensity score matching per dataset and combining datasets to determine nudge effectiveness), we also apply a regressor model that predicts the outcome and cate directly, as described [here](nudging/model/README.md). We expect the regressor model to be more accurate in predicting the outcome/cate within one dataset, but it can only be applied to combined studies if the outcome variables are standardized.
+Except for the method as described above (based on propensity score matching per dataset and determining nudge effectiveness), we also apply a regressor model that predicts the outcome and CATE directly, as described [here](nudging/model/README.md). We expect the regressor model to be more accurate in predicting the outcome/CATE within one dataset, in particular when there are many covariates. However, it has the limitation that it can only be applied to combined studies if the outcome variables are standardized. How to standardize the data for this use may be a topic for future investigation. In the meantime, we can use the regressor model to compare the probabilistic model against.
 
-For the plots, regressor model=0 (blue) and probablistic model=1 (orange).
+For the below plots, regressor model=0 (blue) and probablistic model=1 (orange).
 
 #### Correlation with cate_obs for subgroups:
 ![subgroups_cate_obs](plots_subgroups_cate_obs/noise_frac.png)
