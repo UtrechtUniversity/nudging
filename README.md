@@ -82,13 +82,15 @@ For the simulated datasets, we know the cate that was used as model input, we ca
 
 Except for the method as described above (based on propensity score matching per dataset and combining datasets to determine nudge effectiveness), we also apply a regressor model that predicts the outcome and cate directly, as described [here](nudging/model/README.md). We expect the regressor model to be more accurate in predicting the outcome/cate within one dataset, but it can only be applied to combined studies if the outcome variables are standardized.
 
-# Correlation with cate_obs for subgroups
+For the plots, regressor model=0 (blue) and probablistic model=1 (orange).
+
+#### Correlation with cate_obs for subgroups:
 ![subgroups_cate_obs](plots_subgroups_cate_obs/noise_frac.png)
 
-# Correlation with cate_model for subgroups
+#### Correlation with cate_model for subgroups:
 ![subgroups_cate_model](plots_subgroups_cate_model/noise_frac.png)
 
-# Correlation with cate_model for indivuduals
+#### Correlation with cate_model for individuals:
 ![ind_cate_obs](plots_ind_cate_model/noise_frac.png)
 
 ## Getting Started
