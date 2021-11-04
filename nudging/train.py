@@ -8,7 +8,7 @@ from sklearn.naive_bayes import GaussianNB
 from joblib import dump
 import yaml
 
-from nudging.model.base import BaseBiRegressor
+# from nudging.model.base import BaseBiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 

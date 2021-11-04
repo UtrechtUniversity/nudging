@@ -109,7 +109,6 @@ if __name__ == "__main__":
     # subgroups observed cate
     for d in tqdm(datasets):
         PLOTDIR = "plots_subgroups_cate_obs"
-        # observed cate per subgroup
         cor = get_cate_subgroups(model1, d)
         correlations1.append(cor)
         cor = get_cate_subgroups(model2, d)
@@ -123,7 +122,6 @@ if __name__ == "__main__":
     correlations2 = []
     for d in tqdm(datasets):
         PLOTDIR = "plots_subgroups_cate_model"
-        # observed cate per subgroup
         cor = get_cate_subgroups(model1, d, d.truth["cate"])
         correlations1.append(cor)
         cor = get_cate_subgroups(model2, d, d.truth["cate"])
