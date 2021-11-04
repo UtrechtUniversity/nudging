@@ -5,7 +5,8 @@
 ## Table of Contents
 - [About the Project](#about-the-project)
    - [Combining Data](#combining-data)
-   - [Probabilistic Classifier](#probabilistic-classifier)
+   - [Machine Learning Model](#machine-learning-model)
+   - [Simulations](#simulations)
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
@@ -21,16 +22,17 @@
 
 
 ## About the Project
-This is the code for the Precision Nudging project. The scientific aim of this project is to develop predictive models with Machine Learning in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning helps us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from nudging studies to train our model. 
+This is the code for the Precision Nudging project. The scientific aim of this project is to develop predictive models with Machine Learning in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning in combination with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
 
-Our method consists of two steps: 
+The project can be split in several steps: 
 1) We combine open data from different, published studies. 
-2) We use a classifier to determine the most effective nudge per subject group.
+2) We train a machine learning model (probablistic classifier) on the combined dataset to determine the most effective nudge per subject group.
+3) We simulate datasets to test the model and compare against other methods.
 
-In the sections below, we elaborate on these two steps.
+In the sections below, we elaborate on these steps.
 
 ### Combining Data
-One of the main challenges is how to combine the data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, typically the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
+One of the main challenges is how to combine the data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, in some studies, the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
 
 The propensity score is the probability of treatment assignment, given observed baseline characteristics. The propensity score can be used to balance the treatment and control groups to make them comparable. [Rosenbaum and Rubin (1983)](https://academic.oup.com/biomet/article/70/1/41/240879) showed that treated and untreated subjects with the same propensity scores have identical distributions for all baseline variables. Thus, the propensity score allows one to analyze an observational study as if it were a randomized controlled trial. In our case, the treatment group is the group that received a nudge and the control is the group that didn't. The observed baseline characteristics are specified per study, and typically include age and gender of the subject.
 
@@ -67,10 +69,15 @@ Note that the nudge domain and nudge type can differ per study. We distinguish t
 4. Amount donated 
 
 
-### Probabilistic Classifier
+### Machine Learning Model
 Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probability of nudge success.
 
 We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the tranining data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes' Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
+
+
+### Simulations
+The proceduce of how the simulated datasets are generated is described [here](nudging/simulation/README.md).
+
 
 ## Getting Started
 

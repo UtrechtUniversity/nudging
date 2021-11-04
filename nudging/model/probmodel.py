@@ -73,11 +73,10 @@ class ProbModel(BaseModel):
         # Convert age to decades if present
         if 'age' in data_frame.columns:
             data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        if hasattr(self.model, "predict_proba"):
+            return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        else:
+            return self.model.predict(data_frame[self.predictors])
 
     def predict_cate(self, data):
-        data_frame = data.copy(deep=True)
-        # Convert age to decades if present
-        if 'age' in data_frame.columns:
-            data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        return self.predict_outcome(data)

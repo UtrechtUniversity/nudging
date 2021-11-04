@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from tqdm import tqdm
 import yaml
 
@@ -114,7 +115,6 @@ if __name__ == "__main__":
         cor = get_cate_subgroups(model2, d)
         correlations2.append(cor)
 
-    attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
     for attribute in attributes:
         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
 
@@ -129,11 +129,10 @@ if __name__ == "__main__":
         cor = get_cate_subgroups(model2, d, d.truth["cate"])
         correlations2.append(cor)
 
-    attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
     for attribute in attributes:
         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
 
-    # # individual correlations
+    # individual correlations
     correlations1 = []
     correlations2 = []
     for d in tqdm(datasets):

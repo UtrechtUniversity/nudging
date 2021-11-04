@@ -3,12 +3,12 @@ import glob
 
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-# from sklearn.linear_model import BayesianRidge
-# from sklearn.naive_bayes import CategoricalNB
+from sklearn.linear_model import BayesianRidge
+from sklearn.naive_bayes import GaussianNB
 from joblib import dump
 import yaml
 
-# from nudging.model.base import BaseBiRegressor
+from nudging.model.base import BaseBiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
