@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
 import yaml
 
-from nudging.model.base import BaseBiRegressor
+from nudging.model.regressor import BaseBiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
 from nudging.simulation.multidata import generate_multi_dataset
@@ -108,13 +108,11 @@ if __name__ == "__main__":
     # subgroups observed cate
     for d in tqdm(datasets):
         PLOTDIR = "plots_subgroups_cate_obs"
-        # observed cate per subgroup
         cor = get_cate_subgroups(model1, d)
         correlations1.append(cor)
         cor = get_cate_subgroups(model2, d)
         correlations2.append(cor)
 
-    attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
     for attribute in attributes:
         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
 
@@ -123,17 +121,15 @@ if __name__ == "__main__":
     correlations2 = []
     for d in tqdm(datasets):
         PLOTDIR = "plots_subgroups_cate_model"
-        # observed cate per subgroup
         cor = get_cate_subgroups(model1, d, d.truth["cate"])
         correlations1.append(cor)
         cor = get_cate_subgroups(model2, d, d.truth["cate"])
         correlations2.append(cor)
 
-    attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
     for attribute in attributes:
         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
 
-    # # individual correlations
+    # individual correlations
     correlations1 = []
     correlations2 = []
     for d in tqdm(datasets):

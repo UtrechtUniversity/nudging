@@ -60,8 +60,8 @@ class ProbModel(BaseModel):
         # Drop rows with missing values for predictors
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         # Convert age to decades if present
-        if 'age' in df_nonan.columns:
-            df_nonan["age"] = (df_nonan["age"]/10.).astype(int)
+        # if 'age' in df_nonan.columns:
+        #     df_nonan["age"] = (df_nonan["age"]/10.).astype(int)
 
         self.model.fit(
             df_nonan[self.predictors].to_numpy().astype('int'),
@@ -71,13 +71,13 @@ class ProbModel(BaseModel):
     def predict_outcome(self, data):
         data_frame = data.copy(deep=True)
         # Convert age to decades if present
-        if 'age' in data_frame.columns:
-            data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        # if 'age' in data_frame.columns:
+        #     data_frame["age"] = (data_frame["age"]/10.).astype(int)
+        if hasattr(self.model, "predict_proba"):
+            return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        else:
+            return self.model.predict(data_frame[self.predictors])
 
     def predict_cate(self, data):
-        data_frame = data.copy(deep=True)
-        # Convert age to decades if present
-        if 'age' in data_frame.columns:
-            data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+        return self.predict_outcome(data)
+

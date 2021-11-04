@@ -125,9 +125,9 @@ if __name__ == "__main__":
     # Load model
     model = load("models/nudging.joblib")
 
-    # Calculate probabilties for all subgroups and write to file
+    # Calculate probabilities for all subgroups and write to file
     prob = subgroups.assign(
-        probability=model.predict_proba(subgroups)[:, 1], success=model.predict(subgroups))
+        probability=model.predict_cate(subgroups))
     prob.to_csv("data/processed/nudge_probabilty.csv", index=False)
     print("Output written to data/processed/nudge_probabilty.csv")
     plot_data(prob, features, "plots", x_axis)
