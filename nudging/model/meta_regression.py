@@ -1,0 +1,116 @@
+import numpy as np
+from scipy import stats
+from hyperopt import hp, fmin, tpe
+
+
+class MetaRegressionModel():
+    def __init__(self, model):
+        self._model = model
+
+    def train(self, multi_dataset):
+        model_data = compute_meta_model(self._model, multi_dataset)
+        self._classifiers = model_data[0]
+        self._meta_data = model_data[1]
+        self._domains = model_data[2]
+        self._types = model_data[3]
+
+    def predict_cate(self, test_data):
+        test_type = test_data.truth["nudge_type"]
+        test_domain = test_data.truth["nudge_domain"]
+        same_type = self._types == test_type
+        same_domain = self._domains == test_domain
+        same_domain_type = np.logical_and(same_type, same_domain)
+        cates = np.array([cl.predict_cate(test_data.standard_df)
+                          for cl in self._classifiers])
+        try:
+            coefs = self._meta_data[test_domain][test_type]
+        except KeyError:
+            coefs = {
+                "a_all": 0.5,
+                "a_domain": 0.5,
+                "a_type": 0.5,
+            }
+        cate_est = np.zeros(len(test_data.standard_df))
+        cate_est += coefs["a_all"]*np.sum(cates, axis=0)
+        cate_est += coefs["a_type"]*np.sum(cates[same_type], axis=0)
+        cate_est += coefs["a_domain"]*np.sum(cates[same_domain], axis=0)
+        cate_est += np.sum(cates[same_domain_type], axis=0)
+        return cate_est
+
+
+def compute_meta_model(model, multi_dataset):
+    n_data = len(multi_dataset)
+    results = {}
+    classifiers = [model.clone() for _ in multi_dataset]
+    for i, cl in enumerate(classifiers):
+        cl.train(multi_dataset[i].standard_df)
+    domains = np.array([d.truth["nudge_domain"] for d in multi_dataset])
+    types = np.array([d.truth["nudge_type"] for d in multi_dataset])
+    unq_domains = np.unique(domains)
+
+    model_data = {}
+    for domain_id in unq_domains:
+        model_data[domain_id] = {}
+        unq_types = np.unique(types[domains == domain_id])
+        for type_id in unq_types:
+            same_type = (types == type_id)
+            same_domain = (domains == domain_id)
+            same_domain_type = np.logical_and(same_type, same_domain)
+            results = {}
+            for test_id in np.where(same_domain_type)[0]:
+                not_test_id = np.ones(n_data, dtype=np.bool_)
+                not_test_id[test_id] = False
+                same_type_idx = np.where(np.logical_and(same_type, not_test_id))[0]
+                same_domain_idx = np.where(np.logical_and(same_domain, not_test_id))[0]
+                same_domain_type_idx = np.where(np.logical_and(same_domain_type, not_test_id))[0]
+                all_idx = np.delete(np.arange(n_data), [test_id])
+                results[test_id] = compute_test_cate(
+                    classifiers, multi_dataset, all_idx, same_type_idx,
+                    same_domain_idx, same_domain_type_idx, test_id)
+            model_data[domain_id][type_id] = optimize_results(results)
+    return classifiers, model_data, domains, types
+
+
+def compute_test_cate(classifiers, multi_dataset, all_idx, same_type_idx, same_domain_idx, same_domain_type_idx,
+                      test_id):
+    results = {"other": [0, 0, 0, 0], "self": 0}
+    test_data = multi_dataset[test_id]
+    n_samples = len(test_data.standard_df)
+
+    def get_sum_cate(idx):
+        sum_cate = np.zeros(n_samples)
+        for cur_id in idx:
+            sum_cate += classifiers[cur_id].predict_cate(test_data.standard_df)
+        if len(idx) > 0:
+            return sum_cate*(len(idx)+1)/len(idx)
+        return sum_cate
+    results["other"][0] = get_sum_cate(all_idx)
+    results["other"][1] = get_sum_cate(same_type_idx)
+    results["other"][2] = get_sum_cate(same_domain_idx)
+    results["other"][3] = get_sum_cate(same_domain_type_idx)
+    results["self"] = classifiers[test_id].predict_cate(test_data.standard_df)
+    return results
+
+
+def optimize_results(results):
+    space = [
+        hp.uniform('a_all', 0, 1),
+        hp.uniform('a_type', 0, 1),
+        hp.uniform('a_domain', 0, 1),
+    ]
+
+    def optimizer(x):
+        corr = 0
+        for res in results.values():
+            mixed_cate = res["other"][3]
+            for i in range(0, len(x)):
+                mixed_cate += x[i]*res["other"][i]
+            if np.all(mixed_cate == mixed_cate[0]):
+                print(mixed_cate[0], x)
+                print(res)
+            corr += -stats.spearmanr(mixed_cate, res["self"]).correlation
+        return corr / len(results)
+
+    best = fmin(optimizer, space=space, algo=tpe.suggest, max_evals=100,
+                show_progressbar=False)
+    return best

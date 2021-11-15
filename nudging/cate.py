@@ -1,6 +1,7 @@
 """Module for calculating conditional average treatment effect (cate) """
 import pandas as pd
 from scipy.stats import spearmanr
+import numpy as np
 
 
 def get_cate(dataset, model, k=10):
@@ -115,3 +116,48 @@ def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
                             for x in cate_results]
         all_correlations.extend(new_correlations)
     return all_correlations
+
+
+def multi_dataset_cate(model, multi_dataset):
+    for i_test in range(len(multi_dataset)):
+        test_data = multi_dataset[i_test]
+        train_multi_data = [d for i, d in enumerate(multi_dataset) if i != i_test]
+        classifiers = [model.clone() for _ in train_multi_data]
+        for i, cl in enumerate(classifiers):
+            cl.train(train_multi_data[i].standard_df)
+
+        correlations = []
+        corr_no_same = []
+        corr_same_domain = []
+        corr_same_type = []
+        corr_same_type_domain = []
+        avg_cate = np.zeros(len(test_data.standard_df))
+        avg_same_type_domain = np.zeros(len(test_data.standard_df))
+        for i_cl, cl in enumerate(classifiers):
+            cate = cl.predict_cate(test_data.standard_df)
+            corr = spearmanr(cate, test_data.truth["cate"]).correlation
+            same_domain = (test_data.truth["nudge_domain"] == train_multi_data[i_cl].truth["nudge_domain"])
+            same_type = (test_data.truth["nudge_type"] == train_multi_data[i_cl].truth["nudge_type"])
+            if same_domain:
+                if same_type:
+                    corr_same_type_domain.append(corr)
+                    avg_same_type_domain += cate
+                else:
+                    corr_same_domain.append(corr)
+            elif same_type:
+                corr_same_type.append(corr)
+            else:
+                corr_no_same.append(corr)
+            correlations.append(corr)
+            avg_cate += cate
+
+        print("all", spearmanr(avg_cate, test_data.truth["cate"]).correlation)
+        print("same td", spearmanr(avg_same_type_domain, test_data.truth["cate"]).correlation)
+        from matplotlib import pyplot as plt
+        plt.hist([corr_no_same, corr_same_type, corr_same_domain, corr_same_type_domain],
+                 label=["No same", "Same type", "Same domain", "Same type + domain"])
+        plt.legend()
+        plt.show()
+#         plt.style.use('seaborn-deep')
+        
+

@@ -29,7 +29,7 @@ class BaseModel(ABC):
         return self.model.predict_proba(data[self.predictors])[:, 1]
 
     def predict_cate(self, data):
-        """Predict conditional averagte treatment effect"""
+        """Predict conditional average treatment effect"""
         nudge_data = data[self.predictors].copy(deep=True)
         nudge_data["nudge"] = 1
         control_data = data[self.predictors].copy(deep=True)
