@@ -5,14 +5,58 @@ from hyperopt import hp, fmin, tpe
 
 class MetaRegressionModel():
     def __init__(self, model):
+        """A regression/meta model to train a model from multiple datasets
+
+        It works by training a classifier for each of the datasets. For
+        a new dataset, the expected cate is a weighted average of the
+        trained classifiers, with different weights for each of the
+        classifiers. The weights are determined in an optimization routine for
+        each of the combinations of nudge domain and types, where classifiers
+        with the same domain and types are weighted more strongly (generally).
+
+        Arguments
+        ---------
+        model: BaseModel
+            ML model that can predict the cate.
+        """
         self._model = model
 
     def train(self, multi_dataset):
-        model_data = compute_meta_model(self._model, multi_dataset)
-        self._classifiers = model_data[0]
-        self._meta_data = model_data[1]
-        self._domains = model_data[2]
-        self._types = model_data[3]
+        self._classifiers = [self._model.clone() for _ in multi_dataset]
+        for i, cl in enumerate(self._classifiers):
+            cl.train(multi_dataset[i].standard_df)
+        self._domains = np.array([d.truth["nudge_domain"] for d in multi_dataset])
+        self._types = np.array([d.truth["nudge_type"] for d in multi_dataset])
+        unq_domains = np.unique(self._domains)
+
+        # Determine the model parameters for each of the domains/types.
+        self._model_parameters = {}
+        for domain_id in unq_domains:
+            self._model_parameters[domain_id] = {}
+            unq_types = np.unique(self._types[self._domains == domain_id])
+            for type_id in unq_types:
+                self._model_parameters[domain_id][type_id] = self._train_domain_type(
+                    multi_dataset, domain_id, type_id)
+
+    def _train_domain_type(self, multi_dataset, domain_id, type_id):
+        """Compute the model parameters for one of the domain/type combinations
+        """
+        n_data = len(self._classifiers)
+        same_type = (self._types == type_id)
+        same_domain = (self._domains == domain_id)
+        same_domain_type = np.logical_and(same_type, same_domain)
+        test_results = {}
+        for test_id in np.where(same_domain_type)[0]:
+            not_test_id = np.ones(n_data, dtype=np.bool_)
+            not_test_id[test_id] = False
+            same_type_idx = np.where(np.logical_and(same_type, not_test_id))[0]
+            same_domain_idx = np.where(np.logical_and(same_domain, not_test_id))[0]
+            same_domain_type_idx = np.where(np.logical_and(same_domain_type, not_test_id))[0]
+            all_idx = np.delete(np.arange(n_data), [test_id])
+            test_results[test_id] = compute_test_cate(
+                self._classifiers, multi_dataset, all_idx, same_type_idx,
+                same_domain_idx, same_domain_type_idx, test_id)
+        return optimize_results(test_results)
 
     def predict_cate(self, test_data):
         test_type = test_data.truth["nudge_type"]
@@ -23,7 +67,7 @@ class MetaRegressionModel():
         cates = np.array([cl.predict_cate(test_data.standard_df)
                           for cl in self._classifiers])
         try:
-            coefs = self._meta_data[test_domain][test_type]
+            coefs = self._model_parameters[test_domain][test_type]
         except KeyError:
             coefs = {
                 "a_all": 0.5,
@@ -38,41 +82,8 @@ class MetaRegressionModel():
         return cate_est
 
 
-def compute_meta_model(model, multi_dataset):
-    n_data = len(multi_dataset)
-    results = {}
-    classifiers = [model.clone() for _ in multi_dataset]
-    for i, cl in enumerate(classifiers):
-        cl.train(multi_dataset[i].standard_df)
-    domains = np.array([d.truth["nudge_domain"] for d in multi_dataset])
-    types = np.array([d.truth["nudge_type"] for d in multi_dataset])
-    unq_domains = np.unique(domains)
-
-    model_data = {}
-    for domain_id in unq_domains:
-        model_data[domain_id] = {}
-        unq_types = np.unique(types[domains == domain_id])
-        for type_id in unq_types:
-            same_type = (types == type_id)
-            same_domain = (domains == domain_id)
-            same_domain_type = np.logical_and(same_type, same_domain)
-            results = {}
-            for test_id in np.where(same_domain_type)[0]:
-                not_test_id = np.ones(n_data, dtype=np.bool_)
-                not_test_id[test_id] = False
-                same_type_idx = np.where(np.logical_and(same_type, not_test_id))[0]
-                same_domain_idx = np.where(np.logical_and(same_domain, not_test_id))[0]
-                same_domain_type_idx = np.where(np.logical_and(same_domain_type, not_test_id))[0]
-                all_idx = np.delete(np.arange(n_data), [test_id])
-                results[test_id] = compute_test_cate(
-                    classifiers, multi_dataset, all_idx, same_type_idx,
-                    same_domain_idx, same_domain_type_idx, test_id)
-            model_data[domain_id][type_id] = optimize_results(results)
-    return classifiers, model_data, domains, types
-
-
-def compute_test_cate(classifiers, multi_dataset, all_idx, same_type_idx, same_domain_idx, same_domain_type_idx,
-                      test_id):
+def compute_test_cate(classifiers, multi_dataset, all_idx, same_type_idx,
+                      same_domain_idx, same_domain_type_idx, test_id):
     results = {"other": [0, 0, 0, 0], "self": 0}
     test_data = multi_dataset[test_id]
     n_samples = len(test_data.standard_df)
