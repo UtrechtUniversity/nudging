@@ -1,7 +1,6 @@
 """Module for calculating conditional average treatment effect (cate) """
 import pandas as pd
 from scipy.stats import spearmanr
-import numpy as np
 
 
 def get_cate(dataset, model, k=10):
