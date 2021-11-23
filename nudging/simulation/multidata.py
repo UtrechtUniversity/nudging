@@ -17,11 +17,11 @@ def rescale(var, min_value, max_value):
     return result.astype(int)
 
 
-def generate_multi_dataset(
+def generate_layered_dataset(
         n_dataset=10,
         n_features_correlated=8, n_features_uncorrelated=2, eigen_power=1.5,
         n_nudge_domain=3, n_nudge_type=3, nudge_domain_weight=0.1,
-        nudge_type_weight=0.2, dataset_weight=0.2):
+        nudge_type_weight=0.2, dataset_weight=0.2, linear=True):
 
     # Get the weights for the correlation matrices
 
@@ -100,7 +100,7 @@ def generate_multi_dataset(
 
         # Number of samples is independent on the nudge type/domain.
         feature_kwargs["n_samples"] = np.random.randint(500, 5000)
-        X, truth = features_from_cmatrix(corr_matrix, **feature_kwargs)
+        X, truth = features_from_cmatrix(corr_matrix, **feature_kwargs, linear=linear)
         truth.update(feature_kwargs)
         truth.update(corr_kwargs)
         X.truth = truth
@@ -117,6 +117,12 @@ def generate_multi_dataset(
         if "3" in X.standard_df.columns:
             X.standard_df["3"] = rescale(X.standard_df["3"].values, 0, 3)
     return all_matrices
+
+
+def generate_multi_dataset(*args, **kwargs):
+    return generate_layered_dataset(
+        *args, n_nudge_type=1, n_nudge_domain=1,
+        dataset_weight=1, **kwargs)
 
 
 def update_settings(settings, transformation, weight):

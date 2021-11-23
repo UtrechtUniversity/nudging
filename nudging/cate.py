@@ -1,6 +1,7 @@
 """Module for calculating conditional average treatment effect (cate) """
 import pandas as pd
 from scipy.stats import spearmanr
+import numpy as np
 
 
 def get_cate(dataset, model, k=10):
@@ -116,3 +117,23 @@ def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
                             for x in cate_results]
         all_correlations.extend(new_correlations)
     return all_correlations
+
+
+def measure_top_perf(pred_cate, idx, true_cate, frac_select=0.25):
+    n_select = round(frac_select*len(idx))
+    real_cate = true_cate[idx]
+    cate_order = np.argsort(-pred_cate)
+    select_idx = cate_order[:n_select]
+    best_order = np.argsort(-real_cate)
+    best_idx = best_order[:n_select]
+    return np.mean(real_cate[select_idx])/np.mean(true_cate[best_idx])
+
+
+def get_cate_top_performance(model, dataset, k=5, ntimes=5, frac_select=0.25):
+    true_cate = dataset.truth["cate"]
+    perf = []
+    for _ in range(ntimes):
+        cate_results = get_cate(dataset, model, k=k)
+        for pred_cate, idx in cate_results:
+            perf.append(measure_top_perf(pred_cate, idx, true_cate, frac_select))
+    return np.mean(perf)

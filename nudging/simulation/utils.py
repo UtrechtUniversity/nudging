@@ -43,7 +43,7 @@ def mixed_features(n_features_uncorrelated=10, n_features_correlated=10,
 def features_from_cmatrix(
         corr_matrix, n_samples=500, nudge_avg=0.1,
         noise_frac=0.8, control_unique=0.5,
-        control_precision=0.5):
+        control_precision=0.5, linear=True):
     n_features = corr_matrix.shape[0]-2
     L = np.linalg.cholesky(corr_matrix)
     X = np.dot(L, np.random.randn(n_features+2, n_samples)).T
@@ -59,5 +59,7 @@ def features_from_cmatrix(
     outcome = (true_outcome_control*(1-nudge)
                + true_outcome_nudge*nudge)
     outcome += (noise_frac/(1-noise_frac))*np.random.randn(n_samples)
+    if not linear:
+        outcome = (0.5-np.random.rand())*outcome + (0.5-np.random.rand())*outcome**2 + (0.5-np.random.rand())*outcome**3
     X = X[:, :-2]
     return MatrixData(X, outcome, nudge), {"cate": cate}
