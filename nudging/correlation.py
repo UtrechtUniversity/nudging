@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
 import yaml
 
-from nudging.model.regressor import BaseBiRegressor
+from nudging.model.biregressor import BiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
 from nudging.simulation.multidata import generate_multi_dataset
@@ -80,7 +80,7 @@ def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
 if __name__ == "__main__":
 
     # Choose model
-    model1 = BaseBiRegressor(BayesianRidge())
+    model1 = BiRegressor(BayesianRidge())
     model2 = ProbModel(LogisticRegression())
 
     # Get predictors from config.yaml

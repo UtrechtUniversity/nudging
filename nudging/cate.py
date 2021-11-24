@@ -120,9 +120,9 @@ def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
 
 
 def measure_top_perf(pred_cate, idx, true_cate, frac_select=0.25):
+    """Compute the performance by considering the top x%"""
     n_select = round(frac_select*len(idx))
     real_cate = true_cate[idx]
-#     real_cate += np.max(real_cate)
     cate_order = np.argsort(-pred_cate)
     select_idx = cate_order[:n_select]
     best_order = np.argsort(-real_cate)
@@ -131,13 +131,12 @@ def measure_top_perf(pred_cate, idx, true_cate, frac_select=0.25):
     max_perf = np.mean(real_cate[best_idx])
     min_perf = np.mean(real_cate[worst_idx])
     cur_perf = np.mean(real_cate[select_idx])
-    assert len(best_idx) == len(worst_idx)
     return (cur_perf-min_perf)/(max_perf-min_perf)
-#     print(np.mean(real_cate[select_idx]), np.mean(real_cate[best_idx]))
-#     return np.mean(real_cate[select_idx])/np.mean(real_cate[best_idx])
 
 
 def get_cate_top_performance(model, dataset, k=5, ntimes=1, frac_select=0.25):
+    """Compute the performance of a model for a given dataset using the top x%
+    """
     true_cate = dataset.truth["cate"]
     perf = []
     for _ in range(ntimes):
