@@ -32,12 +32,19 @@ def create_corr_matrix(n_features_uncorrelated=10, n_features_correlated=10,
 
 
 def mixed_features(n_features_uncorrelated=10, n_features_correlated=10,
-                   eigen_power=3, seed=None, **kwargs):
-    np.random.seed(seed)
+                   eigen_power=3, **kwargs):
     corr_matrix = create_corr_matrix(
         n_features_uncorrelated, n_features_correlated,
         eigen_power)
     return features_from_cmatrix(corr_matrix, **kwargs)
+
+
+def _transform_outcome(outcome, a, powers=np.array([1, 0.5, 0.1])):
+    ret_outcome = np.zeros_like(outcome)
+    a *= powers
+    for i in range(len(a)):
+        ret_outcome += (a[i]-powers[i]/2)*outcome**(i+1)
+    return ret_outcome
 
 
 def features_from_cmatrix(
@@ -55,11 +62,19 @@ def features_from_cmatrix(
                             + (1-control_unique)*nudge_intrinsic)
     true_outcome_control *= control_precision
     true_outcome_nudge = nudge_intrinsic + nudge_avg
+    if not linear:
+        a = np.random.rand(3)
+        true_outcome_control = _transform_outcome(true_outcome_control, a)
+        true_outcome_nudge = _transform_outcome(true_outcome_nudge, a)
+        for i_col in range(n_features):
+            a = np.random.rand(3)
+            X[:, i_col] = _transform_outcome(X[:, i_col], a)
+
     cate = true_outcome_nudge - true_outcome_control
     outcome = (true_outcome_control*(1-nudge)
                + true_outcome_nudge*nudge)
     outcome += (noise_frac/(1-noise_frac))*np.random.randn(n_samples)
-    if not linear:
-        outcome = (0.5-np.random.rand())*outcome + (0.5-np.random.rand())*outcome**2 + (0.5-np.random.rand())*outcome**3
     X = X[:, :-2]
-    return MatrixData(X, outcome, nudge), {"cate": cate}
+    matrix = MatrixData(X, outcome, nudge)
+    matrix.truth = {"cate": cate}
+    return matrix

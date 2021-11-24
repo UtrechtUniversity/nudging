@@ -19,7 +19,7 @@ def rescale(var, min_value, max_value):
 
 def generate_layered_dataset(
         n_dataset=10,
-        n_features_correlated=8, n_features_uncorrelated=2, eigen_power=1.5,
+        n_features_correlated=8, n_features_uncorrelated=2, eigen_power=3,
         n_nudge_domain=3, n_nudge_type=3, nudge_domain_weight=0.1,
         nudge_type_weight=0.2, dataset_weight=0.2, linear=True):
 
@@ -100,10 +100,10 @@ def generate_layered_dataset(
 
         # Number of samples is independent on the nudge type/domain.
         feature_kwargs["n_samples"] = np.random.randint(500, 5000)
-        X, truth = features_from_cmatrix(corr_matrix, **feature_kwargs, linear=linear)
-        truth.update(feature_kwargs)
-        truth.update(corr_kwargs)
-        X.truth = truth
+        X = features_from_cmatrix(corr_matrix, **feature_kwargs, linear=linear)
+        X.truth.update(feature_kwargs)
+        X.truth.update(corr_kwargs)
+#         X.truth = truth
         X.truth["nudge_domain"] = nudge_domain
         X.truth["nudge_type"] = nudge_type
         all_matrices.append(X)
