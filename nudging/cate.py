@@ -4,7 +4,7 @@ from scipy.stats import spearmanr
 import numpy as np
 
 
-def get_cate(dataset, model, k=10):
+def get_cate(model, dataset, k=10):
     """Compute the CATE for k-fold validation
 
     Arguments
@@ -24,12 +24,10 @@ def get_cate(dataset, model, k=10):
         belong, which together form a tuple.
     """
     results = []
-    for data_train, data_test in dataset.kfolds(k=k):
-        data = pd.concat([data_train["X"], data_train["outcome"],
-                          data_train["nudge"]], axis=1)
-        model.train(model.preprocess(data))
-        cur_cate = model.predict_cate(data_test["X"])
-        results.append((cur_cate, data_test["idx"]))
+    for train_data, test_data in dataset.kfolds(k=k):
+        model.train(model.preprocess(train_data.standard_df))
+        cur_cate = model.predict_cate(test_data.standard_df)
+        results.append((cur_cate, test_data.idx))
     return results
 
 
@@ -87,7 +85,7 @@ def get_cate_subgroups(model, dataset, true_cate=None):
     return result[cate]["probability"]
 
 
-def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
+def get_cate_correlations(model, dataset, k=10, ntimes=10):
     """Compute the correlations of the CATE to its modelled estimate
 
     This only works for simulated datasets, because the true CATE must
@@ -112,25 +110,24 @@ def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
     """
     all_correlations = []
     for _ in range(ntimes):
-        cate_results = get_cate(dataset, model, k=k)
-        new_correlations = [spearmanr(x[0], true_cate[x[1]]).correlation
+        cate_results = get_cate(model, dataset, k=k)
+        new_correlations = [spearmanr(x[0], dataset.cate[x[1]]).correlation
                             for x in cate_results]
         all_correlations.extend(new_correlations)
     return all_correlations
 
 
-def measure_top_perf(pred_cate, idx, true_cate, frac_select=0.25):
+def measure_top_perf(pred_cate, true_cate, frac_select=0.25):
     """Compute the performance by considering the top x%"""
-    n_select = round(frac_select*len(idx))
-    real_cate = true_cate[idx]
+    n_select = round(frac_select*len(pred_cate))
     cate_order = np.argsort(-pred_cate)
     select_idx = cate_order[:n_select]
-    best_order = np.argsort(-real_cate)
+    best_order = np.argsort(-true_cate)
     best_idx = best_order[:n_select]
     worst_idx = best_order[-n_select:]
-    max_perf = np.mean(real_cate[best_idx])
-    min_perf = np.mean(real_cate[worst_idx])
-    cur_perf = np.mean(real_cate[select_idx])
+    max_perf = np.mean(true_cate[best_idx])
+    min_perf = np.mean(true_cate[worst_idx])
+    cur_perf = np.mean(true_cate[select_idx])
     return (cur_perf-min_perf)/(max_perf-min_perf)
 
 
@@ -140,7 +137,7 @@ def get_cate_top_performance(model, dataset, k=5, ntimes=1, frac_select=0.25):
     true_cate = dataset.truth["cate"]
     perf = []
     for _ in range(ntimes):
-        cate_results = get_cate(dataset, model, k=k)
+        cate_results = get_cate(model, dataset, k=k)
         for pred_cate, idx in cate_results:
-            perf.append(measure_top_perf(pred_cate, idx, true_cate, frac_select))
+            perf.append(measure_top_perf(pred_cate, true_cate[idx], frac_select))
     return np.mean(perf)

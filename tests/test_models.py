@@ -30,7 +30,7 @@ def check_prediction(sim_matrix, model, performance_test=True, clone=False):
     all_cor_cate = []
     for train_data, test_data in sim_matrix.kfolds(k=5):
         true_outcome = test_data.outcome
-        model.train(train_data.standard_df)
+        model.train(model.preprocess(train_data.standard_df))
         test_cate = model.predict_cate(test_data.standard_df)
         test_outcome = model.predict_outcome(test_data.standard_df)
 

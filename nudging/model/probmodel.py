@@ -4,6 +4,7 @@ import numpy as np
 from nudging.model.base import BaseModel
 import nudging.model.propensity_score as ps
 
+
 class ProbModel(BaseModel):
     """class for Probalistic model"""
 
