@@ -10,16 +10,28 @@ from nudging.dataset.base import BaseDataSet
 
 class MatrixData(BaseDataSet):
     """Class MatrixData"""
-    def __init__(self, X, outcome, nudge, names=None):
-        self.standard_df = DataFrame(X)
+#     def __init__(self, X, outcome, nudge, names=None):
+#         self.standard_df = DataFrame(X)
+#         if names is not None:
+#             self.standard_df.set_axis(names, axis=1, inplace=True)
+#         else:
+#             self.standard_df.set_axis(
+#                 [str(x) for x in list(self.standard_df)], axis=1, inplace=True)
+#         self.standard_df["outcome"] = outcome
+#         self.standard_df["nudge"] = nudge
+#         super().__init__()
+
+    @classmethod
+    def from_data(cls, X, outcome, nudge, names=None):
+        standard_df = DataFrame(X)
         if names is not None:
-            self.standard_df.set_axis(names, axis=1, inplace=True)
+            standard_df.set_axis(names, axis=1, inplace=True)
         else:
-            self.standard_df.set_axis(
-                [str(x) for x in list(self.standard_df)], axis=1, inplace=True)
-        self.standard_df["outcome"] = outcome
-        self.standard_df["nudge"] = nudge
-        super().__init__()
+            standard_df.set_axis(
+                [str(x) for x in list(standard_df)], axis=1, inplace=True)
+        standard_df["outcome"] = outcome
+        standard_df["nudge"] = nudge
+        return cls(standard_df=standard_df)
 
     def _load(self, file_path):
         pass

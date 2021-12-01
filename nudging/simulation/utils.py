@@ -75,6 +75,6 @@ def features_from_cmatrix(
                + true_outcome_nudge*nudge)
     outcome += (noise_frac/(1-noise_frac))*np.random.randn(n_samples)
     X = X[:, :-2]
-    matrix = MatrixData(X, outcome, nudge)
+    matrix = MatrixData.from_data(X, outcome, nudge)
     matrix.truth = {"cate": cate}
     return matrix

@@ -16,6 +16,7 @@ def test_equal_range():
     expected = range(0, 9)
     assert result == expected
 
+
 @patch('nudging.correlation.equal_range')
 def test_smooth_data(interval):
     interval.return_value = [range(0, 2), range(2, 4), range(4, 6), range(6, 8), range(8, 10)]

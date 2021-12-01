@@ -11,11 +11,16 @@ class BaseDataSet(ABC):
     nudge_domain = None
     goal = None
 
-    def __init__(self, file_path=None):
+    def __init__(self, file_path=None, idx=None, standard_df=None):
+        if standard_df is not None:
+            self.standard_df = standard_df
         if file_path:
             self.filename = file_path
             self.raw_df = self._load(file_path)
             self.standard_df = self._preprocess(self.raw_df)
+        if idx is None and standard_df is not None:
+            idx = np.arange(len(standard_df))
+        self.idx = idx
 
     @abstractmethod
     def _load(self, file_path):
@@ -23,8 +28,10 @@ class BaseDataSet(ABC):
 
     def __getattr__(self, item):
         """Easier access to nudge and outcomes"""
-        if item in ["nudge", "outcome"]:
+        if item in ["nudge", "outcome"] and item in self.standard_df:
             return self.standard_df[item].values
+        else:
+            return self.truth[item]
         raise AttributeError(f'{self.__class__.__name__}.{item} is invalid.')
 
     def _preprocess(self, data_frame):
@@ -76,10 +83,10 @@ class BaseDataSet(ABC):
         zeros = np.where(self.nudge == 0)[0]
         return np.mean(self.outcome[ones])-np.mean(self.outcome[zeros])
 
-    @property
-    def data(self):
-        """Split the data into FM + outcome + nudge"""
-        return split_df(self.standard_df)
+#     @property
+#     def data(self):
+#         """Split the data into FM + outcome + nudge"""
+#         return split_df(self.standard_df)
 
     @property
     def shape(self):
@@ -103,18 +110,39 @@ class BaseDataSet(ABC):
         for i_split in range(k):
             test_idx = np.append(one_split[i_split], zero_split[i_split])
             train_idx = np.delete(np.arange(len(self)), test_idx)
-            yield split_df(self.standard_df, train_idx, test_idx)
+            yield self.train_test_split(train_idx=train_idx, test_idx=test_idx)
+#             yield split_df(self.standard_df, train_idx, test_idx)
 
     def __len__(self):
         """Number of samples in de dataset"""
         return len(self.standard_df)
 
-    def split(self, train=0.7):
+    def split(self, *idx_sets):
+        if len(idx_sets) == 0:
+            return [self]
+
+        ret = []
+        for idx in idx_sets:
+            if getattr(self, "truth", None) is not None:
+                truth = split_truth(self.truth, idx, len(self.idx))
+            else:
+                truth = None
+            new_idx = self.idx[idx]
+            new_df = self.standard_df.iloc[idx]
+            ret.append(self.from_df(new_df, truth, new_idx, self.nudge_domain,
+                                    self.nudge_type, self.goal))
+        return ret
+
+    def train_test_split(self, train=0.7, train_idx=None, test_idx=None):
         """Split the data into training and test set"""
-        train_idx = np.random.choice(len(self), size=int(train*len(self)),
-                                     replace=False)
-        test_idx = np.delete(np.arange(len(self)), train_idx)
-        return split_df(self.standard_df, train_idx, test_idx)
+        if train_idx is None or test_idx is None:
+            train_idx = np.random.choice(len(self), size=int(train*len(self)),
+                                         replace=False)
+            test_idx = np.delete(np.arange(len(self)), train_idx)
+        train_data, test_data = self.split(train_idx, test_idx)
+        test_data.truth["outcome"] = test_data.outcome
+        test_data.standard_df.drop(columns=["outcome"], inplace=True)
+        return train_data, test_data
 
     def obs_cate(self, features, min_count=10):
         """Calculate observed cate"""
@@ -133,22 +161,42 @@ class BaseDataSet(ABC):
 
         return data_obs["cate_obs"]
 
+    @classmethod
+    def from_df(cls, standard_df, truth, idx=None,
+                nudge_domain=None, nudge_type=None, goal=None):
+        dataset = cls(idx=idx, standard_df=standard_df)
+        dataset.truth = truth
+        dataset.nudge_domain = nudge_domain
+        dataset.nudge_type = nudge_type
+        dataset.goal = goal
+        return dataset
 
-def split_df(data_frame, *idx_set):
-    """Split the dataset into multiple datasets."""
-    if len(idx_set) == 0:
-        return convert_df(data_frame)
-    return [convert_df(data_frame.iloc[idx], idx) for idx in idx_set]
+
+def split_truth(truth, idx, n_total_idx):
+    new_truth = {}
+    for key, value in truth.items():
+        if isinstance(value, np.ndarray) and len(value) == n_total_idx:
+            new_truth[key] = value[idx]
+        else:
+            new_truth[key] = value
+    return new_truth
 
 
-def convert_df(data_frame, idx=None):
-    """Split the dataset into FM/outcome/nudge"""
-    if idx is None:
-        idx = np.arange(len(data_frame))
-    nudge = data_frame["nudge"]
-    outcome = data_frame["outcome"]
-    data = data_frame.drop(["nudge", "outcome"], axis=1)
-    return {"X": data, "outcome": outcome, "nudge": nudge, "idx": idx}
+# def split_df(data_frame, *idx_set):
+#     """Split the dataset into multiple datasets."""
+#     if len(idx_set) == 0:
+#         return convert_df(data_frame)
+#     return [convert_df(data_frame.iloc[idx], idx) for idx in idx_set]
+# 
+# 
+# def convert_df(data_frame, idx=None):
+#     """Split the dataset into FM/outcome/nudge"""
+#     if idx is None:
+#         idx = np.arange(len(data_frame))
+#     nudge = data_frame["nudge"]
+#     outcome = data_frame["outcome"]
+#     data = data_frame.drop(["nudge", "outcome"], axis=1)
+#     return {"X": data, "outcome": outcome, "nudge": nudge, "idx": idx}
 
 
 def remove_duplicate_cols(data_frame):

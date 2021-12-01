@@ -52,6 +52,6 @@ class BaseModel(ABC):
         return X, nudge
 
     def clone(self):
-        new_clone = self.__class__(clone(self.model.clone()))
+        new_clone = self.__class__(clone(self.model))
         new_clone.predictors = self.predictors
         return new_clone
