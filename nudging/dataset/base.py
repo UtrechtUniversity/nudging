@@ -83,11 +83,6 @@ class BaseDataSet(ABC):
         zeros = np.where(self.nudge == 0)[0]
         return np.mean(self.outcome[ones])-np.mean(self.outcome[zeros])
 
-#     @property
-#     def data(self):
-#         """Split the data into FM + outcome + nudge"""
-#         return split_df(self.standard_df)
-
     @property
     def shape(self):
         """Get shape of dataframe"""
@@ -180,23 +175,6 @@ def split_truth(truth, idx, n_total_idx):
         else:
             new_truth[key] = value
     return new_truth
-
-
-# def split_df(data_frame, *idx_set):
-#     """Split the dataset into multiple datasets."""
-#     if len(idx_set) == 0:
-#         return convert_df(data_frame)
-#     return [convert_df(data_frame.iloc[idx], idx) for idx in idx_set]
-# 
-# 
-# def convert_df(data_frame, idx=None):
-#     """Split the dataset into FM/outcome/nudge"""
-#     if idx is None:
-#         idx = np.arange(len(data_frame))
-#     nudge = data_frame["nudge"]
-#     outcome = data_frame["outcome"]
-#     data = data_frame.drop(["nudge", "outcome"], axis=1)
-#     return {"X": data, "outcome": outcome, "nudge": nudge, "idx": idx}
 
 
 def remove_duplicate_cols(data_frame):

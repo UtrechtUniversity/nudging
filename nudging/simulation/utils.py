@@ -5,6 +5,14 @@ from scipy import stats
 from nudging.dataset.matrix import MatrixData
 
 
+def mixed_features(n_features_uncorrelated=10, n_features_correlated=10,
+                   eigen_power=3, **kwargs):
+    corr_matrix = create_corr_matrix(
+        n_features_uncorrelated, n_features_correlated,
+        eigen_power)
+    return features_from_cmatrix(corr_matrix, **kwargs)
+
+
 def find_smallest_alpha(M_zero, M_one):
     def f(alpha):
         return np.min(np.linalg.eigvalsh(M_zero*(1-alpha)+M_one*(alpha)))
@@ -29,14 +37,6 @@ def create_corr_matrix(n_features_uncorrelated=10, n_features_correlated=10,
     alpha = find_smallest_alpha(M_zero, M_one) - 1e-10
     M = M_zero*(1-alpha)+M_one*alpha
     return M
-
-
-def mixed_features(n_features_uncorrelated=10, n_features_correlated=10,
-                   eigen_power=3, **kwargs):
-    corr_matrix = create_corr_matrix(
-        n_features_uncorrelated, n_features_correlated,
-        eigen_power)
-    return features_from_cmatrix(corr_matrix, **kwargs)
 
 
 def _transform_outcome(outcome, a, powers=np.array([1, 0.5, 0.1])):
