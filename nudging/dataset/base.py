@@ -29,9 +29,7 @@ class BaseDataSet(ABC):
         """Easier access to nudge and outcomes"""
         if item in ["nudge", "outcome"] and item in self.standard_df:
             return self.standard_df[item].values
-        else:
-            return self.truth[item]
-        raise AttributeError(f'{self.__class__.__name__}.{item} is invalid.')
+        return self.truth[item]
 
     def _preprocess(self, data_frame):
         """Do some general preprocessing after reading the file"""

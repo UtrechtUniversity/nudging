@@ -5,3 +5,7 @@ max-line-length=100
 max-locals=35
 
 ignore=nudging/model,nudging/simulation
+
+[BASIC]
+
+good-names=X, i, j, k

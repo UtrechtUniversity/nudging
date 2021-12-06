@@ -12,7 +12,7 @@ class MatrixData(BaseDataSet):
     """Class MatrixData"""
 
     @classmethod
-    def from_data(cls, X, outcome, nudge, names=None):  #noqa
+    def from_data(cls, X, outcome, nudge, names=None):
         """Initialize dataset from numpy arrays.
 
         Arguments
@@ -65,12 +65,12 @@ class MatrixData(BaseDataSet):
                         "plot": {"x": "age"}}
 
         # Create the configuration file
-        with open(config_fp, "w") as file_:
+        with open(config_fp, "w", encoding="UTF-8") as file_:
             yaml.dump(feature_dict, file_)
 
         # Create the truth/json file.
         truth = deepcopy(self.truth)
         truth["cate"] = truth["cate"].tolist()
         if truth_fp is not None:
-            with open(truth_fp, "w") as file_:
+            with open(truth_fp, "w", encoding="UTF-8") as file_:
                 json.dump(truth, file_)
