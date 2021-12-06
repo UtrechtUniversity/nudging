@@ -6,6 +6,11 @@ from nudging.model.biregressor import BiRegressor
 
 
 class XRegressor(BaseModel):
+    """Class for X-learner regression
+
+    See https://www.pnas.org/cgi/doi/10.1073/pnas.1804597116. It trains
+    two BiRegressors (T-learners) and then uses a crossover mechanism.
+    """
     def __init__(self, model, predictors=None):
         self.model = model
         self.predictors = predictors

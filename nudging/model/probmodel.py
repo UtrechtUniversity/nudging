@@ -22,7 +22,8 @@ class ProbModel(BaseModel):
             name (str): name of reader
             path (str): path to original dataset
         Returns:
-            pandas.DataFrame: dataframe with nudge success for subjects in treatment group
+            pandas.DataFrame: dataframe with nudge success for subjects in
+                treatment group
         """
 
         data_frame.reset_index(drop=True, inplace=True)

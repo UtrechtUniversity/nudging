@@ -25,7 +25,8 @@ class MetaRegressionModel():
         self._classifiers = [self._model.clone() for _ in multi_dataset]
         for i, cl in enumerate(self._classifiers):
             cl.train(multi_dataset[i].standard_df)
-        self._domains = np.array([d.truth["nudge_domain"] for d in multi_dataset])
+        self._domains = np.array([d.truth["nudge_domain"]
+                                  for d in multi_dataset])
         self._types = np.array([d.truth["nudge_type"] for d in multi_dataset])
         unq_domains = np.unique(self._domains)
 

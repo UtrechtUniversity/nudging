@@ -10,19 +10,27 @@ from nudging.dataset.base import BaseDataSet
 
 class MatrixData(BaseDataSet):
     """Class MatrixData"""
-#     def __init__(self, X, outcome, nudge, names=None):
-#         self.standard_df = DataFrame(X)
-#         if names is not None:
-#             self.standard_df.set_axis(names, axis=1, inplace=True)
-#         else:
-#             self.standard_df.set_axis(
-#                 [str(x) for x in list(self.standard_df)], axis=1, inplace=True)
-#         self.standard_df["outcome"] = outcome
-#         self.standard_df["nudge"] = nudge
-#         super().__init__()
 
     @classmethod
-    def from_data(cls, X, outcome, nudge, names=None):
+    def from_data(cls, X, outcome, nudge, names=None):  #noqa
+        """Initialize dataset from numpy arrays.
+
+        Arguments
+        ---------
+        X: np.ndarray
+            Feature matrix in numpy array format (NxM).
+        outcome: np.ndarray
+            Outcome for each of the samples (N).
+        nudge: np.ndarray
+            Whether each subject was nudged or not (1 or 0) (N).
+        names: list[str]
+            List of column names (M)
+
+        Returns
+        -------
+        MatrixData:
+            Initialized dataset.
+        """
         standard_df = DataFrame(X)
         if names is not None:
             standard_df.set_axis(names, axis=1, inplace=True)

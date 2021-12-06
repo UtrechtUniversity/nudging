@@ -135,16 +135,17 @@ def match_ps(data_ps):
     Returns:
         pandas.DataFrame: dataframe with nudged participants and matched control
     """
-    df1 = data_ps.reset_index()[data_ps["nudge"]==1]
-    df2 = data_ps.reset_index()[data_ps["nudge"]==0]
+    df1 = data_ps.reset_index()[data_ps["nudge"] == 1]
+    df2 = data_ps.reset_index()[data_ps["nudge"] == 0]
     result = pd.merge_asof(df1.sort_values('pscore'),
-                   df2.sort_values('pscore'),
-                   on='pscore', 
-                   direction='nearest', 
-                   suffixes=['', '_control'])
+                           df2.sort_values('pscore'),
+                           on='pscore',
+                           direction='nearest',
+                           suffixes=['', '_control'])
 
     columns = list(df1) + ['control'] 
     result = result.rename(columns={"outcome_control": "control"})
-    result = result[columns].sort_values('index').reset_index(drop=True).drop(columns=['index', 'nudge', 'pscore'])
+    result = result[columns].sort_values('index').reset_index(drop=True).drop(
+        columns=['index', 'nudge', 'pscore'])
 
     return result

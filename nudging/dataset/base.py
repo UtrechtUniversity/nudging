@@ -7,8 +7,7 @@ import pandas as pd
 class BaseDataSet(ABC):
     """Base class for DataSet """
 
-    nudge_type = None
-    nudge_domain = None
+    truth = {}
     goal = None
 
     def __init__(self, file_path=None, idx=None, standard_df=None):
@@ -52,9 +51,9 @@ class BaseDataSet(ABC):
 
         # Set nudge type and domain
         if "nudge_type" not in result.columns:
-            result["nudge_type"] = self.nudge_type
+            result["nudge_type"] = self.truth["nudge_type"]
         if "nudge_domain" not in result.columns:
-            result["nudge_domain"] = self.nudge_domain
+            result["nudge_domain"] = self.truth["nudge_domain"]
 
         # Remove duplicates
         result = remove_duplicate_cols(result)
@@ -106,13 +105,26 @@ class BaseDataSet(ABC):
             test_idx = np.append(one_split[i_split], zero_split[i_split])
             train_idx = np.delete(np.arange(len(self)), test_idx)
             yield self.train_test_split(train_idx=train_idx, test_idx=test_idx)
-#             yield split_df(self.standard_df, train_idx, test_idx)
 
     def __len__(self):
         """Number of samples in de dataset"""
         return len(self.standard_df)
 
     def split(self, *idx_sets):
+        """Split dataset into multiple smaller datasets.
+
+        Arguments
+        ---------
+        idx_sets: np.ndarray
+            A list of index sets, which determine how the dataset is split.
+            It should be given in row indices (not ID's). It is not technically
+            necessary that these sets are non-overlapping.
+
+        Returns
+        -------
+        list[BaseDataset]:
+            A list of new datasets split off the current one.
+        """
         if len(idx_sets) == 0:
             return [self]
 
@@ -124,8 +136,7 @@ class BaseDataSet(ABC):
                 truth = None
             new_idx = self.idx[idx]
             new_df = self.standard_df.iloc[idx]
-            ret.append(self.from_df(new_df, truth, new_idx, self.nudge_domain,
-                                    self.nudge_type, self.goal))
+            ret.append(self.from_df(new_df, truth, new_idx, self.goal))
         return ret
 
     def train_test_split(self, train=0.7, train_idx=None, test_idx=None):
@@ -157,19 +168,38 @@ class BaseDataSet(ABC):
         return data_obs["cate_obs"]
 
     @classmethod
-    def from_df(cls, standard_df, truth, idx=None,
-                nudge_domain=None, nudge_type=None, goal=None):
+    def from_df(cls, standard_df, truth, idx=None, goal=None):
+        """Create dataset from dataframe.
+
+        Arguments
+        ---------
+        standard_df: pd.DataFrame
+            Input data to create the dataset from.
+        truth: dict
+            Dictionary with truths such as nudge_type, outcome, cate, etc.
+        idx: np.ndarray
+            Original indices, they can be used as ID's while propagating
+            through multiple splits.
+        goal: str
+            Either increase or decrease for better outcomes.
+
+        Returns
+        -------
+        BaseDataset:
+            Return the dataset created.
+        """
         dataset = cls(idx=idx, standard_df=standard_df)
         dataset.truth = truth
-        dataset.nudge_domain = nudge_domain
-        dataset.nudge_type = nudge_type
         dataset.goal = goal
         return dataset
 
 
 def split_truth(truth, idx, n_total_idx):
+    """Split the truth dictionary."""
     new_truth = {}
     for key, value in truth.items():
+        # If it is an array with the same length as the original number of
+        # samples then only return the idx indices.
         if isinstance(value, np.ndarray) and len(value) == n_total_idx:
             new_truth[key] = value[idx]
         else:

@@ -12,7 +12,19 @@ class BaseModel(ABC):
 
     @staticmethod
     def preprocess(data_frame):
-        """Standardize outcome"""
+        """Standardize outcome
+
+        Arguments
+        ---------
+        data_frame: pd.DataFrame
+            Input dataframe to be standardized. If not implemented by a
+            derived class nothing will be done to it.
+
+        Returns
+        -------
+        output_data_frame: pd.DataFrame
+            Standardized dataframe
+        """
         return data_frame
 
     def train(self, data):
@@ -25,13 +37,28 @@ class BaseModel(ABC):
         )
 
     def predict_outcome(self, data):
-        """Predict outcome"""
+        """Predict outcome of given samples.
+
+        This method only works for a classifier that was initialized
+        with "probability=True".
+
+        Arguments
+        ---------
+        data: pd.DataFrame
+            Input dataframe to compute the outcome of.
+
+        Returns
+        -------
+        probabilities: np.ndarray
+            Probabilities of a possitive outcome.
+        """
         return self.model.predict_proba(data[self.predictors])[:, 1]
 
     def predict_cate(self, data):
         """Predict conditional average treatment effect"""
         if self.predictors is None:
-            self.predictors = [x for x in list(data) if x not in ["nudge", "outcome"]]
+            self.predictors = [x for x in list(data)
+                               if x not in ["nudge", "outcome"]]
         nudge_data = data[self.predictors].copy(deep=True)
         nudge_data["nudge"] = 1
         control_data = data[self.predictors].copy(deep=True)
@@ -46,12 +73,15 @@ class BaseModel(ABC):
 
     def _X_nudge(self, data):
         if self.predictors is None:
-            self.predictors = [x for x in list(data) if x not in ["nudge", "outcome"]]
+            self.predictors = [x for x in list(data)
+                               if x not in ["nudge", "outcome"]]
         X = data[self.predictors].values
         nudge = data["nudge"].values
         return X, nudge
 
     def clone(self):
+        """Create a clone of itself.
+        """
         new_clone = self.__class__(clone(self.model))
         new_clone.predictors = self.predictors
         return new_clone
