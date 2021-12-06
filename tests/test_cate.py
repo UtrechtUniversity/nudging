@@ -33,6 +33,7 @@ def test_get_cate(sim_matrix):
 
 def test_cate_subgroups(sim_matrix_age):
     model = BiRegressor(BayesianRidge())
+    model.predictors = ["age", "gender"]
     results = get_cate_subgroups(model, sim_matrix_age, true_cate=sim_matrix_age.cate)
     assert not np.isnan(results)
 
