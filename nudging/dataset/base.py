@@ -1,8 +1,9 @@
 """Base class for DataSet """
 from abc import ABC, abstractmethod
+import numbers
+
 import numpy as np
 import pandas as pd
-import numbers
 
 
 class BaseDataSet(ABC):
