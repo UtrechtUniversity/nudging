@@ -31,9 +31,9 @@ class RealDataset(BaseDataSet):
     @classmethod
     def _load(cls, file_path, encoding=None):
         suffix = Path(file_path).suffix.lower()
-        if suffix == "dta":
+        if suffix == ".dta":
             return pd.read_stata(file_path)
-        if suffix == "csv":
+        if suffix == ".csv":
             return pd.read_csv(file_path, encoding=encoding)
         raise ValueError(f"Reader doesn't know how to read files with extension '{suffix}'")
 

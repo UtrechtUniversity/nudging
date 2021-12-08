@@ -22,6 +22,7 @@ def sim_matrix_age():
 
 def test_get_cate(sim_matrix):
     model = BiRegressor(BayesianRidge())
+
     results = get_cate(model, sim_matrix, k=10)
     assert len(results) == 10
     all_idx = []

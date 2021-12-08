@@ -80,5 +80,5 @@ def features_from_cmatrix(
         "noise_frac": noise_frac, "control_unique": control_unique,
         "control_precision": control_precision, "linear": linear,
     }
-    matrix = MatrixData.from_data((X, outcome, nudge), **kwargs, truth=truth)
+    matrix = MatrixData.from_data((X, nudge, outcome), **kwargs, truth=truth)
     return matrix
