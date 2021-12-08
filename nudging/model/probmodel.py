@@ -60,6 +60,7 @@ class ProbModel(BaseModel):
 
     def train(self, data):
         # Drop rows with missing values for predictors
+        self.set_predictors(data)
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         # Convert age to decades if present
         # if 'age' in df_nonan.columns:

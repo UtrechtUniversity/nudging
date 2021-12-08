@@ -12,8 +12,7 @@ class XRegressor(BaseModel):
     two BiRegressors (T-learners) and then uses a crossover mechanism.
     """
     def __init__(self, model, predictors=None):
-        self.model = model
-        self.predictors = predictors
+        super().__init__(model, predictors)
         self.biregressor = BiRegressor(model, predictors=predictors)
         self.nudge_control_model = clone(model)
         self.control_nudge_model = clone(model)
@@ -30,6 +29,7 @@ class XRegressor(BaseModel):
         self.control_nudge_model.fit(X[control_idx], imputed_treatment_nudge)
 
     def train(self, data):
+        self.set_predictors(data)
         self._fit(*self._X_nudge_outcome(data))
 
     def _predict(self, X, nudge):

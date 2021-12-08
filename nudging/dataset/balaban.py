@@ -1,23 +1,28 @@
 """DataSet class for Balaban"""
 import pandas as pd
 
-from nudging.dataset.base import BaseDataSet
+from nudging.dataset.real import RealDataset
 
 
-class Balaban(BaseDataSet):
+class Balaban(RealDataset):
     """DataSet class for Balaban and Conway 2020"""
-    covariates = ["ACThybrid", "gender", "Fyear", "PofC"]
-    nudge_type = 8
-    nudge_domain = 5
+    _default_filename = "balaban.dta"
+    truth = {
+        "covariates": ["ACThybrid", "gender", "Fyear", "PofC"],
+        "nudge_type": 8,
+        "nudge_domain": 5,
+        "goal": "increase"
+    }
+#     nudge is successfull if outcome increased
+#     goal = "increase"
 
-    # nudge is successfull if outcome increased
-    goal = "increase"
-
-    def _load(self, file_path):
+    @classmethod
+    def _load(cls, file_path):
 
         return pd.read_stata(file_path)
 
-    def _preprocess(self, data_frame):
+    @classmethod
+    def _preprocess(cls, data_frame):
         """Read raw csv and convert to standard format
         Args:
             filename (str): name of file to convert

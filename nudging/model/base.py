@@ -5,11 +5,10 @@ from sklearn.base import clone
 
 class BaseModel(ABC):
     """Base class for model"""
-    predictors = None
-
     def __init__(self, model, predictors=None):
         self.model = model
-        self.predictors = predictors
+        self._predictors = predictors
+        self._predictor_auto = (predictors is None)
 
     @staticmethod
     def preprocess(data_frame):
@@ -28,8 +27,30 @@ class BaseModel(ABC):
         """
         return data_frame
 
+    @property
+    def predictors(self):
+        return self._predictors
+
+    @predictors.setter
+    def predictors(self, new_predictors):
+        self._predictors = new_predictors
+        self._predictor_auto = False
+
+    def set_predictors(self, data):
+        if self._predictor_auto:
+            self._predictors = [x for x in list(data)
+                                if x not in ["nudge", "outcome"]]
+
+#     def predictors(self, data):
+#         if self._predictors is None:
+#             return [x for x in list(data)
+#                     if x not in ["nudge", "outcome"]]
+#         else:
+#             return self._predictors
+
     def train(self, data):
         """Train model"""
+        self.set_predictors(data)
         # Drop rows with missing values for predictors
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         self.model.fit(
@@ -57,9 +78,6 @@ class BaseModel(ABC):
 
     def predict_cate(self, data):
         """Predict conditional average treatment effect"""
-        if self.predictors is None:
-            self.predictors = [x for x in list(data)
-                               if x not in ["nudge", "outcome"]]
         nudge_data = data[self.predictors].copy(deep=True)
         nudge_data["nudge"] = 1
         control_data = data[self.predictors].copy(deep=True)
@@ -73,9 +91,7 @@ class BaseModel(ABC):
         return *self._X_nudge(data),  data["outcome"].values
 
     def _X_nudge(self, data):
-        if self.predictors is None:
-            self.predictors = [x for x in list(data)
-                               if x not in ["nudge", "outcome"]]
+        self.set_predictors(data)
         X = data[self.predictors].values
         nudge = data["nudge"].values
         return X, nudge
@@ -84,5 +100,6 @@ class BaseModel(ABC):
         """Create a clone of itself.
         """
         new_clone = self.__class__(clone(self.model))
-        new_clone.predictors = self.predictors
+        new_clone._predictors = self._predictors
+        new_clone._predictor_auto = self._predictor_auto
         return new_clone

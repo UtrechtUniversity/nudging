@@ -1,37 +1,20 @@
 """Base class for DataSet """
-from abc import ABC, abstractmethod
 import numbers
 
 import numpy as np
-import pandas as pd
 
 
-class BaseDataSet(ABC):
+class BaseDataSet():
     """Base class for DataSet """
 
-    goal = None
-
-    def __init__(self, file_path=None, idx=None, standard_df=None,
-                 nudge_type=None, nudge_domain=None):
-        self.truth = {}
-        if standard_df is not None:
-            self.standard_df = standard_df
-        elif file_path:
-            self.filename = file_path
-            self.raw_df = self._load(file_path)
-            self.standard_df = self._preprocess(self.raw_df)
+    def __init__(self, standard_df, truth=None, idx=None):
+        if truth is not None:
+            self.truth = truth
+        self.standard_df = standard_df
 
         if idx is None and self.standard_df is not None:
             idx = np.arange(len(self.standard_df))
         self.idx = idx
-        if nudge_type is not None:
-            self.nudge_type = nudge_type
-        if nudge_domain is not None:
-            self.nudge_domain = nudge_domain
-
-    @abstractmethod
-    def _load(self, file_path):
-        raise NotImplementedError
 
     def __getattr__(self, item):
         """Easier access to nudge and outcomes"""
@@ -39,52 +22,13 @@ class BaseDataSet(ABC):
             return self.standard_df[item].values
         return self.truth[item]
 
-    def __setattr__(self, key, value):
-        if key in ["nudge_type", "nudge_domain"]:
-            self.truth[key] = value
-
-        super().__setattr__(key, value)
-
-    def _preprocess(self, data_frame):
-        """Do some general preprocessing after reading the file"""
-        # Remove unused columns
-
-        result = data_frame.copy(deep=True)
-        used_columns = self.covariates + ["nudge", "outcome"]
-        result = result.loc[:, used_columns]
-
-        # Convert to a numeric type
-        result = result.apply(pd.to_numeric)
-        result["nudge"] = result["nudge"].astype(int)
-        result["outcome"] = result["outcome"].astype(float)
-
-        # Remove rows with NA in them
-        result = result.dropna()
-
-        # Set nudge type and domain
-        if "nudge_type" not in result.columns:
-            result["nudge_type"] = self.nudge_type
-        if "nudge_domain" not in result.columns:
-            result["nudge_domain"] = self.nudge_domain
-
-        # Remove duplicates
-        result = remove_duplicate_cols(result)
-
-        # shuffle rows
-        np.random.seed(1234123)
-        result = result.sample(frac=1)
-
-        return result
-
-    def write_raw(self, path):
-        """Write raw data to csv file"""
-        self.raw_df.to_csv(path, index=False)
-
     def write_interim(self, path):
         """Write interim data (standard format) to csv file"""
-        if self.goal == "decrease":
-            self.standard_df["outcome"] = - self.standard_df["outcome"]
-
+        try:
+            if self.goal == "decrease":
+                self.standard_df["outcome"] = -self.standard_df["outcome"]
+        except AttributeError:
+            pass
         self.standard_df.to_csv(path, index=False)
 
     @property
@@ -101,7 +45,9 @@ class BaseDataSet(ABC):
 
     @property
     def covariates(self):
-        """By defaults all columns (ex. nudge/outcome) are covariates."""
+        """By default all columns (ex. nudge/outcome) are covariates."""
+        if "covariates" in self.truth:
+            return self.truth["covariates"]
         return [x for x in list(self.standard_df) if x not in ["nudge", "outcome"]]
 
     def kfolds(self, k=10):
@@ -149,7 +95,7 @@ class BaseDataSet(ABC):
                 truth = None
             new_idx = self.idx[idx]
             new_df = self.standard_df.iloc[idx]
-            ret.append(self.from_df(new_df, truth, new_idx, self.goal))
+            ret.append(self.from_df(new_df, truth, new_idx))
         return ret
 
     def train_test_split(self, train=0.7, train_idx=None, test_idx=None):
@@ -181,7 +127,7 @@ class BaseDataSet(ABC):
         return data_obs["cate_obs"]
 
     @classmethod
-    def from_df(cls, standard_df, truth, idx=None, goal=None):
+    def from_df(cls, standard_df, truth, idx=None):
         """Create dataset from dataframe.
 
         Arguments
@@ -201,9 +147,7 @@ class BaseDataSet(ABC):
         BaseDataset:
             Return the dataset created.
         """
-        dataset = cls(idx=idx, standard_df=standard_df)
-        dataset.truth = truth
-        dataset.goal = goal
+        dataset = cls(standard_df=standard_df, idx=idx, truth=truth)
         return dataset
 
 
@@ -220,30 +164,3 @@ def split_truth(truth, idx, n_total_idx):
     return new_truth
 
 
-def remove_duplicate_cols(data_frame):
-    """Some columns may be duplications of each other, remove them."""
-    cols = list(data_frame.columns)
-    unq_cols, counts = np.unique(cols, return_counts=True)
-    if len(unq_cols) == len(cols):
-        return data_frame
-
-    result = data_frame.copy()
-    unq_zip = dict(zip(unq_cols, counts))
-    for col_name, count in unq_zip.items():
-        if count == 1:
-            continue
-        col_pos = np.where(np.array(cols) == col_name)[0]
-        new_cols = np.copy(cols)
-        for i, i_pos in enumerate(col_pos):
-            new_cols[i_pos] = col_name+"_"+str(i)
-        result.columns = new_cols
-        for i, i_pos in enumerate(col_pos):
-            all_same = np.all(
-                result[col_name+"_"+str(i)].values == result[col_name+"_"+str(0)].values)
-            if not all_same:
-                raise ValueError("Reading two columns with the same name, but different data")
-            if i > 0:
-                result.drop([col_name+"_"+str(i)], inplace=True, axis=1)
-        result.rename(columns={col_name+"_0": col_name}, inplace=True)
-        cols = result.columns
-    return result

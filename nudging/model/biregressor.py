@@ -22,10 +22,9 @@ class BiRegressor(BaseModel):
         None means all columns except nudge/outcome.
     """
     def __init__(self, model, predictors=None):
-        super().__init__(model)
+        super().__init__(model, predictors=predictors)
         self.model_nudge = model
         self.model_control = clone(model)
-        self.predictors = predictors
 
     def _fit(self, X, nudge, outcome):
         nudge_idx = (nudge == 1)
@@ -35,9 +34,7 @@ class BiRegressor(BaseModel):
 
     def train(self, data):
         # Drop rows with missing values for predictors
-        if self.predictors is None:
-            self.predictors = [x for x in list(data)
-                               if x not in ["nudge", "outcome"]]
+        self.set_predictors(data)
         self._fit(data[self.predictors].values, data["nudge"].values,
                   data["outcome"].values)
 
