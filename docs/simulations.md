@@ -9,10 +9,10 @@ Except for the method as described above (probabilistic model), we also apply a 
 For the below plots, CATE regression model=0 (blue) and probabilistic model=1 (orange).
 
 #### Correlation with *cate_obs* for subgroups:
-![subgroups_cate_obs](plots_subgroups_cate_obs/noise_frac.png)
+![subgroups_cate_obs](../plots_subgroups_cate_obs/noise_frac.png)
 
 #### Correlation with *cate_model* for subgroups:
-![subgroups_cate_model](plots_subgroups_cate_model/noise_frac.png)
+![subgroups_cate_model](../plots_subgroups_cate_model/noise_frac.png)
 
 #### Correlation with *cate_model* for individuals:
-![ind_cate_obs](plots_ind_cate_model/noise_frac.png)
+![ind_cate_obs](../plots_ind_cate_model/noise_frac.png)

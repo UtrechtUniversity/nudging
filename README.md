@@ -4,7 +4,7 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 - [About the Project](#about-the-project)
-   - [Combining Data](docs/combing_data.md)
+   - [Combining Data](docs/combining_data.md)
    - [Probabilistic Model](docs/probabilistic_model.md)
    - [Simulations](docs/simulations.md)
 - [Getting Started](#getting-started)
