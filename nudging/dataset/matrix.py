@@ -10,9 +10,12 @@ from nudging.dataset.base import BaseDataSet
 
 class MatrixData(BaseDataSet):
     """Class MatrixData"""
+    nudge_domain = 0
+    nudge_type = 0
 
     @classmethod
-    def from_data(cls, X, outcome, nudge, names=None):
+    def from_data(cls, X, outcome, nudge, names=None, nudge_type=0,
+                  nudge_domain=0):
         """Initialize dataset from numpy arrays.
 
         Arguments
@@ -39,7 +42,8 @@ class MatrixData(BaseDataSet):
                 [str(x) for x in list(standard_df)], axis=1, inplace=True)
         standard_df["outcome"] = outcome
         standard_df["nudge"] = nudge
-        return cls(standard_df=standard_df)
+        return cls(standard_df=standard_df, nudge_type=nudge_type,
+                   nudge_domain=nudge_domain)
 
     def _load(self, file_path):
         pass

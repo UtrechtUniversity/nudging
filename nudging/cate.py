@@ -109,11 +109,16 @@ def get_cate_correlations(model, dataset, k=10, ntimes=10):
         and repeats.
     """
     all_correlations = []
+    if np.all(dataset.cate == dataset.cate[0]):
+        return np.zeros(len(k*ntimes))
+
     for _ in range(ntimes):
         cate_results = get_cate(model, dataset, k=k)
-        new_correlations = [spearmanr(x[0], dataset.cate[x[1]]).correlation
-                            for x in cate_results]
-        all_correlations.extend(new_correlations)
+        for res, idx in cate_results:
+            if np.all(res == res[0]):
+                all_correlations.append(0)
+            else:
+                all_correlations.append((spearmanr(res, dataset.cate[idx])).correlation)
     return all_correlations
 
 

@@ -46,6 +46,8 @@ def smooth_data(xdata, ydata, n_data=100):
     Returns:
         tuple: tuple of ndarrays
     """
+    xdata = np.array(xdata)
+    ydata = np.array(ydata)
     x_sorted = np.argsort(xdata)
     new_x = []
     new_y = []

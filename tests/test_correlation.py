@@ -1,7 +1,5 @@
 import numpy as np
-import pandas as pd
-from pandas._testing import assert_frame_equal
-from mock import patch
+from unittest.mock import patch
 
 from nudging.correlation import equal_range, smooth_data
 

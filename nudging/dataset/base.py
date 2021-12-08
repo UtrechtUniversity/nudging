@@ -2,24 +2,31 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
+import numbers
 
 
 class BaseDataSet(ABC):
     """Base class for DataSet """
 
-    truth = {}
     goal = None
 
-    def __init__(self, file_path=None, idx=None, standard_df=None):
+    def __init__(self, file_path=None, idx=None, standard_df=None,
+                 nudge_type=None, nudge_domain=None):
+        self.truth = {}
         if standard_df is not None:
             self.standard_df = standard_df
-        if file_path:
+        elif file_path:
             self.filename = file_path
             self.raw_df = self._load(file_path)
             self.standard_df = self._preprocess(self.raw_df)
-        if idx is None and standard_df is not None:
-            idx = np.arange(len(standard_df))
+
+        if idx is None and self.standard_df is not None:
+            idx = np.arange(len(self.standard_df))
         self.idx = idx
+        if nudge_type is not None:
+            self.nudge_type = nudge_type
+        if nudge_domain is not None:
+            self.nudge_domain = nudge_domain
 
     @abstractmethod
     def _load(self, file_path):
@@ -30,6 +37,12 @@ class BaseDataSet(ABC):
         if item in ["nudge", "outcome"] and item in self.standard_df:
             return self.standard_df[item].values
         return self.truth[item]
+
+    def __setattr__(self, key, value):
+        if key in ["nudge_type", "nudge_domain"]:
+            self.truth[key] = value
+
+        super().__setattr__(key, value)
 
     def _preprocess(self, data_frame):
         """Do some general preprocessing after reading the file"""
@@ -49,9 +62,9 @@ class BaseDataSet(ABC):
 
         # Set nudge type and domain
         if "nudge_type" not in result.columns:
-            result["nudge_type"] = self.truth["nudge_type"]
+            result["nudge_type"] = self.nudge_type
         if "nudge_domain" not in result.columns:
-            result["nudge_domain"] = self.truth["nudge_domain"]
+            result["nudge_domain"] = self.nudge_domain
 
         # Remove duplicates
         result = remove_duplicate_cols(result)
@@ -92,6 +105,7 @@ class BaseDataSet(ABC):
 
     def kfolds(self, k=10):
         """Generator for k-folds"""
+        assert isinstance(k, numbers.Integral), "k (folds) needs to be an integer"
         zeros = np.where(self.standard_df["nudge"].values == 0)[0]
         ones = np.where(self.standard_df["nudge"].values == 1)[0]
         np.random.shuffle(zeros)

@@ -7,8 +7,9 @@ class BaseModel(ABC):
     """Base class for model"""
     predictors = None
 
-    def __init__(self, model):
+    def __init__(self, model, predictors=None):
         self.model = model
+        self.predictors = predictors
 
     @staticmethod
     def preprocess(data_frame):

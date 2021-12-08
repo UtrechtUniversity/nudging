@@ -50,7 +50,7 @@ def _transform_outcome(outcome, a, powers=np.array([1, 0.5, 0.1])):
 def features_from_cmatrix(
         corr_matrix, n_samples=500, nudge_avg=0.1,
         noise_frac=0.8, control_unique=0.5,
-        control_precision=0.5, linear=True):
+        control_precision=0.5, linear=True, **kwargs):
     n_features = corr_matrix.shape[0]-2
     L = np.linalg.cholesky(corr_matrix)
     X = np.dot(L, np.random.randn(n_features+2, n_samples)).T
@@ -75,6 +75,10 @@ def features_from_cmatrix(
                + true_outcome_nudge*nudge)
     outcome += (noise_frac/(1-noise_frac))*np.random.randn(n_samples)
     X = X[:, :-2]
-    matrix = MatrixData.from_data(X, outcome, nudge)
-    matrix.truth = {"cate": cate}
+    matrix = MatrixData.from_data(X, outcome, nudge, **kwargs)
+    matrix.truth.update({
+        "cate": cate, "n_samples": n_samples, "nudge_avg": nudge_avg,
+        "noise_frac": noise_frac, "control_unique": control_unique,
+        "control_precision": control_precision, "linear": linear,
+    })
     return matrix
