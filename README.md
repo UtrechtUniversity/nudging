@@ -30,7 +30,7 @@ Most nudging research uses standard social science techniques like field experim
 
 The project can be split in several steps: 
 1) [We combine open data from different, published studies](docs/combing_data.md)
-2) [We train a machine learning model on the combined dataset to determine the most effective nudge per subject group](docs/combing_data.md)
+2) [We train a machine learning model on the combined dataset to determine the most effective nudge per subject group](docs/probabilistic_model.md)
 3) [We simulate datasets to test the model and compare against other methods](docs/simulations.md)
 
 ## Getting Started
