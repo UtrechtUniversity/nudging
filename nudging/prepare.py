@@ -5,7 +5,7 @@
 import pandas as pd
 
 from nudging.dataset import Balaban, Hotard, Pennycook1, Pennycook2,\
-    Lieberoth, Vandenbroele, Simulated # noqa
+    Lieberoth, Vandenbroele # noqa
 from nudging.utils import clean_dirs
 
 
