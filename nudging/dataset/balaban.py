@@ -17,8 +17,7 @@ class Balaban(RealDataset):
 #     goal = "increase"
 
     @classmethod
-    def _load(cls, file_path):
-
+    def _load(cls, file_path, _encoding=None):
         return pd.read_stata(file_path)
 
     @classmethod

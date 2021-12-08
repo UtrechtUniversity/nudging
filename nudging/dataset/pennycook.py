@@ -14,30 +14,14 @@ Study 2:
 (or sharing intentions) between true and false headlines
 """
 import numpy as np
-import pandas as pd
 
 from nudging.dataset.real import RealDataset
 
 
 class BasePennyCook(RealDataset):
-    @classmethod
-    def _load(cls, file_path):
-        """ Read file and return data in dataframe
-        Args:
-            file_path (str): path of file
-        Returns:
-            pandas.DataFrame: raw data in dataframe
-        """
-        return pd.read_csv(file_path, encoding="iso-8859-1")
-
+    """Base class for penny cook datasets"""
     @classmethod
     def _preprocess(cls, data_frame):
-        """Convert original data to dataframe with standard format
-        Args:
-            data_frame (pandas.DataFrame): original data
-        Returns:
-            pandas.DataFrame: dataframe containing covariates, outcome, nudge
-        """
         df_out = data_frame.copy()
         df_out.rename(columns={list(df_out)[0]: "nudge"}, inplace=True)
         df_out.rename(columns={"Discern": "outcome"}, inplace=True)
@@ -51,6 +35,10 @@ class BasePennyCook(RealDataset):
         df_out.loc[female_idx, "gender"] = 0
         df_out.loc[male_idx, "gender"] = 1
         return super()._preprocess(df_out)
+
+    @classmethod
+    def _load(cls, file_path, encoding="iso-8859-1"):
+        return super()._load(file_path, encoding=encoding)
 
 
 class Pennycook1(BasePennyCook):
@@ -67,20 +55,6 @@ class Pennycook1(BasePennyCook):
         "female": 2,
         "goal": "increase",
     }
-#     # Columns to keep as covariates for propensity score matching
-#     covariates = ["age", "gender", "hhi", "education", "ethnicity", "political_party",
-#                   "SciKnow", "MMS", "CRT_ACC"]
-#     nudge_type = 8
-#     nudge_domain = 5
-#     # Control and nudge classes in original data:
-#     control = 2
-#     nudge = 1
-#     # Gender classes in original data:
-#     male = 1
-#     female = 2
-#
-#     # nudge is successfull if outcome increased
-#     goal = "increase"
 
 
 class Pennycook2(BasePennyCook):
@@ -97,4 +71,3 @@ class Pennycook2(BasePennyCook):
         "female": 2,
         "goal": "increase",
     }
-

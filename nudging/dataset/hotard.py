@@ -1,7 +1,6 @@
 
 """DataSet class for Hotard et al 2019 (https://doi.org/10.1038/s41562-019-0572-z)"""
 import numpy as np
-import pandas as pd
 
 from nudging.dataset.real import RealDataset
 
@@ -21,13 +20,13 @@ class Hotard(RealDataset):
         "goal": "increase",
     }
 
-    @classmethod
-    def _load(cls, file_path):
-        return pd.read_stata(file_path)
+#     @classmethod
+#     def _load(cls, file_path):
+#         return pd.read_stata(file_path)
 
     @classmethod
     def _preprocess(cls, data_frame):
-        """Read raw csv and convert to standard format
+        """Read raw csv for Hotard data and convert to standard format
         Args:
             filename (str): name of file to convert
         Returns:

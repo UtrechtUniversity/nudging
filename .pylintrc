@@ -8,4 +8,4 @@ ignore=nudging/model,nudging/simulation
 
 [BASIC]
 
-good-names=X, i, j, k
+good-names=X, i, j, k, df

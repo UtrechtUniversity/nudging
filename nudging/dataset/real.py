@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+"""Contains the classes for real datasets"""
+
 from pathlib import Path
 from enum import IntEnum
 
@@ -9,28 +10,36 @@ from nudging.dataset.base import BaseDataSet
 
 
 class Gender(IntEnum):
+    """Gender enum"""
     MALE = 1
     FEMALE = 0
 
 
 class Group(IntEnum):
+    """Group enum"""
     CONTROL = 0
     NUDGE = 1
 
 
-class RealDataset(BaseDataSet, ABC):
+class RealDataset(BaseDataSet):
+    """Base class for real world datasets"""
     def __init__(self, standard_df, raw_df, file_path, idx=None):
         self.raw_df = raw_df
         self.file_path = file_path
         super().__init__(standard_df, idx=idx)
 
     @classmethod
-    @abstractmethod
-    def _load(cls, file_path):
-        raise NotImplementedError
+    def _load(cls, file_path, encoding=None):
+        suffix = Path(file_path).suffix.lower()
+        if suffix == "dta":
+            return pd.read_stata(file_path)
+        if suffix == "csv":
+            return pd.read_csv(file_path, encoding=encoding)
+        raise ValueError(f"Reader doesn't know how to read files with extension '{suffix}'")
 
     @classmethod
     def from_file(cls, file_path):
+        """Create dataset from file"""
         if Path(file_path).is_dir():
             file_path = Path(file_path, cls._default_filename)
         raw_df = cls._load(file_path)
@@ -75,31 +84,11 @@ class RealDataset(BaseDataSet, ABC):
 
         return result
 
-    def split(self, *idx_sets):
-        """Split dataset into multiple smaller datasets.
-
-        Arguments
-        ---------
-        idx_sets: np.ndarray
-            A list of index sets, which determine how the dataset is split.
-            It should be given in row indices (not ID's). It is not technically
-            necessary that these sets are non-overlapping.
-
-        Returns
-        -------
-        list[BaseDataset]:
-            A list of new datasets split off the current one.
-        """
-        if len(idx_sets) == 0:
-            return [self]
-
-        ret = []
-        for idx in idx_sets:
-            new_idx = self.idx[idx]
-            new_df = self.standard_df.iloc[idx]
-            new_raw_df = self.raw_df.iloc[idx]
-            ret.append(self.__class__(new_df, new_raw_df, self.file_path, new_idx))
-        return ret
+    def _split_once(self, idx):
+        new_idx = self.idx[idx]
+        new_df = self.standard_df.iloc[idx]
+        new_raw_df = self.raw_df.iloc[idx]
+        return self.__class__(new_df, new_raw_df, self.file_path, new_idx)
 
     def write_raw(self, path):
         """Write raw data to csv file"""

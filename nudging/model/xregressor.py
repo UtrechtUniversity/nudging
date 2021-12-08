@@ -29,7 +29,6 @@ class XRegressor(BaseModel):
         self.control_nudge_model.fit(X[control_idx], imputed_treatment_nudge)
 
     def train(self, data):
-        self.set_predictors(data)
         self._fit(*self._X_nudge_outcome(data))
 
     def _predict(self, X, nudge):

@@ -87,16 +87,16 @@ class BaseDataSet():
         if len(idx_sets) == 0:
             return [self]
 
-        ret = []
-        for idx in idx_sets:
-            if getattr(self, "truth", None) is not None:
-                truth = split_truth(self.truth, idx, len(self.idx))
-            else:
-                truth = None
-            new_idx = self.idx[idx]
-            new_df = self.standard_df.iloc[idx]
-            ret.append(self.from_df(new_df, truth, new_idx))
-        return ret
+        return [self._split_once(idx) for idx in idx_sets]
+
+    def _split_once(self, idx):
+        if getattr(self, "truth", None) is not None:
+            truth = split_truth(self.truth, idx, len(self.idx))
+        else:
+            truth = None
+        new_idx = self.idx[idx]
+        new_df = self.standard_df.iloc[idx]
+        return self.from_df(new_df, truth, new_idx)
 
     def train_test_split(self, train=0.7, train_idx=None, test_idx=None):
         """Split the data into training and test set"""
@@ -162,5 +162,3 @@ def split_truth(truth, idx, n_total_idx):
         else:
             new_truth[key] = value
     return new_truth
-
-

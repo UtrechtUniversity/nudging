@@ -7,7 +7,7 @@ from nudging.dataset.base import BaseDataSet
 class MatrixData(BaseDataSet):
     """Class MatrixData"""
     @classmethod
-    def from_data(cls, X, outcome, nudge, names=None, truth={}, **kwargs):
+    def from_data(cls, data, truth=None, names=None, **kwargs):
         """Initialize dataset from numpy arrays.
 
         Arguments
@@ -26,6 +26,9 @@ class MatrixData(BaseDataSet):
         MatrixData:
             Initialized dataset.
         """
+        X, nudge, outcome = data
+        if truth is None:
+            truth = {}
         truth.update(kwargs)
         standard_df = DataFrame(X)
         if names is not None:
