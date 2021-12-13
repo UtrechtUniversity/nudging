@@ -47,9 +47,9 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Read and convert each dataset
-    for name, data in datasets.items():
+    for name, dataset_info in datasets.items():
         print(f"\ndataset {name}")
-        data_class, data_fp = data
+        data_class, data_fp = dataset_info
         dataset = data_class.from_file(data_fp)
         # Write raw data to csv
         dataset.write_raw("data/raw/" + name + ".csv")
