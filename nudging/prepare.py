@@ -1,6 +1,5 @@
 """ Determine nudge success per subject using propensity score matching
 """
-# pylint: disable=eval-used
 # pylint: disable=unused-import
 import pandas as pd
 
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     datasets = {
         # "Simulated": "data/external/simulated/simulated.csv",
         # "Vandenbroele": "data/external/016_vandenbroele/S2_OpenAccess.sav",
-        "Pennycook1": "data/external/002_pennycook/Pennycook et al._Study 1.csv",
+        "Pennycook1": (Pennycook1, "data/external/002_pennycook/Pennycook et al._Study 1.csv"),
         # "Pennycook2": "data/external/002_pennycook/Pennycook et al._Study 2.csv",
         # "Hotard": "data/external/004_hotard/NNYFeeWaiverReplicationData.dta",
         # "Balaban": "data/external/008_balaban/anon1.dta",
@@ -48,9 +47,10 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Read and convert each dataset
-    for name, path in datasets.items():
+    for name, data in datasets.items():
         print(f"\ndataset {name}")
-        dataset = eval(name + "('" + path + "')")
+        data_class, data_fp = data
+        dataset = data_class.from_file(data_fp)
         # Write raw data to csv
         dataset.write_raw("data/raw/" + name + ".csv")
 
