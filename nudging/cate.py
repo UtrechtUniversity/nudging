@@ -142,20 +142,19 @@ def measure_top_perf(pred_cate, true_cate, frac_select=0.25):
     return (cur_perf-min_perf)/(max_perf-min_perf)
 
 
-def get_cate_top_performance(model, dataset, k=5, ntimes=1, frac_select=0.25,
+def get_cate_top_performance(model, dataset, k=5, frac_select=0.25,
                              spearmanr_results=False):
     """Compute the performance of a model for a given dataset using the top x%
     """
     top_perf = []
     spear_perf = []
-    for _ in range(ntimes):
-        cate_results = get_cate(model, dataset, k=k)
-        for pred_cate, idx in cate_results:
-            top_res = measure_top_perf(pred_cate, dataset.cate[idx], frac_select)
-            top_perf.append(top_res)
-            if spearmanr_results:
-                sp_res = _get_spearmanr(pred_cate, dataset.cate[idx])
-                spear_perf.append(sp_res)
+    cate_results = get_cate(model, dataset, k=k)
+    for pred_cate, idx in cate_results:
+        top_res = measure_top_perf(pred_cate, dataset.cate[idx], frac_select)
+        top_perf.append(top_res)
+        if spearmanr_results:
+            sp_res = _get_spearmanr(pred_cate, dataset.cate[idx])
+            spear_perf.append(sp_res)
 
     if spearmanr_results:
         return np.mean(top_perf), np.mean(spear_perf)
