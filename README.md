@@ -29,7 +29,7 @@ Thus, we are interested in the heterogeneous treatment effect of nudges. Convent
 Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning combined with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
 
 The project can be split in several steps: 
-1) [We combine open data from different, published studies](docs/combing_data.md)
+1) [We combine open data from different, published studies](docs/combining_data.md)
 2) [We train a machine learning model on the combined dataset to determine the most effective nudge per subject group](docs/probabilistic_model.md)
 3) [We simulate datasets to test the model and compare against other methods](docs/simulations.md)
 
