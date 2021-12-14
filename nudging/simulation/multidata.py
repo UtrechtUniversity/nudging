@@ -17,11 +17,21 @@ def rescale(var, min_value, max_value):
     return result.astype(int)
 
 
-def generate_multi_dataset(
+def _edit_bounds(name, settings, new_value):
+    if new_value is None:
+        return
+    if not isinstance(new_value, np.ndarray):
+        new_value = np.array([new_value, new_value])
+    settings[name] = new_value
+
+
+def generate_layered_dataset(
         n_dataset=10,
-        n_features_correlated=8, n_features_uncorrelated=2, eigen_power=1.5,
+        n_features_correlated=8, n_features_uncorrelated=2, eigen_power=3,
         n_nudge_domain=3, n_nudge_type=3, nudge_domain_weight=0.1,
-        nudge_type_weight=0.2, dataset_weight=0.2):
+        nudge_type_weight=0.2, dataset_weight=0.2, linear=None,
+        nudge_avg=None, noise_frac=None, control_unique=None,
+        control_precision=None, n_samples=None):
 
     # Get the weights for the correlation matrices
 
@@ -60,6 +70,17 @@ def generate_multi_dataset(
         "control_unique": np.array([0, 1.0]),
         "control_precision": np.array([0.2, 1.0]),
     }
+    _edit_bounds("nudge_avg", initial_settings, nudge_avg)
+    _edit_bounds("noise_frac", initial_settings, noise_frac)
+    _edit_bounds("control_unique", initial_settings, control_unique)
+    _edit_bounds("control_precision", initial_settings, control_precision)
+
+    if n_samples is None:
+        sample_bounds = [500, 5000]
+    elif isinstance(n_samples, (list, np.ndarray)):
+        sample_bounds = np.array(n_samples, dtype=int)
+    else:
+        sample_bounds = np.array([n_samples, n_samples+1], dtype=int)
 
     # Each domain/type has their own bias for each of the parameters.
     random_cor_vars = list(initial_settings)
@@ -73,7 +94,7 @@ def generate_multi_dataset(
     # Compute the weights when going from one level to the next
     # i.e. all -> specific nudge domain -> specific nudge type.
     variations = np.array([nudge_domain_weight, nudge_type_weight,
-                           dataset_weight]).astype(np.float)
+                           dataset_weight]).astype(np.float64)
     variations /= np.sum(variations)
     var_left = 1-np.cumsum(variations)
     update_weights = [var_left[0], var_left[1]/var_left[0]]
@@ -99,13 +120,18 @@ def generate_multi_dataset(
         feature_kwargs = kwargs_from_settings(settings)
 
         # Number of samples is independent on the nudge type/domain.
-        feature_kwargs["n_samples"] = np.random.randint(500, 5000)
-        X, truth = features_from_cmatrix(corr_matrix, **feature_kwargs)
-        truth.update(feature_kwargs)
-        truth.update(corr_kwargs)
-        X.truth = truth
-        X.truth["nudge_domain"] = nudge_domain
-        X.truth["nudge_type"] = nudge_type
+        feature_kwargs["n_samples"] = np.random.randint(*sample_bounds)
+        if linear is None:
+            set_linear = np.bool_(np.random.randint(2))
+        else:
+            set_linear = linear
+        X = features_from_cmatrix(
+            corr_matrix, **feature_kwargs, linear=set_linear,
+            nudge_type=nudge_type, nudge_domain=nudge_domain)
+        X.truth.update(corr_kwargs)
+#         X.truth = truth
+#         X.truth["nudge_domain"] = nudge_domain
+#         X.truth["nudge_type"] = nudge_type
         all_matrices.append(X)
         if n_features_uncorrelated >= 2:
             X.standard_df["0"] = rescale(X.standard_df["0"].values, 18, 80)
@@ -117,6 +143,12 @@ def generate_multi_dataset(
         if "3" in X.standard_df.columns:
             X.standard_df["3"] = rescale(X.standard_df["3"].values, 0, 3)
     return all_matrices
+
+
+def generate_multi_dataset(*args, **kwargs):
+    return generate_layered_dataset(
+        *args, n_nudge_type=1, n_nudge_domain=1,
+        dataset_weight=1, **kwargs)
 
 
 def update_settings(settings, transformation, weight):

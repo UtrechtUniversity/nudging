@@ -1,5 +1,7 @@
 from .probmodel import ProbModel
-from .regressor import BaseBiRegressor
+from .biregressor import BiRegressor
+from .monoregressor import MonoRegressor
+from .xregressor import XRegressor
 
 
-__all__ = ['ProbModel', 'BaseBiRegressor']
+__all__ = ['ProbModel', 'BiRegressor', 'MonoRegressor', 'XRegressor']

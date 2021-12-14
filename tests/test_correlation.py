@@ -1,7 +1,5 @@
 import numpy as np
-import pandas as pd
-from pandas._testing import assert_frame_equal
-from mock import patch
+from unittest.mock import patch
 
 from nudging.correlation import equal_range, smooth_data
 
@@ -15,6 +13,7 @@ def test_equal_range():
         result = interval
     expected = range(0, 9)
     assert result == expected
+
 
 @patch('nudging.correlation.equal_range')
 def test_smooth_data(interval):

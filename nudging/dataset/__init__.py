@@ -4,7 +4,6 @@ from nudging.dataset.hotard import Hotard
 from nudging.dataset.pennycook import Pennycook1, Pennycook2
 from nudging.dataset.lieberoth import Lieberoth
 from nudging.dataset.vandenbroele import Vandenbroele
-from nudging.dataset.simulated import Simulated
 
 
 __all__ = [
@@ -13,4 +12,4 @@ __all__ = [
     'Pennycook1', 'Pennycook2',
     'Lieberoth',
     'Vandenbroele',
-    'Simulated']
+]
