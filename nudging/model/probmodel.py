@@ -4,6 +4,7 @@ import numpy as np
 from nudging.model.base import BaseModel
 import nudging.model.propensity_score as ps
 
+
 class ProbModel(BaseModel):
     """class for Probalistic model"""
 
@@ -21,7 +22,8 @@ class ProbModel(BaseModel):
             name (str): name of reader
             path (str): path to original dataset
         Returns:
-            pandas.DataFrame: dataframe with nudge success for subjects in treatment group
+            pandas.DataFrame: dataframe with nudge success for subjects in
+                treatment group
         """
 
         data_frame.reset_index(drop=True, inplace=True)
@@ -58,6 +60,7 @@ class ProbModel(BaseModel):
 
     def train(self, data):
         # Drop rows with missing values for predictors
+        self.set_predictors(data)
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         # Convert age to decades if present
         # if 'age' in df_nonan.columns:

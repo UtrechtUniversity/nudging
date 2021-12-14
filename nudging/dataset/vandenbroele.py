@@ -11,24 +11,28 @@ import pyreadstat
 import numpy as np
 import pandas as pd
 
-from nudging.dataset.base import BaseDataSet
+from nudging.dataset.real import RealDataset
 
 
-class Vandenbroele(BaseDataSet):
+class Vandenbroele(RealDataset):
     """DataSet class for Vandenbroele et al 2020"""
-    covariates = ["age", "gender"]
-    nudge_type = 4
-    nudge_domain = 3
+    _default_filename = "broele.sav"
+    truth = {
+        "covariates": ["age", "gender"],
+        "nudge_type": 4,
+        "nudge_domain": 3,
+        # nudge is successfull if outcome increased
+        "goal": "increase",
 
-    # nudge is successfull if outcome increased
-    goal = "increase"
+    }
 
-    def _load(self, file_path):
-
+    @classmethod
+    def _load(cls, file_path, _encoding=None):
         input_data, _ = pyreadstat.read_sav(file_path)
         return input_data
 
-    def _preprocess(self, data_frame):
+    @classmethod
+    def _preprocess(cls, data_frame):
         """Convert original data to standard format
         Args:
             data_frame (pandas.DataFrame): dataframe with original data
@@ -89,5 +93,4 @@ class Vandenbroele(BaseDataSet):
             data.append([age, gender, ratio_control, 0])
 
         df_out = pd.DataFrame(data, columns=["age", "gender", "outcome", "nudge"])
-
         return super()._preprocess(df_out)

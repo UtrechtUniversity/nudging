@@ -1,9 +1,10 @@
 """Module for calculating conditional average treatment effect (cate) """
 import pandas as pd
 from scipy.stats import spearmanr
+import numpy as np
 
 
-def get_cate(dataset, model, k=10):
+def get_cate(model, dataset, k=10):
     """Compute the CATE for k-fold validation
 
     Arguments
@@ -23,12 +24,10 @@ def get_cate(dataset, model, k=10):
         belong, which together form a tuple.
     """
     results = []
-    for data_train, data_test in dataset.kfolds(k=k):
-        data = pd.concat([data_train["X"], data_train["outcome"],
-                          data_train["nudge"]], axis=1)
-        model.train(model.preprocess(data))
-        cur_cate = model.predict_cate(data_test["X"])
-        results.append((cur_cate, data_test["idx"]))
+    for train_data, test_data in dataset.kfolds(k=k):
+        model.train(model.preprocess(train_data.standard_df))
+        cur_cate = model.predict_cate(test_data.standard_df)
+        results.append((cur_cate, test_data.idx))
     return results
 
 
@@ -86,7 +85,7 @@ def get_cate_subgroups(model, dataset, true_cate=None):
     return result[cate]["probability"]
 
 
-def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
+def get_cate_correlations(model, dataset, k=10, ntimes=10):
     """Compute the correlations of the CATE to its modelled estimate
 
     This only works for simulated datasets, because the true CATE must
@@ -110,9 +109,53 @@ def get_cate_correlations(model, dataset, true_cate, k=10, ntimes=10):
         and repeats.
     """
     all_correlations = []
+    if np.all(dataset.cate == dataset.cate[0]):
+        return np.zeros(len(k*ntimes))
+
     for _ in range(ntimes):
-        cate_results = get_cate(dataset, model, k=k)
-        new_correlations = [spearmanr(x[0], true_cate[x[1]]).correlation
-                            for x in cate_results]
-        all_correlations.extend(new_correlations)
+        cate_results = get_cate(model, dataset, k=k)
+        for res, idx in cate_results:
+            if np.all(res == res[0]):
+                all_correlations.append(0)
+            else:
+                all_correlations.append((spearmanr(res, dataset.cate[idx])).correlation)
     return all_correlations
+
+
+def _get_spearmanr(pred_cate, real_cate):
+    if np.all(pred_cate == pred_cate[0]) or np.all(real_cate == real_cate[0]):
+        return 0
+    return spearmanr(pred_cate, real_cate).correlation
+
+
+def measure_top_perf(pred_cate, true_cate, frac_select=0.25):
+    """Compute the performance by considering the top x%"""
+    n_select = round(frac_select*len(pred_cate))
+    cate_order = np.argsort(-pred_cate)
+    select_idx = cate_order[:n_select]
+    best_order = np.argsort(-true_cate)
+    best_idx = best_order[:n_select]
+    worst_idx = best_order[-n_select:]
+    max_perf = np.mean(true_cate[best_idx])
+    min_perf = np.mean(true_cate[worst_idx])
+    cur_perf = np.mean(true_cate[select_idx])
+    return (cur_perf-min_perf)/(max_perf-min_perf)
+
+
+def get_cate_top_performance(model, dataset, k=5, frac_select=0.25,
+                             spearmanr_results=False):
+    """Compute the performance of a model for a given dataset using the top x%
+    """
+    top_perf = []
+    spear_perf = []
+    cate_results = get_cate(model, dataset, k=k)
+    for pred_cate, idx in cate_results:
+        top_res = measure_top_perf(pred_cate, dataset.cate[idx], frac_select)
+        top_perf.append(top_res)
+        if spearmanr_results:
+            sp_res = _get_spearmanr(pred_cate, dataset.cate[idx])
+            spear_perf.append(sp_res)
+
+    if spearmanr_results:
+        return np.mean(top_perf), np.mean(spear_perf)
+    return np.mean(top_perf)
