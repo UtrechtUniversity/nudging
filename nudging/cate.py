@@ -2,8 +2,12 @@
 import pandas as pd
 from scipy.stats import spearmanr
 import numpy as np
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
+from nudging.model.bootstrap import BootstrapModel
 
 
+@ignore_warnings(category=ConvergenceWarning)
 def get_cate(model, dataset, k=10):
     """Compute the CATE for k-fold validation
 
@@ -120,6 +124,21 @@ def get_cate_correlations(model, dataset, k=10, ntimes=10):
             else:
                 all_correlations.append((spearmanr(res, dataset.cate[idx])).correlation)
     return all_correlations
+
+
+def analyze_boot_correlations(model, dataset, k=5):
+    boot_model = BootstrapModel(model)
+    true_cate = dataset.truth["cate"]
+    cate_results = get_cate(boot_model, dataset, k=k)
+    single_correlations = []
+    multi_correlations = []
+    std = []
+    for cate_res, idx in cate_results:
+        single_res, multi_res, multi_std = cate_res
+        single_correlations.append(spearmanr(single_res, true_cate[idx]).correlation)
+        multi_correlations.append(spearmanr(multi_res, true_cate[idx]).correlation)
+        std.extend((multi_res-true_cate[idx])/multi_std)
+    return single_correlations, multi_correlations, std
 
 
 def _get_spearmanr(pred_cate, real_cate):

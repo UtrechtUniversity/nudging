@@ -151,6 +151,11 @@ class BaseDataSet():
         return dataset
 
 
+def bootstrap(df):
+    new_idx = np.random.choice(len(df), size=len(df), replace=True)
+    return df.iloc[new_idx]
+
+
 def split_truth(truth, idx, n_total_idx):
     """Split the truth dictionary."""
     new_truth = {}

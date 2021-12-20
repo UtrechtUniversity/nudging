@@ -3,17 +3,22 @@ import numpy as np
 
 from nudging.model.base import BaseModel
 import nudging.model.propensity_score as ps
+from sklearn.base import is_classifier, is_regressor
 
 
 class ProbModel(BaseModel):
     """class for Probalistic model"""
 
-    @staticmethod
-    def _get_success(data_frame):
+    def _get_success(self, data_frame):
         """Convert outcome to nudge success"""
         result = data_frame.copy(deep=True)
-        result["outcome"] = np.greater(
-            data_frame["outcome"], data_frame["control"]).astype(int)
+        if is_classifier(self.model):
+            result["outcome"] = np.greater(
+                data_frame["outcome"], data_frame["control"]).astype(int)
+        elif is_regressor(self.model):
+            result["outcome"] = data_frame["outcome"] - data_frame["control"]
+        else:
+            assert False, "Model must be an sklearn classifier or regressor"
         return result.drop(columns=["control"])
 
     def preprocess(self, data_frame):
