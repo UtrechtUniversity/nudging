@@ -89,7 +89,7 @@ def get_cate_subgroups(model, dataset, true_cate=None):
     return result[cate]["probability"]
 
 
-def get_cate_correlations(model, dataset, k=10, ntimes=10):
+def get_cate_correlations(model, dataset, k=5, ntimes=1):
     """Compute the correlations of the CATE to its modelled estimate
 
     This only works for simulated datasets, because the true CATE must
@@ -134,10 +134,15 @@ def analyze_boot_correlations(model, dataset, k=5):
     multi_correlations = []
     std = []
     for cate_res, idx in cate_results:
-        single_res, multi_res, multi_std = cate_res
-        single_correlations.append(spearmanr(single_res, true_cate[idx]).correlation)
-        multi_correlations.append(spearmanr(multi_res, true_cate[idx]).correlation)
-        std.extend((multi_res-true_cate[idx])/multi_std)
+        single_cate = cate_res["single_cate"]
+        multi_cate = cate_res["multi_cate"]
+        avg_multi_cate = np.mean(multi_cate, axis=0)
+        single_correlations.append(spearmanr(single_cate, true_cate[idx]).correlation)
+        multi_correlations.append(spearmanr(avg_multi_cate, true_cate[idx]).correlation)
+        boot_res = []
+        for i_row in range(multi_cate.shape[0]):
+            boot_res.append(spearmanr(multi_cate[i_row], true_cate[idx]).correlation)
+        std.append(np.std(boot_res))
     return single_correlations, multi_correlations, std
 
 
