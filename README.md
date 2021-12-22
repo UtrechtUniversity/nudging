@@ -24,14 +24,14 @@
 ## About the Project
 This software package is under development within the Precision Nudging project. The scientific aim of this project is to use open data to develop predictive models with Machine Learning, in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. 
 
-Thus, we are interested in the heterogeneous treatment effect of nudges. Conventionally, heterogeneous treatment effects are found by dividing the study data into subgroups (e.g., men and women, or by age) and comparing the conditional average treatment effect (CATE) between subgroups. A challenge with this approach is that each subgroup may have substantially less data than the study as a whole, and there may not be enough data to accurately estimate the effects on subgroups. Recently and increasingly, however, machine learning is used to estimate heterogeneous treatment effects, even to the level of individuals, see e.g. [Künzel et al. 2019](https://www.pnas.org/content/116/10/4156).
+Thus, we are interested in the heterogeneous treatment effect of nudges. Conventionally, heterogeneous treatment effects are found by dividing the study data into subgroups (e.g., men and women, or by age) and comparing the conditional average treatment effect (CATE) between subgroups. A challenge with this approach is that each subgroup may have substantially less data than the study as a whole, and there may not be enough data to accurately estimate the effects on subgroups. Recently and increasingly, however, machine learning is used to estimate heterogeneous treatment effects, even to the level of individuals, see e.g. [Künzel et al. 2019](https://www.pnas.org/content/116/10/4156). In this study, we will apply different machine learning models to determine the heterogenity of treatment effetc
 
-Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning combined with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
+To determine which nudge is most effective for a certain subgroup of individuals, one could set up a large study where different nudges are applied. However, this would be very time-consuming and costly. Here, we explore the possibiltiy of using open data from previously published nudging studies to train our models. If we are able to use and combine existing datasets, we can study the heterogeneous effects of nudges on a large scale with limited effort.
 
-The project can be split in several steps: 
-1) [We combine open data from different, published studies](docs/combining_data.md)
-2) [We train a machine learning model on the combined dataset to determine the most effective nudge per subject group](docs/probabilistic_model.md)
-3) [We simulate datasets to test the model and compare against other methods](docs/simulations.md)
+The project can be split in several steps:
+- We investigate different methods of determining the heterogeneity of treatment effects;
+- We create realistic synthetic data to compare the performance of the different methods;
+- We investigate the validity of the methods on open data from published studies.
 
 ## Getting Started
 
