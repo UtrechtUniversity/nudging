@@ -29,8 +29,8 @@ Thus, we are interested in the heterogeneous treatment effect of nudges. Convent
 To determine which nudge is most effective for a certain subgroup of individuals, one could set up a large study where different nudges are applied. However, this would be very time-consuming and costly. Here, we explore the possibiltiy of using open data from previously published nudging studies to train our models. If we are able to use and combine existing datasets, we can study the heterogeneous effects of nudges on a large scale with limited effort.
 
 The project can be split in several steps:
-- We investigate different methods of determining the heterogeneity of treatment effects;
-- We create realistic synthetic data to compare the performance of the different methods;
+- [We investigate different methods of determining the heterogeneity of treatment effects](docs/methods.md);
+- [We create realistic synthetic data to compare the performance of the different methods](docs/simulations.md);
 - We investigate the validity of the methods on open data from published studies.
 
 ## Getting Started
