@@ -54,8 +54,8 @@ class BaseModel(ABC):
         # Drop rows with missing values for predictors
         df_nonan = data.dropna(subset=self.predictors, inplace=False)
         self.model.fit(
-            df_nonan[self.predictors],
-            df_nonan["outcome"]
+            df_nonan[self.predictors].values,
+            df_nonan["outcome"].values
         )
 
     def predict_outcome(self, data):

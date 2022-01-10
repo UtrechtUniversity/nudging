@@ -152,7 +152,9 @@ class BaseDataSet():
 
 
 def bootstrap(df):
-    new_idx = np.random.choice(len(df), size=len(df), replace=True)
+    new_idx = []
+    while len(np.unique(df.iloc[new_idx]["nudge"])) < 2:
+        new_idx = np.random.choice(len(df), size=len(df), replace=True)
     return df.iloc[new_idx]
 
 

@@ -82,9 +82,9 @@ class ProbModel(BaseModel):
         # if 'age' in data_frame.columns:
         #     data_frame["age"] = (data_frame["age"]/10.).astype(int)
         if hasattr(self.model, "predict_proba"):
-            return self.model.predict_proba(data_frame[self.predictors])[:, 1]
+            return self.model.predict_proba(data_frame[self.predictors].values)[:, 1]
         else:
-            return self.model.predict(data_frame[self.predictors])
+            return self.model.predict(data_frame[self.predictors].values)
 
     def predict_cate(self, data):
         return self.predict_outcome(data)
