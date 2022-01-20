@@ -48,6 +48,12 @@ def smooth_data(xdata, ydata, n_data=100):
     """
     xdata = np.array(xdata)
     ydata = np.array(ydata)
+    if len(np.unique(xdata)) < n_data:
+        new_x = np.unique(xdata)
+        new_y = []
+        for x in new_x:
+            new_y.append(np.mean(ydata[xdata==x]))
+        return new_x, new_y
     x_sorted = np.argsort(xdata)
     new_x = []
     new_y = []

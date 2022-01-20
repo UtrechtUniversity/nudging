@@ -1,6 +1,7 @@
 import numpy as np
 
 from nudging.simulation.utils import create_corr_matrix, features_from_cmatrix
+from nudging.simulation.corr_matrix import MatrixPipeline
 
 
 def rescale(var, min_value, max_value):
@@ -34,7 +35,6 @@ def generate_layered_dataset(
         control_precision=None, n_samples=None):
 
     # Get the weights for the correlation matrices
-
     if n_nudge_domain <= 1:
         nudge_domain_weight = 0
     if n_nudge_type <= 1:
@@ -143,6 +143,11 @@ def generate_layered_dataset(
         if "3" in X.standard_df.columns:
             X.standard_df["3"] = rescale(X.standard_df["3"].values, 0, 3)
     return all_matrices
+
+
+def generate_datasets(n, **kwargs):
+    pipe = MatrixPipeline(**kwargs)
+    return pipe.generate(n)
 
 
 def generate_multi_dataset(*args, **kwargs):

@@ -74,7 +74,7 @@ class BaseModel(ABC):
         probabilities: np.ndarray
             Probabilities of a possitive outcome.
         """
-        return self.model.predict_proba(data[self.predictors])[:, 1]
+        return self.model.predict_proba(data[self.predictors].values)[:, 1]
 
     def predict_cate(self, data):
         """Predict conditional average treatment effect"""

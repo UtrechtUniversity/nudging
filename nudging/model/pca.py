@@ -14,7 +14,7 @@ class PCAModel(BaseModel):
         matches = multimatch(X_pca, nudge)
         distances = [m[2] for m in matches]
         std_dist = np.std(distances)
-        matches = [m for i, m in enumerate(matches) if distances[i] < 3*std_dist]
+        matches = [m for i, m in enumerate(matches) if distances[i] <= np.mean(distances) + std_dist]
 
         new_X = []
         new_y = []
@@ -22,6 +22,11 @@ class PCAModel(BaseModel):
             new_X.extend([X_pca[m[0]], X_pca[m[1]]])
             new_y.extend(2*[outcome[m[1]]-outcome[m[0]]])
         new_X, new_y = np.array(new_X), np.array(new_y)
+        if len(new_X.shape) == 1:
+            print(distances)
+            print(nudge)
+            print(new_X.shape)
+            print(matches)
         self.model.fit(new_X, new_y)
         return matches
 
