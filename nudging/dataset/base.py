@@ -152,6 +152,7 @@ class BaseDataSet():
 
 
 def bootstrap(df):
+    "Create bootstrapped version of a dataframe."
     new_idx = []
     while len(np.unique(df.iloc[new_idx]["nudge"])) < 2:
         new_idx = np.random.choice(len(df), size=len(df), replace=True)

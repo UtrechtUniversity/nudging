@@ -127,6 +127,7 @@ def get_cate_correlations(model, dataset, k=5, ntimes=1):
 
 
 def analyze_boot_correlations(model, dataset, k=5):
+    """Compute results from bootstrap model."""
     boot_model = BootstrapModel(model)
     true_cate = dataset.truth["cate"]
     cate_results = get_cate(boot_model, dataset, k=k)
