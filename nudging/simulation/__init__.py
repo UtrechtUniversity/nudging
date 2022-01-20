@@ -1,4 +1,4 @@
-from .multidata import generate_multi_dataset
+from .multidata import generate_datasets
 from .utils import mixed_features
 
-__all__ = ['generate_multi_dataset', 'mixed_features']
+__all__ = ['generate_datasets', 'mixed_features']

@@ -32,18 +32,6 @@ class Bounds():
         return self.value[0]
 
 
-# def convert_to_bounds(value, int_val=False):
-#     if isinstance(value, (list, tuple, np.ndarray)):
-#         return np.array(value), int_val
-#     if int_val:
-#         return np.array([value, value+1], dtype=int), int_val
-
-#     return np.array([value, value], dtype=np.float), int_val
-#     if not isinstance(new_value, np.ndarray):
-#         new_value = np.array([new_value, new_value])
-#     settings[name] = new_value
-
-
 def mixed_features(n_features_uncorrelated=10, n_features_correlated=10,
                    eigen_power=3, **kwargs):
     corr_matrix = create_corr_matrix(

@@ -5,7 +5,6 @@ from matplotlib import pyplot as plt
 from abc import ABC
 import inspect
 from nudging.dataset.matrix import MatrixData
-from scipy.ndimage import gaussian_filter1d
 
 
 def compute_avg_corr(corr_matrix):
@@ -13,35 +12,34 @@ def compute_avg_corr(corr_matrix):
     return np.sum(np.abs(tril_matrix))/np.sum(tril_matrix != 0)
 
 
-
-def smooth(x,window_len=11,window='hanning'):
+def smooth(x, window_len=11, window='hanning'):
     """smooth the data using a window with requested size.
-    
+
     This method is based on the convolution of a scaled window with the signal.
-    The signal is prepared by introducing reflected copies of the signal 
+    The signal is prepared by introducing reflected copies of the signal
     (with the window size) in both ends so that transient parts are minimized
     in the begining and end part of the output signal.
-    
+
     input:
-        x: the input signal 
+        x: the input signal
         window_len: the dimension of the smoothing window; should be an odd integer
         window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
             flat window will produce a moving average smoothing.
 
     output:
         the smoothed signal
-        
+
     example:
 
     t=linspace(-2,2,0.1)
     x=sin(t)+randn(len(t))*0.1
     y=smooth(x)
-    
-    see also: 
-    
+
+    see also:
+
     numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
     scipy.signal.lfilter
- 
+
     TODO: the window parameter could be the window itself if an array instead of a string
     NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
     """
@@ -58,10 +56,9 @@ def smooth(x,window_len=11,window='hanning'):
     if window not in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
-    s = np.r_[x[window_len-1:0:-1],x,x[-2:-window_len-1:-1]]
-    #print(len(s))
-    if window == 'flat': #moving average
-        w = np.ones(window_len,'d')
+    s = np.r_[x[window_len-1:0:-1], x, x[-2:-window_len-1:-1]]
+    if window == 'flat':  #moving average
+        w = np.ones(window_len, 'd')
     else:
         w = eval('np.'+window+'(window_len)')
 
@@ -165,18 +162,6 @@ class BasePipe(ABC):
             default_parameters.update(new_parameters)
             cur_class = cur_class.__bases__[0]
         return default_parameters
-
-#     def __getattr__(self, key):
-#         if key[-1] == "_" and key[:-1] in self.default_param:
-#             return super().__getattr__(key[:-1])
-#         val = super().__getattr__(key)
-#         if key in self.default_param:
-#             int_val = val[1]
-#             if int_val:
-#                 return np.random.randint(*val[0])
-#             r = np.random.rand()
-#             return r*(val[0][1]-val[0][0]) + val[0][0]
-#         return val
 
 
 class CorrMatrix(BasePipe):
