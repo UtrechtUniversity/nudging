@@ -17,7 +17,7 @@ class Bounds():
         elif int_val:
             self.value = np.array([value, value+1], dtype=int)
         else:
-            self.value = np.array([value, value], dtype=np.float)
+            self.value = np.array([value, value], dtype=float)
 
     def rand(self):
         if self.int_val:

@@ -80,6 +80,6 @@ class Categorical(BasePipe):
                 break
             X.standard_df[col] = rescale(X.standard_df[col].values, 0,
                                          self.n_layers.rand())
-            X.standard_df.rename(columns={col: f"layer_{col}"}, inplace=True)
+            X.standard_df.rename(columns={col: f"categorical_{col}"}, inplace=True)
             truth["n_rescale"] += 1
         return X

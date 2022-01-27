@@ -25,7 +25,7 @@ class MatrixPipeline():
                     self._pipe_kwargs[i].update({key: value})
                     key_found = True
                     break
-                if value:
+                if value is not None and value is not False:
                     continue
                 if self._pipe_classes[i].__name__ == key:
                     del self._pipe_classes[i]
