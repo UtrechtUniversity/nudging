@@ -1,10 +1,11 @@
 [FORMAT]
 
+
 # Maximum number of characters on a single line.
 max-line-length=100
 max-locals=35
 
-ignore=nudging/model,nudging/simulation,nudging/parallel
+ignore=nudging/model,nudging/simulation
 
 [BASIC]
 

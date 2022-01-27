@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 from multiprocessing import Queue, cpu_count, Process
 from tqdm import tqdm
 
