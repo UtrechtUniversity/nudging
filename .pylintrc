@@ -4,7 +4,7 @@
 max-line-length=100
 max-locals=35
 
-ignore=nudging/model,nudging/simulation
+ignore=nudging/model,nudging/simulation,nudging/parallel.py
 
 [BASIC]
 
