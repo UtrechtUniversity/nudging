@@ -27,7 +27,7 @@ def get_pscore(data_frame, solver='liblinear'):
         data_frame[treatment].to_numpy().astype('int')
     )
 
-    data_ps = data_frame.assign(pscore=ps_model.predict_proba(data_frame[predictors])[:, 1])
+    data_ps = data_frame.assign(pscore=ps_model.predict_proba(data_frame[predictors].values)[:, 1])
 
     return data_ps
 

@@ -4,7 +4,7 @@ from nudging.dataset.hotard import Hotard
 from nudging.dataset.pennycook import Pennycook1, Pennycook2
 from nudging.dataset.lieberoth import Lieberoth
 from nudging.dataset.vandenbroele import Vandenbroele
-
+from nudging.dataset.matrix import MatrixData
 
 __all__ = [
     'Balaban',
@@ -12,4 +12,5 @@ __all__ = [
     'Pennycook1', 'Pennycook2',
     'Lieberoth',
     'Vandenbroele',
+    'MatrixData',
 ]

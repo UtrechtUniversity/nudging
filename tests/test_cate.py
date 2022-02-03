@@ -2,10 +2,10 @@ import pytest
 import numpy as np
 from nudging.simulation.utils import mixed_features
 from nudging.model.biregressor import BiRegressor
-from sklearn.linear_model._bayes import BayesianRidge
+from sklearn.linear_model import BayesianRidge
 from nudging.cate import get_cate, get_cate_subgroups, get_cate_correlations,\
     measure_top_perf, get_cate_top_performance
-from nudging.simulation import generate_multi_dataset
+from nudging.simulation import generate_datasets
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def sim_matrix():
 @pytest.fixture
 def sim_matrix_age():
     np.random.seed(1298745)
-    return generate_multi_dataset(1)[0]
+    return generate_datasets(1)[0]
 
 
 def test_get_cate(sim_matrix):

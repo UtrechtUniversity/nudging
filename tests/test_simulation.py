@@ -3,8 +3,7 @@ import pytest
 from nudging.simulation.utils import create_corr_matrix, mixed_features
 from sklearn.linear_model._bayes import BayesianRidge
 from nudging.model.biregressor import BiRegressor
-from nudging.simulation.multidata import generate_multi_dataset,\
-    generate_layered_dataset
+from nudging.simulation import generate_datasets
 from nudging.dataset.base import BaseDataSet
 
 
@@ -42,34 +41,45 @@ def test_mixed_features(control_unique, control_precision, noise_frac, linear, n
     assert len(outcome) == n_samples
 
 
-@pytest.mark.parametrize("control_unique", [0, np.array([0.3, 0.4])])
-@pytest.mark.parametrize("control_precision", [0.1, np.array([0.3, 0.4])])
-@pytest.mark.parametrize("noise_frac", [0.2, np.array([0.3, 0.4])])
-@pytest.mark.parametrize("n_samples", [None, 10000, np.array([300, 3000])])
-@pytest.mark.parametrize("linear", [True, False])
-@pytest.mark.parametrize("n_dataset", [3, 5])
-@pytest.mark.parametrize("layered", [True, False])
-def test_multi_dataset(control_unique, control_precision, noise_frac, linear,
-                       n_samples, n_dataset, layered):
-    if layered:
-        generator = generate_layered_dataset
-    else:
-        generator = generate_multi_dataset
-    datasets = generator(
-        n_dataset=n_dataset,
-        n_features_uncorrelated=10, n_features_correlated=10,
-        control_unique=control_unique, control_precision=control_precision,
-        noise_frac=noise_frac, linear=linear, n_samples=n_samples)
-    assert len(datasets) == n_dataset
+def check_datasets(**kwargs):
+    datasets = generate_datasets(**kwargs)
+    assert len(datasets) == kwargs["n"]
+    for d in datasets:
+        for param_name, param_val in kwargs.items():
+            if param_name == "n" or param_name == "n_layers" or param_name == "n_rescale":
+                continue
+            true_val = d.truth[param_name]
+            if isinstance(param_val, (np.ndarray, tuple)):
+                assert true_val >= param_val[0] and true_val <= param_val[1]
+            else:
+                assert np.fabs(true_val - param_val) < 1e-7, param_name
     assert np.all([isinstance(d, BaseDataSet) for d in datasets])
-    if n_samples is None:
-        sample_bounds = [500, 5000]
-    elif isinstance(n_samples, np.ndarray):
-        sample_bounds = n_samples
-    else:
-        sample_bounds = [n_samples, n_samples+1]
-    assert np.all([len(d) >= sample_bounds[0] and len(d) < sample_bounds[1] for d in datasets])
-    if isinstance(control_unique, np.ndarray):
-        assert np.all([control_unique[0] <= d.truth["control_unique"] <= control_unique[1]
-                       for d in datasets])
+    assert np.all([len(d) == d.truth["n_samples"] for d in datasets])
     assert np.all([len(d.cate) == len(d) for d in datasets])
+
+
+def test_multi_dataset():
+    param_dict = {
+        "noise_frac": [0.2, np.array([0.3, 0.4])],
+        "control_unique": [0, np.array([0.3, 0.4])],
+        "control_precision": [0.1, np.array([0.3, 0.4])],
+        "n_samples": [2000, np.array([300, 3000])],
+        "linear": [True, False],
+        "n_samples": [1000, np.array([300, 3000])],
+        "avg_correlation": [0.05, np.array([0.05, 0.1])],
+        "n_features_uncorrelated": [7, (1, 5)],
+        "n_features_correlated": [7, (1, 5)],
+        "nudge_avg": [0.3, (-0.1, 0.1)],
+        "n_rescale": [1, (0, 3)],
+        "n_layers": [1, (2, 10)],
+    }
+    for _ in range(10):
+        n = np.random.randint(1, 5)
+        kwargs = {}
+        for param_name, param_vals in param_dict.items():
+            n_vals = len(param_vals)
+            rand = np.random.randint(0, n_vals+1)
+            if rand == n_vals:
+                continue
+            kwargs[param_name] = param_vals[rand]
+        check_datasets(n=n, **kwargs)
