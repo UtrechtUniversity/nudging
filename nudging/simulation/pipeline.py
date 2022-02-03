@@ -4,6 +4,22 @@ from . import ConvertAge, ConvertGender, Categorical
 
 
 class MatrixPipeline():
+    """Class for a full simulation pipeline
+
+    Individual elements can be disabled, but not all elements are
+    optional:
+    Mandatory elements:
+        CorrMatrix
+        CreateFM
+        GenNudgeOutcome
+        CreateMatrixData
+    Optional elements:
+        Linearizer
+        AddNoise
+        ConvertAge,
+        ConvertGender,
+        Categorical
+    """
     def __init__(self, **kwargs):
         self._pipe_classes = [
             CorrMatrix,

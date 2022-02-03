@@ -6,8 +6,8 @@ from .utils import Bounds
 
 def find_free_col(X, n_features_uncorrelated=None):
     feature_names = list(X.standard_df)
-    if n_features_uncorrelated is None:
-        np.random.shuffle(feature_names)
+#     if n_features_uncorrelated is None:
+#         np.random.shuffle(feature_names)
     for i, name in enumerate(feature_names):
         try:
             int(name)
@@ -64,7 +64,7 @@ class ConvertGender(BasePipe):
 
 class Categorical(BasePipe):
     def __init__(self, n_rescale=np.array([0, 4], dtype=int),
-                 n_layers=np.array([0, 5], dtype=int)):
+                 n_layers=np.array([2, 5], dtype=int)):
         self.n_rescale = Bounds(n_rescale, int_val=True)
         self.n_layers = Bounds(n_layers, int_val=True)
 
