@@ -9,7 +9,7 @@ from scipy.stats.stats import spearmanr
 import numpy as np
 from nudging.model.probmodel import ProbModel
 from sklearn.linear_model import LogisticRegression
-from nudging.simulation.multidata import generate_multi_dataset
+from nudging.simulation import generate_datasets
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def sim_matrix():
 @pytest.fixture
 def sim_matrix_age_gender():
     np.random.seed(8127384)
-    return generate_multi_dataset(1)[0]
+    return generate_datasets(1)[0]
 
 
 def check_prediction(sim_matrix, model, performance_test=True, clone=False):
@@ -58,4 +58,4 @@ def test_regression_models(sim_matrix, model_type):
 def test_proba_model(sim_matrix_age_gender):
     model = ProbModel(LogisticRegression())
     model.predictors = ["age", "gender"]
-    check_prediction(sim_matrix_age_gender, model)
+    check_prediction(sim_matrix_age_gender, model, performance_test=False)

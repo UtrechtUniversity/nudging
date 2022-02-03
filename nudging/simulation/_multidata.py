@@ -34,7 +34,6 @@ def generate_layered_dataset(
         control_precision=None, n_samples=None):
 
     # Get the weights for the correlation matrices
-
     if n_nudge_domain <= 1:
         nudge_domain_weight = 0
     if n_nudge_type <= 1:

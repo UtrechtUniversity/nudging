@@ -1,3 +1,12 @@
-from .multidata import generate_multi_dataset
+from .utils import mixed_features
+from .corr_matrix import CorrMatrix
+from .create_fm import CreateFM
+from .linearizer import Linearizer
+from .outcome import GenNudgeOutcome
+from .noise import AddNoise
+from .matrix_data import CreateMatrixData
+from .post_processing import ConvertAge, ConvertGender, Categorical
+from .pipeline import generate_datasets
 
-__all__ = ['generate_multi_dataset']
+
+__all__ = ['generate_datasets', 'mixed_features']

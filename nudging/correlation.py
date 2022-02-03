@@ -11,7 +11,7 @@ import yaml
 from nudging.model.biregressor import BiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
-from nudging.simulation.multidata import generate_multi_dataset
+from nudging.simulation import generate_datasets
 
 
 def equal_range(start, stop, n_step):
@@ -48,6 +48,10 @@ def smooth_data(xdata, ydata, n_data=100):
     """
     xdata = np.array(xdata)
     ydata = np.array(ydata)
+    if len(np.unique(xdata)) < n_data:
+        new_x = np.unique(xdata)
+        new_y = [np.mean(ydata[xdata == x] for x in new_x)]
+        return new_x, np.array(new_y)
     x_sorted = np.argsort(xdata)
     new_x = []
     new_y = []
@@ -92,14 +96,7 @@ if __name__ == "__main__":
 
     # Generate simulated datasets
     np.random.seed(9817274)
-    datasets = generate_multi_dataset(
-        n_dataset=1000,
-        n_nudge_type=1,
-        n_nudge_domain=1,
-        dataset_weight=1,
-        eigen_power=1.5,
-        n_features_correlated=2,
-        n_features_uncorrelated=2)
+    datasets = generate_datasets(n=1000)
 
     attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
 

@@ -42,4 +42,5 @@ class MatrixData(BaseDataSet):
             truth["nudge_type"] = -1
         if "nudge_domain" not in truth:
             truth["nudge_domain"] = -1
+        truth["n_features"] = X.shape[1]
         return cls(standard_df=standard_df, truth=truth)
