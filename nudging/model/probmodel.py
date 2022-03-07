@@ -76,16 +76,15 @@ class ProbModel(BaseModel):
             df_nonan["outcome"].to_numpy().astype('int')
         )
 
-    def predict_outcome(self, data):
-        data_frame = data.copy(deep=True)
-        # Convert age to decades if present
-        # if 'age' in data_frame.columns:
-        #     data_frame["age"] = (data_frame["age"]/10.).astype(int)
-        if hasattr(self.model, "predict_proba"):
-            return self.model.predict_proba(data_frame[self.predictors].values)[:, 1]
-        else:
-            return self.model.predict(data_frame[self.predictors].values)
+#     def predict_outcome(self, data):
+#         data_frame = data.copy(deep=True)
+#         # Convert age to decades if present
+#         # if 'age' in data_frame.columns:
+#         #     data_frame["age"] = (data_frame["age"]/10.).astype(int)
+#         if hasattr(self.model, "predict_proba"):
+#             return self.model.predict_proba(data_frame[self.predictors].values)[:, 1]
+#         else:
+#             return self.model.predict(data_frame[self.predictors].values)
 
     def predict_cate(self, data):
         return self.predict_outcome(data)
-

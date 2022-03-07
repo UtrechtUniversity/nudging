@@ -50,7 +50,7 @@ def smooth_data(xdata, ydata, n_data=100):
     ydata = np.array(ydata)
     if len(np.unique(xdata)) < n_data:
         new_x = np.unique(xdata)
-        new_y = [np.mean(ydata[xdata == x] for x in new_x)]
+        new_y = [np.mean(ydata[xdata == x]) for x in new_x]
         return new_x, np.array(new_y)
     x_sorted = np.argsort(xdata)
     new_x = []

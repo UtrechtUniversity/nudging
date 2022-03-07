@@ -1,20 +1,22 @@
-from nudging.model.base import BaseModel
 from sklearn.decomposition import PCA
 import numpy as np
+from nudging.model.matching import MatchingModel
 
 
-class PCAModel(BaseModel):
-    def __init__(self, model, predictors=None):
-        super().__init__(model, predictors)
+class PCAModel(MatchingModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.pca_model = PCA()
 
     def train(self, data):
         X, nudge, outcome = self._X_nudge_outcome(data)
         X_pca = self.pca_model.fit_transform(X)
-        matches = multimatch(X_pca, nudge)
+        self.pca_fac = np.sqrt(self.pca_model.explained_variance_ratio_)
+        matches = multimatch(X_pca*self.pca_fac, nudge)
         distances = [m[2] for m in matches]
         std_dist = np.std(distances)
-        matches = [m for i, m in enumerate(matches) if distances[i] <= np.mean(distances) + std_dist]
+        matches = [m for i, m in enumerate(matches)
+                   if distances[i] <= np.mean(distances) + std_dist]
 
         new_X = []
         new_y = []
@@ -28,11 +30,23 @@ class PCAModel(BaseModel):
             print(new_X.shape)
             print(matches)
         self.model.fit(new_X, new_y)
+        if self.train_tlearner:
+            all_idx = []
+            for m in matches:
+                all_idx.extend([m[0], m[1]])
+            all_idx = np.array(all_idx, dtype=int)
+            self.tlearner._fit(X_pca[all_idx], nudge[all_idx],
+                               outcome[all_idx])
         return matches
 
+    def _X_nudge_transform(self, data):
+        X, nudge = self._X_nudge(data)
+        X_pca = self.pca_model.transform(X)
+        return X_pca, nudge
+
     def predict_cate(self, data):
-        X, _ = self._X_nudge(data)
-        return self.model.predict(self.pca_model.transform(X))
+        X, _ = self._X_nudge_transform(data)
+        return self.model.predict(X)
 
 
 def greedy_match(X, nudge):
