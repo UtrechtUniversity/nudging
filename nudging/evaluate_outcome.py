@@ -1,15 +1,30 @@
+"""Evaluate outcome (+CATE) of datasets"""
+
 from scipy.stats import spearmanr
 import numpy as np
 
 
-def safe_spearmanr(a, b):
-    if np.all(a[0] == a) or np.all(b[0] == b):
+def safe_spearmanr(arr_a, arr_b):
+    "Compute the spearman-R correlation, but 0 if all equal"
+    if np.all(arr_a[0] == arr_a) or np.all(arr_b[0] == arr_b):
         return 0
-
-    return spearmanr(a, b).correlation
+    return spearmanr(arr_a, arr_b).correlation
 
 
 def evaluate_outcome(model, dataset, k=5, n=1):
+    """Evaluate the outcome of a model with a dataset
+
+    Arguments
+    ---------
+    model: BaseModel
+        model to be trained and evaluated on the dataset.
+    dataset: BaseDataset
+        Dataset on which the model is evaluated.
+    k: int
+        Number of folds
+    n: int
+        Number of iterations to evaluate over
+    """
     results = []
     for _ in range(n):
         for train_data, test_data in dataset.kfolds(k=k):
@@ -25,6 +40,20 @@ def evaluate_outcome(model, dataset, k=5, n=1):
 
 
 def evaluate_performance(model, dataset, k=5, n=1):
+    """Evaluate the outcome + CATE of a model with a dataset
+
+    Arguments
+    ---------
+    model: BaseModel
+        model to be trained and evaluated on the dataset.
+    dataset: BaseDataset
+        Dataset on which the model is evaluated.
+    k: int
+        Number of folds
+    n: int
+        Number of iterations to evaluate over
+    """
+
     cate_corr = []
     outcome_corr = []
     for _ in range(n):
