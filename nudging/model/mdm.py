@@ -33,7 +33,8 @@ class MDMModel(BaseModel):
         matches = random_match(X, zero_idx, one_idx, cov_inv)
         distances = [m[2] for m in matches]
         std_dist = np.std(distances)
-        matches = [m for i, m in enumerate(matches) if distances[i] < 3*std_dist]
+        matches = [m for i, m in enumerate(matches)
+                   if distances[i] <= np.mean(distances) + std_dist]
         new_X = []
         new_y = []
         for m in matches:
@@ -45,8 +46,11 @@ class MDMModel(BaseModel):
     def predict_cate(self, data):
         X, _ = self._X_nudge(data)
         return self.model.predict(X)
-#         return new_X, new_y
-#         return matches
+
+    def predict_outcome(self, data):
+        X, nudge = self._X_nudge(data)
+        cate = self.model.predict(X)
+        return (nudge-0.5)*cate
 
 
 def random_match(X, zero_idx, one_idx, cov_inv):

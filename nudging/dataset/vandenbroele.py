@@ -66,6 +66,8 @@ class Vandenbroele(RealDataset):
             # control
             meat_purchases = np.nansum(meat[index_control])
             veg_purchases = np.nansum(veg[index_control])
+            if meat_purchases == 0 and veg_purchases == 0:
+                continue
             veg1 = veg1 + veg_purchases
             meat1 = meat1 + meat_purchases
             ratio_control = veg_purchases/(meat_purchases + veg_purchases)
@@ -73,6 +75,9 @@ class Vandenbroele(RealDataset):
             # nudge
             meat_purchases = np.nansum(meat[index_nudge])
             veg_purchases = np.nansum(veg[index_nudge])
+            if meat_purchases == 0 and veg_purchases == 0:
+                continue
+#             print(meat_purchases, veg_purchases)
             ratio_nudge = veg_purchases/(meat_purchases + veg_purchases)
 
             age_list = age_array[person_index][np.isfinite(age_array[person_index])]
