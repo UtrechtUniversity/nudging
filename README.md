@@ -4,9 +4,9 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 - [About the Project](#about-the-project)
-   - [Combining Data](#combining-data)
-   - [Probabilistic Model](#probabilistic-model)
-   - [Simulations](#simulations)
+   - [Combining Data](docs/combining_data.md)
+   - [Probabilistic Model](docs/probabilistic_model.md)
+   - [Simulations](docs/simulations.md)
 - [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
@@ -24,79 +24,14 @@
 ## About the Project
 This software package is under development within the Precision Nudging project. The scientific aim of this project is to use open data to develop predictive models with Machine Learning, in order to determine the most effective nudge for persons, given the nudging goal and the individual personal circumstances. 
 
-Thus, we are interested in the heterogeneous treatment effect of nudges. Conventionally, heterogeneous treatment effects are found by dividing the study data into subgroups (e.g., men and women, or by age) and comparing the conditional average treatment effect (CATE) between subgroups. A challenge with this approach is that each subgroup may have substantially less data than the study as a whole, and there may not be enough data to accurately estimate the effects on subgroups. Recently and increasingly, however, machine learning is used to estimate heterogeneous treatment effects, even to the level of individuals, see e.g. [Künzel et al. 2019](https://www.pnas.org/content/116/10/4156).
+Thus, we are interested in the heterogeneous treatment effect of nudges. Conventionally, heterogeneous treatment effects are found by dividing the study data into subgroups (e.g., men and women, or by age) and comparing the conditional average treatment effect (CATE) between subgroups. A challenge with this approach is that each subgroup may have substantially less data than the study as a whole, and there may not be enough data to accurately estimate the effects on subgroups. Recently and increasingly, however, machine learning is used to estimate heterogeneous treatment effects, even to the level of individuals, see e.g. [Künzel et al. 2019](https://www.pnas.org/content/116/10/4156). In this study, we apply different machine learning models to determine the heterogenity of treatment effects.
 
-Most nudging research uses standard social science techniques like field experiments, surveys, or document analyses. Using Machine Learning combined with open data can help us discover new ways to apply behavior change techniques to solve societal problems. We focus on improving health behavior, such as eating and exercising, as unhealthy behavior is a crucial societal problem. We use open data from published nudging studies to train our model. 
+To determine which nudge is most effective for a certain subgroup of individuals, one could set up a large study where different nudges are applied. However, this would be very time-consuming and costly. Here, we explore the possibiltiy of using open data from previously published nudging studies to train our models. If we are able to use and combine existing datasets, we can study the heterogeneous effects of nudges on a large scale with limited effort.
 
-The project can be split in several steps: 
-1) We combine open data from different, published studies. 
-2) We train a machine learning model on the combined dataset to determine the most effective nudge per subject group.
-3) We simulate datasets to test the model and compare against other methods.
-
-In the sections below, we elaborate on these steps.
-
-### Combining Data
-
-One of the main challenges is how to combine data from the widely varying studies. Each study has measured a different outcome variable to determine the effectiveness of a nudge. Furthermore, in some studies, the effectiveness of a nudge is determined through an observational (non-randomized) study and not a randomized controlled trial. In an observational study, the treatment and control (untreated) groups are not directly comparable, because they may systematically differ at baseline. Here, we propose to use propensity score matching to tackle these issue (see e.g. [Austin 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/)).
-
-The propensity score is the probability of treatment assignment, given observed baseline characteristics. The propensity score can be used to balance the treatment and control groups to make them comparable. [Rosenbaum and Rubin (1983)](https://academic.oup.com/biomet/article/70/1/41/240879) showed that treated and untreated subjects with the same propensity scores have identical distributions for all baseline variables. Thus, the propensity score allows one to analyze an observational study as if it were a randomized controlled trial. In our case, the treatment group is the group that received a nudge and the control is the group that didn't. The observed baseline characteristics are specified per study, and typically include age and gender of the subject.
-
-For each study separately, we estimate the propensity score by logistic regression. This is a statistical model used to predict the probability that an event occurs. In logistic regression, the dependent variable is binary; in our case, we have Z=1 for the treated subjects and Z=0 for the untreated subjects. We can then derive the logistic regression model and subsequently use it to calculate the propensity score for each subject. Propensity score matching is done by nearest neighbour matching of treated and untreated subjects, so that matched subjects have similar values of the propensity score.
-
-When we have matched subjects, we simply determine the nudge succes by evaluating whether the outcome variable had increased or decreased, depending on the nudge study. Thus nudge success is a binary, 0 for failure or 1 for success, which allows us to combine the results for different studies.
-
-Finally, we record for each subject in the treatment group the following:
-- age
-- gender (0=female, 1=male)
-- other relevant personal characteristics
-- nudge success (0=failure, 1=success)
-- nudge domain
-- nudge type
-
-Note that the nudge domain and nudge type can differ per study. We distinguish the following categories in this study:
-
-**Nudge types** (see [Sunstein (2014)](https://link.springer.com/article/10.1007/s10603-014-9273-1)):
-1. Default. For instance automatic enrolment in programs 
-2. Simplification 
-3. Social norms 
-4. Change effort 
-5. Disclosure 
-6. Warnings, graphics. Think of cigarettes. 
-7. Precommitment 
-8. Reminders 
-9. Eliciting implementation intentions 
-10. Feedback: Informing people of the nature and consequences of their own past choices 
-
-**Nudge domains** (see [Hummel and Maedche (2019)](https://ideas.repec.org/a/eee/soceco/v80y2019icp47-58.html)):
-1. Energy consumption 
-2. Healthy products 
-3. Environmentally friendly products 
-4. Amount donated 
-
-
-### Probabilistic Model
-Once, we have combined the data from different studies, we can determine which nudge type is most effective for a certain group of people, for a given nudge domain. We use age and gender to divide people into subgroups, although we could easily include more observed characteristics if these are available. We use a probabilistic classifier to determine the most effective nudge, which has the advantage that we can also rank nudges on effectiveness instead of selecting only the most effective one. Nudge effectiveness is defined as the probability of nudge success.
-
-We implemented both a logistic regression and a naive Bayes classifier using [scikit-learn](https://scikit-learn.org). Logistic regression is a discriminitive model, meaning it learns the posterior probability directly from the tranining data. Naive Bayes is a generative model, meaning it learns the joint probability distribution and uses Bayes' Theorem to predicts the posterior probability. Typically, naive Bayes converges quicker but has a higher error than logistic regression, see [Ng and Jordan 2001](https://dl.acm.org/doi/10.5555/2980539.2980648). Thus, while on small datasets naive Bayes may be preferable, logistic regression is likely to achieve better results as the training set size grows.
-
-
-### Simulations
-We generated 1000 datasets with varying control parameters such as noise, number of subjects, etc. as described [here](nudging/simulation/README.md). Each dataset consists of half treatment group (nudged) and half control group (non-nudged). For each dataset we determine the nudge effectiveness as described above. We then compute the correlation between nudge effectiveness and the CATE. If the correlation is good, we may assume that the nudge effectivenes is a good proxy for the CATE. Note that our goal is not neccesarily to predict the CATE but rather to find a proxy of the CATE that we can use on combined studies/datasets with different outcome variables.
-
-For the simulated datasets, we know the CATE that was used as model input, we call this *cate_model*. We can also derive the "observed" CATE (*cate_obs*) per subgroup by mean(treatment) - mean(control). While *cate_model* is known both for individuals and subgroups, *cate_obs* can only be derived for subgroups. We show the correlation for all three types of CATEs.
-
-Except for the method as described above (probabilistic model), we also apply a machine learning model that directly predicts the outcome and CATE, as described [here](nudging/model/README.md). We refer to the latter as the CATE regression model, since regression is used to fit the CATE. We expect the CATE regression model to be more accurate in predicting the outcome/CATE within one dataset, in particular when there are many covariates. However, it has the limitation that it can only be applied to combined studies if the outcome variables are standardized. How to standardize the data for this use is a topic for future investigation. In the meantime, we can use the CATE regression model to compare with the probabilistic model.
-
-For the below plots, CATE regression model=0 (blue) and probabilistic model=1 (orange).
-
-#### Correlation with *cate_obs* for subgroups:
-![subgroups_cate_obs](plots_subgroups_cate_obs/noise_frac.png)
-
-#### Correlation with *cate_model* for subgroups:
-![subgroups_cate_model](plots_subgroups_cate_model/noise_frac.png)
-
-#### Correlation with *cate_model* for individuals:
-![ind_cate_obs](plots_ind_cate_model/noise_frac.png)
+The project can be split in several steps:
+- [We investigate different methods of determining the heterogeneity of treatment effects](docs/methods.md);
+- [We create realistic synthetic data to compare the performance of the different methods](docs/simulations.md);
+- We investigate the validity of the methods on open data from published studies.
 
 ## Getting Started
 
