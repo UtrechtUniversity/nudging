@@ -5,6 +5,7 @@ from nudging.dataset.pennycook import Pennycook1, Pennycook2
 from nudging.dataset.lieberoth import Lieberoth
 from nudging.dataset.vandenbroele import Vandenbroele
 from nudging.dataset.matrix import MatrixData
+from nudging.dataset.milkman import Milkman
 
 __all__ = [
     'Balaban',
@@ -13,4 +14,5 @@ __all__ = [
     'Lieberoth',
     'Vandenbroele',
     'MatrixData',
+    'Milkman'
 ]
