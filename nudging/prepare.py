@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
         if name == "Milkman":
             for nudge_type, intervention in enumerate(interventions):
-                dataset = data_class.from_file(data_fp, intervention)
+                dataset = data_class.from_file(data_fp, nudge_type, intervention)
                 # Write raw data to csv
                 dataset.write_raw("data/raw/" + name + str(nudge_type) + ".csv")
                 # Write interim data to csv

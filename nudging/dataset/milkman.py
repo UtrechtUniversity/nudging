@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from nudging.dataset.real import RealDataset, Gender, Group
+from nudging.dataset.real import RealDataset, Gender, Group, convert_categorical
 
 
 def get_change(data_frame):
@@ -27,7 +27,7 @@ class Milkman(RealDataset):
     _default_filename = "pptdata.csv"
     truth = {
         "covariates": ["age", "gender"], # "customer_state"],
-        "nudge_type": 4,
+        "nudge_type": None,
         "nudge_domain": 3,
         "goal": "increase", # nudge is successfull if outcome increased
 
@@ -39,14 +39,17 @@ class Milkman(RealDataset):
         return super()._load(file_path, encoding=encoding)
 
     @classmethod
-    def from_file(cls, file_path, intervention=None):
+    def from_file(cls, file_path, nudge_type=None, intervention=None):
         """Create dataset from file"""
         if intervention:
             cls.intervention = intervention
+        if nudge_type:
+            cls.truth["nudge_type"] = nudge_type
         if Path(file_path).is_dir():
             file_path = Path(file_path, cls._default_filename)
         raw_df = cls._load(file_path)
         standard_df = cls._preprocess(raw_df)
+
         return cls(standard_df, raw_df, file_path)
 
 
@@ -62,6 +65,8 @@ class Milkman(RealDataset):
             ['participant_id', 'week', 'visits', 'age',
             'customer_state', 'gender','exp_condition']].copy()
 
+        print(list(data['customer_state'].drop_duplicates()))
+
         data.loc[:, 'phase'] = "post"
         data.loc[data.week < 5, 'phase'] = 'during'
         data.loc[data.week < 0, 'phase'] = 'pre'
@@ -72,25 +77,11 @@ class Milkman(RealDataset):
         data_unique = data.drop(columns=['week', 'visits', 'phase']).drop_duplicates()
 
         df = pd.merge(data_unique, data_new, on="participant_id")
-        df = _convert_categorical(df, "exp_condition",
+        df = convert_categorical(df, "exp_condition",
             {"Placebo Control": Group.CONTROL, cls.intervention: Group.NUDGE},
             col_new="nudge")
-        df = _convert_categorical(df, "gender", {"F": Gender.FEMALE, "M": Gender.MALE})
-        print(df)
+        df = convert_categorical(df, "gender", {"F": Gender.FEMALE, "M": Gender.MALE})
+        # print(df)
 
         return super()._preprocess(df)
 
-
-def _convert_categorical(df, col_old, conversion, col_new=None):
-    if col_new is None:
-        col_new = col_old
-    orig_values = df[col_old].values
-    good_rows = np.isin(orig_values, list(conversion))
-    df = df.iloc[good_rows]
-    orig_values = df[col_old].values
-    cat_values = np.zeros(len(df), dtype=int)
-    for src, dest in conversion.items():
-        cat_values[orig_values == src] = dest
-    df.loc[:, col_new] = cat_values
-
-    return df
