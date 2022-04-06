@@ -134,5 +134,5 @@ def convert_categorical(df, col_old, conversion, col_new=None):
     cat_values = np.zeros(len(df), dtype=int)
     for src, dest in conversion.items():
         cat_values[orig_values == src] = dest
-    df[col_new] = cat_values
+    df.loc[:, col_new] = cat_values
     return df

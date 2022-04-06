@@ -51,7 +51,7 @@ def plot_probability(data, labels, outdir, xaxis):
         label = "nudge {}".format(nudge)
         dataset.plot(
             ax=axis, kind='bar', x=xaxis, y='probability', label=label,
-            color=colors[i], width=width, position=position)
+            color=colors[i%7], width=width, position=position)
         # get ticks of largest range
         if len(axis.get_xticks()) > len(xticks):
             xticks = axis.get_xticks()
