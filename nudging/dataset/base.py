@@ -87,6 +87,9 @@ class BaseDataSet():
         if len(idx_sets) == 0:
             return [self]
 
+        if len(idx_sets) == 1:
+            return self._split_once(idx_sets[0])
+
         return [self._split_once(idx) for idx in idx_sets]
 
     def _split_once(self, idx):

@@ -4,11 +4,13 @@ This handbook only considers the more simple form of simulation, which generates
 
 ### Basics
 The simplest and most common way to generate datasets is by using the `generate_datasets` function:
+
 ```python
 from nudging.simulation import generate_datasets
 
 datasets = generate_datasets(10, avg_correlation=0.1, n_samples=1000)
 ```
+
 to generate a list of 10 independent datasets, where the average correlation between features is 0.1, and the number of samples is 1000. There in total 12 parameters that can be set apart from the number of datasets, which will be described later on.
 Internally, the dataset generation is done through many steps in a pipeline. We will discuss these steps in the next few sections.
 
