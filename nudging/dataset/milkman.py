@@ -1,5 +1,7 @@
 """DataSet class for Milkman et al 2021: Megastudies improve the impact of applied
 behavioural science
+Paper: https://www.nature.com/articles/s41586-021-04128-4
+Data: https://osf.io/9av87/?view_only=8bb9282111c24f81a19c2237e7d7eba3
 """
 from pathlib import Path
 import numpy as np
@@ -64,9 +66,6 @@ class Milkman(RealDataset):
         data = data_frame[
             ['participant_id', 'week', 'visits', 'age',
             'customer_state', 'gender','exp_condition']].copy()
-
-        print(list(data['customer_state'].drop_duplicates()))
-
         data.loc[:, 'phase'] = "post"
         data.loc[data.week < 5, 'phase'] = 'during'
         data.loc[data.week < 0, 'phase'] = 'pre'
@@ -81,7 +80,6 @@ class Milkman(RealDataset):
             {"Placebo Control": Group.CONTROL, cls.intervention: Group.NUDGE},
             col_new="nudge")
         df = convert_categorical(df, "gender", {"F": Gender.FEMALE, "M": Gender.MALE})
-        # print(df)
 
         return super()._preprocess(df)
 
