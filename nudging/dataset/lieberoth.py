@@ -37,7 +37,7 @@ class Lieberoth(RealDataset):
         """
         df = data_frame.copy()
         df = convert_categorical(df, "group", {"control": Group.CONTROL, "nudge": Group.NUDGE},
-                                  col_new="nudge")
+                                 col_new="nudge")
         df = convert_categorical(df, "gender", {"8": Gender.FEMALE, "1": Gender.MALE})
         df["age"] = pd.to_numeric(df["age"], errors='coerce').round()
         df["outcome"] = df["swtot"]
