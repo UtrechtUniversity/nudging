@@ -20,7 +20,6 @@ class Lieberoth(RealDataset):
         "female": "8",
         # nudge is successfull if outcome increased
         "goal": "increase",
-
     }
 
     @classmethod

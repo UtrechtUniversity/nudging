@@ -28,11 +28,10 @@ class Milkman(RealDataset):
     intervention = "Higher Incentives b"
     _default_filename = "pptdata.csv"
     truth = {
+        "goal": "increase",
         "covariates": ["age", "gender"],  # "customer_state"],
         "nudge_type": None,
         "nudge_domain": 3,
-        "goal": "increase",  # nudge is successfull if outcome increased
-
     }
 
     @classmethod
@@ -40,8 +39,8 @@ class Milkman(RealDataset):
         return super()._load(file_path, encoding=encoding)
 
     @classmethod
-    def from_file(
-            cls, file_path, nudge_type=None, intervention=None):  # pylint: disable=arguments-differ
+    def from_file(  # pylint: disable=arguments-differ
+            cls, file_path, nudge_type=None, intervention=None):
         """Create dataset from file"""
         if intervention:
             cls.intervention = intervention
