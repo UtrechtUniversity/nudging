@@ -26,7 +26,7 @@ def flatten(data):
     return result
 
 
-def plot_probability(data, labels, outdir, xaxis):
+def plot_probability(data, labels, outdir, xaxis, cat="nudge_type"):
     """Plot nudge effectiveness (probability of success) as function of x for each nudge type
     Args:
        data (pandas.DataFrame): dataframe with nudge effectiveness
@@ -37,7 +37,7 @@ def plot_probability(data, labels, outdir, xaxis):
     width = 0.2
     _, axis = plt.subplots()
     colors = ["b", "r", "g", "c", "m", "y", "k"]
-    types = data['nudge_type'].unique()
+    types = data[cat].unique()
     position = 0
     condition = True
     xticks = []
@@ -45,10 +45,10 @@ def plot_probability(data, labels, outdir, xaxis):
         condition = (data[label] == labels[label]) & condition
 
     for i, nudge in enumerate(types):
-        dataset = data[(data['nudge_type'] == nudge) & condition]
+        dataset = data[(data[cat] == nudge) & condition]
         if dataset.empty:
             continue
-        label = "nudge {}".format(nudge)
+        label = "{} {}".format(cat, nudge)
         dataset.plot(
             ax=axis, kind='bar', x=xaxis, y='probability', label=label,
             color=colors[i%7], width=width, position=position)
@@ -76,7 +76,7 @@ def plot_probability(data, labels, outdir, xaxis):
     print(f"Plot generated: {filename}")
 
 
-def plot_data(data, predictors, outdir, xaxis):
+def plot_data(data, predictors, outdir, xaxis, cat="nudge_type"):
     """Make plots of nudge effectiveness for each subject subgroup
     Args:
         predictors (list): list of predictors
@@ -88,10 +88,10 @@ def plot_data(data, predictors, outdir, xaxis):
     prod = []
     labels = {}
     for predictor in predictors:
-        if predictor not in ["nudge_type", xaxis]:
+        if predictor not in [cat, xaxis]:
             plot_dict[predictor] = data[predictor].unique()
     if not plot_dict:
-        plot_probability(data, labels, outdir, xaxis)
+        plot_probability(data, labels, outdir, xaxis, cat)
 
     for i, value in enumerate(plot_dict.values()):
         if i == 0:
@@ -105,7 +105,7 @@ def plot_data(data, predictors, outdir, xaxis):
         else:
             label = [term]
         labels = {key: label[i] for i, key in enumerate(plot_dict.keys())}
-        plot_probability(data, labels, outdir, xaxis)
+        plot_probability(data, labels, outdir, xaxis, cat)
 
 
 if __name__ == "__main__":
@@ -130,4 +130,4 @@ if __name__ == "__main__":
         probability=model.predict_cate(subgroups))
     prob.to_csv("data/processed/nudge_probabilty.csv", index=False)
     print("Output written to data/processed/nudge_probabilty.csv")
-    plot_data(prob, features, "plots", x_axis)
+    plot_data(prob, features, "plots", x_axis, "gender")
