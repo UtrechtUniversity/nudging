@@ -2,13 +2,13 @@
 import glob
 
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+# from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import BayesianRidge
 from joblib import dump
 import yaml
 
 from nudging.model.biregressor import BiRegressor
-from nudging.model.probmodel import ProbModel
+# from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
 
