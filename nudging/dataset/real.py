@@ -125,6 +125,7 @@ def remove_duplicate_cols(data_frame):
 
 
 def convert_categorical(df, col_old, conversion, col_new=None):
+    """Convet categories"""
     if col_new is None:
         col_new = col_old
     orig_values = df[col_old].values

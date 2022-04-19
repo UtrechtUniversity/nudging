@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # "Lieberoth": (Lieberoth, "data/external/011_lieberoth/Commuter experiment_simple.csv"),
         "Milkman": (Milkman, "data/external/021_milkman/Data/StepUp Data/pptdata.csv"),
     }
-    
+
     # Cleanup old data
     outdirs = ["data/raw", "data/interim"]
     # Make sure output dirs exist and are empty
@@ -123,5 +123,3 @@ if __name__ == "__main__":
 
             # Write interim data to csv
             dataset.write_interim("data/interim/" + name + ".csv")
-
-

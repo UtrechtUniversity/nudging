@@ -1,6 +1,5 @@
 """DataSet class for Andreas Lieberoth et al 2018 (https://doi.org/10.1016/j.trf.2018.02.016)"""
 import pandas as pd
-import numpy as np
 
 from nudging.dataset.real import RealDataset, Gender, Group, convert_categorical
 

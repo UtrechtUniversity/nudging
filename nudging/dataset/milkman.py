@@ -41,7 +41,7 @@ class Milkman(RealDataset):
         return super()._load(file_path, encoding=encoding)
 
     @classmethod
-    def from_file(cls, file_path, nudge_type=None, intervention=None):
+    def from_file(cls, file_path, nudge_type=None, intervention=None): # pylint: disable=arguments-differ
         """Create dataset from file"""
         if intervention:
             cls.intervention = intervention
@@ -82,4 +82,3 @@ class Milkman(RealDataset):
         df = convert_categorical(df, "gender", {"F": Gender.FEMALE, "M": Gender.MALE})
 
         return super()._preprocess(df)
-
