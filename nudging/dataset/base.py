@@ -18,6 +18,8 @@ class BaseDataSet():
 
     def __getattr__(self, item):
         """Easier access to nudge and outcomes"""
+        if item.startswith("__"):
+            return super().__getattr__(self, item)
         if item in ["nudge", "outcome"] and item in self.standard_df:
             return self.standard_df[item].values
         return self.truth[item]
