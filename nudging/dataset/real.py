@@ -122,3 +122,18 @@ def remove_duplicate_cols(data_frame):
         result.rename(columns={col_name+"_0": col_name}, inplace=True)
         cols = result.columns
     return result
+
+
+def convert_categorical(df, col_old, conversion, col_new=None):
+    """Convet categories"""
+    if col_new is None:
+        col_new = col_old
+    orig_values = df[col_old].values
+    good_rows = np.isin(orig_values, list(conversion))
+    df = df.iloc[good_rows]
+    orig_values = df[col_old].values
+    cat_values = np.zeros(len(df), dtype=int)
+    for src, dest in conversion.items():
+        cat_values[orig_values == src] = dest
+    df.loc[:, col_new] = cat_values
+    return df

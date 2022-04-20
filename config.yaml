@@ -4,4 +4,4 @@ features:
   - nudge_type
   - nudge_domain
 plot:
-  x: age
+  x: nudge_type

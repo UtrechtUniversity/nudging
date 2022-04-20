@@ -1,8 +1,7 @@
 """DataSet class for Andreas Lieberoth et al 2018 (https://doi.org/10.1016/j.trf.2018.02.016)"""
 import pandas as pd
-import numpy as np
 
-from nudging.dataset.real import RealDataset, Gender, Group
+from nudging.dataset.real import RealDataset, Gender, Group, convert_categorical
 
 
 class Lieberoth(RealDataset):
@@ -21,7 +20,6 @@ class Lieberoth(RealDataset):
         "female": "8",
         # nudge is successfull if outcome increased
         "goal": "increase",
-
     }
 
     @classmethod
@@ -37,25 +35,11 @@ class Lieberoth(RealDataset):
             pandas.DataFrame: dataframe containing covariates, outcome, nudge
         """
         df = data_frame.copy()
-        df = _convert_categorical(df, "group", {"control": Group.CONTROL, "nudge": Group.NUDGE},
-                                  col_new="nudge")
-        df = _convert_categorical(df, "gender", {"8": Gender.FEMALE, "1": Gender.MALE})
+        df = convert_categorical(df, "group", {"control": Group.CONTROL, "nudge": Group.NUDGE},
+                                 col_new="nudge")
+        df = convert_categorical(df, "gender", {"8": Gender.FEMALE, "1": Gender.MALE})
         df["age"] = pd.to_numeric(df["age"], errors='coerce').round()
         df["outcome"] = df["swtot"]
 
         # this removes unused columns of original data
         return super()._preprocess(df)
-
-
-def _convert_categorical(df, col_old, conversion, col_new=None):
-    if col_new is None:
-        col_new = col_old
-    orig_values = df[col_old].values
-    good_rows = np.isin(orig_values, list(conversion))
-    df = df.iloc[good_rows]
-    orig_values = df[col_old].values
-    cat_values = np.zeros(len(df), dtype=int)
-    for src, dest in conversion.items():
-        cat_values[orig_values == src] = dest
-    df[col_new] = cat_values
-    return df
