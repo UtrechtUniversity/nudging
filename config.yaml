@@ -5,8 +5,8 @@ features:
   - nudge_type
 encode:
   - gender
-model_name: nb
-learner_type: probabilistic
+model_name: ridge
+learner_type: t-learner
 plot:
   x: age
 

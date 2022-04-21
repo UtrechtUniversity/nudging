@@ -4,43 +4,11 @@ import glob
 import category_encoders as ce
 from joblib import dump
 import pandas as pd
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.linear_model import LogisticRegression, Ridge, LinearRegression, SGDRegressor
-from sklearn.linear_model import ARDRegression, BayesianRidge, ElasticNet
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVR
-from sklearn.tree import DecisionTreeRegressor, ExtraTreeRegressor
 import yaml
 
-from nudging.model import BiRegressor, MonoRegressor, XRegressor
-from nudging.model.probmodel import ProbModel
+from nudging.model import regressors, learners
 from nudging.utils import clean_dirs, read_data
 
-regressors = {
-    "gauss_process": GaussianProcessRegressor,
-    "ridge": Ridge,
-    "linear": LinearRegression,
-    "logistic": LogisticRegression,
-    "nb": GaussianNB,
-    "sgd": SGDRegressor,
-    "elasticnet": ElasticNet,
-    "ard": ARDRegression,
-    "bayesian_ridge": BayesianRidge,
-    "knn": KNeighborsRegressor,
-    "mlp": MLPRegressor,
-    "svm": SVR,
-    "decision_tree": DecisionTreeRegressor,
-    "extra_tree": ExtraTreeRegressor,
-}
-
-learner_dict = {
-    "s-learner": MonoRegressor,
-    "t-learner": BiRegressor,
-    "x-learner": XRegressor,
-    "probabilistic": ProbModel
-}
 
 if __name__ == "__main__":
 
@@ -56,9 +24,7 @@ if __name__ == "__main__":
     # Choose model
 
     regressor = regressors[config["model_name"]]
-    model = learner_dict[config["learner_type"]](regressor())
-    # model = BiRegressor(BayesianRidge())
-    # model = ProbModel(LogisticRegression())
+    model = learners[config["learner_type"]](regressor())
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')
