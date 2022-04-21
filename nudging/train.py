@@ -1,14 +1,12 @@
 """Train nudging model using probabilistic classifier"""
 import glob
 
-import pandas as pd
-# from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import BayesianRidge
+import category_encoders as ce
 from joblib import dump
+import pandas as pd
 import yaml
 
-from nudging.model.biregressor import BiRegressor
-# from nudging.model.probmodel import ProbModel
+from nudging.model import regressors, learners
 from nudging.utils import clean_dirs, read_data
 
 
@@ -24,9 +22,9 @@ if __name__ == "__main__":
     predictors = config["features"]
 
     # Choose model
-    model = BiRegressor(BayesianRidge())
-    # model = ProbModel(LogisticRegression())
-    model.predictors = config["features"]
+
+    regressor = regressors[config["model_name"]]
+    model = learners[config["learner_type"]](regressor())
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')
@@ -40,7 +38,18 @@ if __name__ == "__main__":
     # Use age in decennia
     dataset["age"] = (dataset["age"]/10.0).astype({'age': 'int32'})
 
+    # Encode categories
+    encode = config.get("encode", None)
+    if encode:
+        encoder = ce.OneHotEncoder(cols=encode)
+        dataset = encoder.fit_transform(dataset)
+        predictors = list(dataset.columns)
+        predictors.remove("outcome")
+        if "nudge" in predictors:
+            predictors.remove("nudge")
+
     # train model
+    model.predictors = predictors
     model.train(dataset)
 
     # Save trained model

@@ -1,7 +1,12 @@
 features:
   - gender
   - age
-  - nudge_type
   - nudge_domain
+  - nudge_type
+encode:
+  - gender
+model_name: ridge
+learner_type: t-learner
 plot:
-  x: nudge_type
+  x: age
+
