@@ -5,5 +5,8 @@ features:
   - nudge_type
 encode:
   - gender
+model_name: nb
+learner_type: probabilistic
 plot:
   x: age
+

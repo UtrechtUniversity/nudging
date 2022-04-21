@@ -125,7 +125,6 @@ if __name__ == "__main__":
     df_nonan = read_data("data/interim/combined.csv")
     subgroups = df_nonan[features].drop_duplicates().sort_values(by=features, ignore_index=True)
 
-
     # Calculate probabilities for all subgroups and write to file
     prob = subgroups.assign(
         probability=model.predict_cate(subgroups))

@@ -2,16 +2,45 @@
 import glob
 
 import category_encoders as ce
-import pandas as pd
-# from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import BayesianRidge
 from joblib import dump
+import pandas as pd
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.linear_model import LogisticRegression, Ridge, LinearRegression, SGDRegressor
+from sklearn.linear_model import ARDRegression, BayesianRidge, ElasticNet
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.svm import SVR
+from sklearn.tree import DecisionTreeRegressor, ExtraTreeRegressor
 import yaml
 
-from nudging.model.biregressor import BiRegressor
-# from nudging.model.probmodel import ProbModel
+from nudging.model import BiRegressor, MonoRegressor, XRegressor
+from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
+regressors = {
+    "gauss_process": GaussianProcessRegressor,
+    "ridge": Ridge,
+    "linear": LinearRegression,
+    "logistic": LogisticRegression,
+    "nb": GaussianNB,
+    "sgd": SGDRegressor,
+    "elasticnet": ElasticNet,
+    "ard": ARDRegression,
+    "bayesian_ridge": BayesianRidge,
+    "knn": KNeighborsRegressor,
+    "mlp": MLPRegressor,
+    "svm": SVR,
+    "decision_tree": DecisionTreeRegressor,
+    "extra_tree": ExtraTreeRegressor,
+}
+
+learner_dict = {
+    "s-learner": MonoRegressor,
+    "t-learner": BiRegressor,
+    "x-learner": XRegressor,
+    "probabilistic": ProbModel
+}
 
 if __name__ == "__main__":
 
@@ -25,7 +54,10 @@ if __name__ == "__main__":
     predictors = config["features"]
 
     # Choose model
-    model = BiRegressor(BayesianRidge())
+
+    regressor = regressors[config["model_name"]]
+    model = learner_dict[config["learner_type"]](regressor())
+    # model = BiRegressor(BayesianRidge())
     # model = ProbModel(LogisticRegression())
 
     # combine separate datasets to one
@@ -47,7 +79,8 @@ if __name__ == "__main__":
         dataset = encoder.fit_transform(dataset)
         predictors = list(dataset.columns)
         predictors.remove("outcome")
-        predictors.remove("nudge")
+        if "nudge" in predictors:
+            predictors.remove("nudge")
 
     # train model
     model.predictors = predictors
