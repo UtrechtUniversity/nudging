@@ -27,11 +27,10 @@ if __name__ == "__main__":
     # Read combined dataset, note this is the same as used for training
     config = yaml.safe_load(open("config.yaml"))
     features = config["features"]
-    df_nonan = read_data("data/interim/combined.csv", features)
+    df_nonan = read_data("data/interim/combined.csv")
 
     # Load model
     model = load("models/nudging.joblib")
-    model.predictors = config["features"]
 
     # Calculate probabilities and check results
     dataset = df_nonan.assign(probability=model.predict_outcome(df_nonan))

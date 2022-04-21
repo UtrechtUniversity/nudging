@@ -5,7 +5,7 @@ import os
 import pandas as pd
 
 
-def read_data(filename, features):
+def read_data(filename, features=None):
     """ Read data from file and return dataframe for selected features
     Args:
         filename (str): name of csv file

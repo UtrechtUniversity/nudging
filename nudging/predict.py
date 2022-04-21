@@ -115,19 +115,20 @@ if __name__ == "__main__":
     # Make sure output dirs exist and are empty
     clean_dirs(outdirs)
 
-    # Read combined dataset, note this is the same as used for training
-    config = yaml.safe_load(open("config.yaml"))
-    features = config["features"]
-    x_axis = config["plot"]["x"]
-    df_nonan = read_data("data/interim/combined.csv", features)
-    subgroups = df_nonan[features].drop_duplicates().sort_values(by=features, ignore_index=True)
-
     # Load model
     model = load("models/nudging.joblib")
+    features = model.predictors
+
+    # Read combined dataset, note this is the same as used for training
+    config = yaml.safe_load(open("config.yaml"))
+    x_axis = config["plot"]["x"]
+    df_nonan = read_data("data/interim/combined.csv")
+    subgroups = df_nonan[features].drop_duplicates().sort_values(by=features, ignore_index=True)
+
 
     # Calculate probabilities for all subgroups and write to file
     prob = subgroups.assign(
         probability=model.predict_cate(subgroups))
     prob.to_csv("data/processed/nudge_probabilty.csv", index=False)
     print("Output written to data/processed/nudge_probabilty.csv")
-    plot_data(prob, features, "plots", x_axis, "gender")
+    plot_data(prob, features, "plots", x_axis)

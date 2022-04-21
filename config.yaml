@@ -1,7 +1,7 @@
 features:
   - gender
   - age
-  - nudge_type
   - nudge_domain
+  - nudge_type
 plot:
-  x: nudge_type
+  x: age

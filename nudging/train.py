@@ -2,6 +2,7 @@
 import glob
 
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
 # from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import BayesianRidge
 from joblib import dump
@@ -11,6 +12,22 @@ from nudging.model.biregressor import BiRegressor
 # from nudging.model.probmodel import ProbModel
 from nudging.utils import clean_dirs, read_data
 
+
+def encode_dataframe(data_frame, column):
+    """Tranform dataframe by onehot encoding one of its columns"""
+    jobs_encoder = OneHotEncoder(handle_unknown='ignore', sparse=False)
+    transformed = jobs_encoder.fit_transform(data_frame[[column]])
+
+    #Create a Pandas DataFrame of the hot encoded column
+    ohe_df = pd.DataFrame(transformed, columns=jobs_encoder.get_feature_names())
+
+    # One-hot encoding removed index; put it back
+    ohe_df.index = data_frame.index
+
+    #concat with original data
+    result = pd.concat([data_frame, ohe_df], axis=1).drop([column], axis=1)
+
+    return result
 
 if __name__ == "__main__":
 
@@ -26,7 +43,6 @@ if __name__ == "__main__":
     # Choose model
     model = BiRegressor(BayesianRidge())
     # model = ProbModel(LogisticRegression())
-    model.predictors = config["features"]
 
     # combine separate datasets to one
     files = glob.glob('data/interim/[!combined.csv]*')
@@ -40,7 +56,16 @@ if __name__ == "__main__":
     # Use age in decennia
     dataset["age"] = (dataset["age"]/10.0).astype({'age': 'int32'})
 
+    # Encode categories
+    encode = config.get("encode", None)
+    if encode:
+        dataset = encode_dataframe(dataset, encode)
+        predictors = list(dataset.columns)
+        predictors.remove("outcome")
+        predictors.remove("nudge")
+
     # train model
+    model.predictors = predictors
     model.train(dataset)
 
     # Save trained model
