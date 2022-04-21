@@ -3,5 +3,7 @@ features:
   - age
   - nudge_domain
   - nudge_type
+encode:
+  - gender
 plot:
   x: age
