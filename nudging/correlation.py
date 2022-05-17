@@ -12,6 +12,7 @@ from nudging.model.biregressor import BiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
 from nudging.simulation import generate_datasets
+from scipy import stats
 
 
 def equal_range(start, stop, n_step):
@@ -60,6 +61,25 @@ def smooth_data(xdata, ydata, n_data=100):
         new_y.append(np.nanmean(ydata[x_sorted[i_data]]))
     return new_x, new_y
 
+
+def smooth_data_2(xdata, ydata, n_data=20):
+    xdata = np.array(xdata)
+    ydata = np.array(ydata)
+    if len(np.unique(xdata)) < n_data:
+        new_x = np.unique(xdata)
+        new_y = [np.mean(ydata[xdata == x]) for x in new_x]
+        return new_x, np.array(new_y)
+
+    ydata = ydata[np.argsort(xdata)]
+    xdata = np.sort(xdata)
+    std = (np.max(xdata)-np.min(xdata))/n_data
+    xres = []
+    yres = []
+    for center in xdata:
+        mult = stats.norm(loc=center, scale=std).pdf(xdata)
+        yres.append(np.sum(ydata*mult)/np.sum(mult))
+        xres.append(np.sum(xdata*mult)/np.sum(mult))
+    return np.array(xres), np.array(yres)
 
 def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
     """Plot correlations

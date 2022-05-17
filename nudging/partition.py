@@ -1,12 +1,14 @@
-import numpy as np
-from sklearn.cluster import KMeans
-from nudging.model import BiRegressor
-from sklearn.linear_model import BayesianRidge
-from sklearn.preprocessing import normalize
-from nudging.cate import get_cate
-from nudging.evaluate_outcome import safe_spearmanr
 from collections import defaultdict
 import warnings
+
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.linear_model import BayesianRidge
+from sklearn.preprocessing import normalize
+
+from nudging.cate import get_cate
+from nudging.evaluate_outcome import safe_spearmanr
+from nudging.model import BiRegressor
 
 
 class KMeansPartitioner():

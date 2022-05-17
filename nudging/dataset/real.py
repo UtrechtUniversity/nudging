@@ -67,7 +67,7 @@ class RealDataset(BaseDataSet):
         try:
             if "nudge_type" not in result.columns:
                 result["nudge_type"] = cls.truth["nudge_type"]
-        except AttributeError:
+        except (AttributeError, KeyError):
             result["nudge_type"] = -1
         try:
             if "nudge_domain" not in result.columns:

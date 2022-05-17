@@ -11,7 +11,7 @@ import pandas as pd
 
 
 def create_data_dirs(filename):
-    """ Read excel file with open dataset and create folders using 1st author name"""
+    """Read excel file with open dataset and create folders using 1st author name"""
     data = pd.read_excel(filename)
 
     valid_ids = np.where(np.logical_not(np.isnan(data["ID"])))[0]
