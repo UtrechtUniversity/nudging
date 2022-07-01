@@ -72,7 +72,6 @@ class Milkman(RealDataset):
         data_unique = data.drop(columns=['week', 'visits', 'phase']).drop_duplicates()
 
         df = pd.merge(data_unique, data_new, on="participant_id")
-        len(df)
         df = convert_categorical(
             df,
             "exp_condition",
