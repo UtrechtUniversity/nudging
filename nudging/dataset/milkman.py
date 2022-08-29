@@ -3,7 +3,6 @@ behavioural science
 Paper: https://www.nature.com/articles/s41586-021-04128-4
 Data: https://osf.io/9av87/?view_only=8bb9282111c24f81a19c2237e7d7eba3
 """
-from pathlib import Path
 import numpy as np
 import pandas as pd
 
@@ -46,11 +45,6 @@ class Milkman(RealDataset):
         if nudge_type:
             cls.truth["nudge_type"] = nudge_type
         return super().from_file(file_path)
-        # if Path(file_path).is_dir():
-        # file_path = Path(file_path, cls._default_filename)
-        # raw_df = cls._load(file_path)
-        # standard_df = cls._preprocess(raw_df)
-        # return cls(standard_df, raw_df, file_path)
 
     @classmethod
     def _preprocess(cls, data_frame):
