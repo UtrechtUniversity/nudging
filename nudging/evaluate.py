@@ -16,8 +16,7 @@ def evaluate_probabilities(data):
     correct = sum(check)
     total = check.shape[0]
     accuracy = int(round(correct*100/total, 0))
-    print("Correct prediction of nudge success for {}% ({} out of {})". format(
-        accuracy, correct, total))
+    print(f"Correct prediction of nudge success for {accuracy}% ({correct} out of {total})")
 
     return accuracy
 
@@ -25,7 +24,8 @@ def evaluate_probabilities(data):
 if __name__ == "__main__":
 
     # Read combined dataset, note this is the same as used for training
-    config = yaml.safe_load(open("config.yaml"))
+    with open("config.yaml", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
     features = config["features"]
     df_nonan = read_data("data/interim/combined.csv", features)
 

@@ -38,7 +38,7 @@ class Milkman(RealDataset):
         return super()._load(file_path, encoding=encoding)
 
     @classmethod
-    def from_file(  # pylint: disable=arguments-differ
+    def from_file(  # pylint: disable=arguments-differ, duplicate-code
             cls, file_path, nudge_type=None, intervention=None):
         """Create dataset from file"""
         if intervention:
@@ -82,7 +82,8 @@ class Milkman(RealDataset):
 
     @classmethod
     @property
-    def available_interventions(self):
+    def available_interventions(cls):
+        """List all the available interventions."""
         return [
             'Exercise Commitment Contract Encouraged',
             'Free Audiobook Provided',

@@ -48,7 +48,7 @@ def plot_probability(data, labels, outdir, xaxis, cat="nudge_type"):
         dataset = data[(data[cat] == nudge) & condition]
         if dataset.empty:
             continue
-        label = "{} {}".format(cat, nudge)
+        label = f"{cat} {nudge}"
         dataset.plot(
             ax=axis, kind='bar', x=xaxis, y='probability', label=label,
             color=colors[i % 7], width=width, position=position)
@@ -116,7 +116,8 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Read combined dataset, note this is the same as used for training
-    config = yaml.safe_load(open("config.yaml"))
+    with open("config.yaml", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
     features = config["features"]
     x_axis = config["plot"]["x"]
     df_nonan = read_data("data/interim/combined.csv", features)

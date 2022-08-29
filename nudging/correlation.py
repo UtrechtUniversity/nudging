@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import stats
 from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
@@ -12,7 +13,6 @@ from nudging.model.biregressor import BiRegressor
 from nudging.model.probmodel import ProbModel
 from nudging.cate import get_cate_correlations, get_cate_subgroups
 from nudging.simulation import generate_datasets
-from scipy import stats
 
 
 def equal_range(start, stop, n_step):
@@ -63,6 +63,7 @@ def smooth_data(xdata, ydata, n_data=100):
 
 
 def smooth_data_2(xdata, ydata, n_data=20):
+    """Smooth data between interval, but use normal distribution"""
     xdata = np.array(xdata)
     ydata = np.array(ydata)
     if len(np.unique(xdata)) < n_data:
@@ -80,6 +81,7 @@ def smooth_data_2(xdata, ydata, n_data=20):
         yres.append(np.sum(ydata*mult)/np.sum(mult))
         xres.append(np.sum(xdata*mult)/np.sum(mult))
     return np.array(xres), np.array(yres)
+
 
 def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
     """Plot correlations
@@ -110,7 +112,8 @@ if __name__ == "__main__":
     model2 = ProbModel(LogisticRegression())
 
     # Get predictors from config.yaml
-    config = yaml.safe_load(open("config.yaml"))
+    with open("config.yaml", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
     model1.predictors = config["features"]
     model2.predictors = config["features"]
 

@@ -1,3 +1,4 @@
+"""Methods and classes for computing subgroup CATEs."""
 from collections import defaultdict
 import warnings
 
@@ -11,7 +12,7 @@ from nudging.evaluate_outcome import safe_spearmanr
 from nudging.model import BiRegressor
 
 
-class KMeansPartitioner():
+class KMeansPartitioner():  # pylint: disable=too-many-instance-attributes
     """Partitioner that uses k-means to partition patients"""
     name = "kmeans"
 
@@ -29,7 +30,7 @@ class KMeansPartitioner():
         """
         # We need this model to extract the feature matrix
         model = BiRegressor(BayesianRidge())
-        self.X, _nudge, _outcome = model._X_nudge_outcome(dataset.standard_df)
+        self.X, _nudge, _outcome = model._X_nudge_outcome(dataset.standard_df)  # pylint: disable=protected-access
 
         # Normalize the feature matrix
         self.X = normalize(self.X, axis=0, norm="l1")*len(self.X)
@@ -196,7 +197,7 @@ class KMeansPartitioner():
                     yield clusters == i
 
 
-class KSplitPartitioner():
+class KSplitPartitioner():  # pylint: disable=too-few-public-methods
     """Partition the dataset by splitting it on single columns
 
     The partitioner iterates over all columns and for each of
@@ -223,7 +224,7 @@ class KSplitPartitioner():
             participants.
         """
         model = BiRegressor(BayesianRidge())
-        X, _, _ = model._X_nudge_outcome(dataset.standard_df)
+        X, _, _ = model._X_nudge_outcome(dataset.standard_df)  # pylint: disable=protected-access
 
         # Iterate over k-splits
         for k_split in range(2, 6):
@@ -239,12 +240,13 @@ class KSplitPartitioner():
                     yield mask
 
 
-class RandomPartitioner():
+class RandomPartitioner():  # pylint: disable=too-few-public-methods
     """Partitioner that creates random partitions"""
     name = "random"
 
     @classmethod
     def generate(cls, dataset):
+        """Generate random splits."""
         for k_split in range(2, 6):
             for _ in range(10):
                 yield np.random.randn(len(dataset)) < 1/k_split
@@ -291,7 +293,7 @@ def compute_partition_correlation(model, dataset, *all_partitioner):
     # Iterate over the folds.
     for cate, idx in cate_results:
         sub_dataset = dataset.split(idx)
-        _, nudge, outcomes = model._X_nudge_outcome(sub_dataset.standard_df)
+        _, nudge, outcomes = model._X_nudge_outcome(sub_dataset.standard_df)  # pylint: disable=protected-access
         treatment = nudge == 1
         control = nudge == 0
         for partitioner in all_partitioner:
