@@ -45,11 +45,12 @@ class Milkman(RealDataset):
             cls.intervention = intervention
         if nudge_type:
             cls.truth["nudge_type"] = nudge_type
-        if Path(file_path).is_dir():
-            file_path = Path(file_path, cls._default_filename)
-        raw_df = cls._load(file_path)
-        standard_df = cls._preprocess(raw_df)
-        return cls(standard_df, raw_df, file_path)
+        return super().from_file(file_path)
+        # if Path(file_path).is_dir():
+        # file_path = Path(file_path, cls._default_filename)
+        # raw_df = cls._load(file_path)
+        # standard_df = cls._preprocess(raw_df)
+        # return cls(standard_df, raw_df, file_path)
 
     @classmethod
     def _preprocess(cls, data_frame):

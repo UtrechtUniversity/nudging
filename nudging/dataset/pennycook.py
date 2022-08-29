@@ -1,4 +1,4 @@
-"""DataSet class for Pennycook et al 2020,
+"""Dataset class for Pennycook et al 2020,
 "Fighting COVID-19 Misinformation on  Social Media:
 Experimental Evidence for  a Scalable Accuracy-Nudge Intervention"
 (https://journals.sagepub.com/doi/10.1177/0956797620939054)
