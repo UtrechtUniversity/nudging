@@ -39,12 +39,13 @@ def get_datasets(n=500, base_cache_dir=None):
             pkl.dump(sim_datasets, f)
     return sim_datasets
 
+
 def get_correlations(datasets, base_cache_dir=None):
     if base_cache_dir is None:
         base_cache_dir = Path(Path.home(), "cache", "nudging")
 
     n = len(datasets)
-    cache_dir =  Path(base_cache_dir, "partition")
+    cache_dir = Path(base_cache_dir, "partition")
     cache_dir.mkdir(exist_ok=True)
     correlation_fp = Path(cache_dir, f"correlation{n}.pkl")
     if correlation_fp.is_file():
@@ -99,7 +100,6 @@ def get_models(key="default"):
         "decision_tree": DecisionTreeRegressor,
         "extra_tree": ExtraTreeRegressor,
     }
-
 
     if key in meta_conversion:
         return {key + " " + regressor_name: meta_conversion[key](regressor_class())
@@ -207,11 +207,11 @@ def get_cate_outcomes(datasets, models="meta", base_cache_dir=None):
 def parameter_descriptions():
     return {
         "noise_frac": "Proportion noise",
-        "n_samples": "# of samples",
+        "n_samples": "Number of people",
         "control_precision": "Control group response heterogeneity",
         "control_unique": "Control/treatment group response similarity",
-        "n_features": "# of features",
+        "n_features": "Number of features",
         "avg_correlation": "Average correlation between features/outcome",
         "balance": "Proportion treatment group",
-        "n_rescale": "# of categorical variables",
+        "n_rescale": "Number of categorical variables",
     }
