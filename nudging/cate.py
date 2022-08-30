@@ -1,5 +1,4 @@
 """Module for calculating conditional average treatment effect (cate) """
-import pandas as pd
 from scipy.stats import spearmanr
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
