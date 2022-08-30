@@ -1,3 +1,5 @@
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/UtrechtUniversity/nudging/HEAD?labpath=examples%2Ftutorial.ipynb)
+
 # Precision nudging with Machine Learning
 
 
@@ -32,6 +34,11 @@ The project can be split in several steps:
 - [We investigate different methods of determining the heterogeneity of treatment effects](docs/methods.md);
 - [We create realistic synthetic data to compare the performance of the different methods](docs/simulations.md);
 - We investigate the validity of the methods on open data from published studies.
+
+
+## Online Tutorial
+
+We have a quick online [tutorial](https://mybinder.org/v2/gh/UtrechtUniversity/nudging/HEAD?labpath=examples%2Ftutorial.ipynb).
 
 ## Getting Started
 
