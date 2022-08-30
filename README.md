@@ -43,65 +43,22 @@ We have a quick online [tutorial](https://mybinder.org/v2/gh/UtrechtUniversity/n
 ## Getting Started
 
 ### Prerequisites
-This project makes use of Python 3.9.2 and [Poetry](https://python-poetry.org/) for managing dependencies. 
 
-### Installation
-You can simply install the dependencies with 
-`poetry install` in the projects root folder.
+Install a version of Python>=3.6 for this project.
 
-### Testing
-The test are located in the `tests` folder. To run the tests execute:
-`poetry run pytest tests`
+### Installation (locally)
 
-Note that the `poetry run` command executes the given command inside the project’s virtual environment.
+Open a command line terminal (not a python interpreter!).
 
-## Usage
-The data processing pipeline consists of several stages which we describe below.
+Clone the repository with `git clone https://github.com/UtrechtUniversity/nudging.git`.
 
-### Get Data
-The data used in this project is under [DVC](https://dvc.org/) version control. To get access to the data contact one of the repo contributors. The following assumes that the external data has been downloaded. To check the downloaded data:
+Go into the newly created directory `cd nudging` (Linux/MacOS).
 
-`poetry run python nudging/check_data.py`
+Install the package with `pip install .`
 
-This should give a summary of the datasets stored in `data/external`.
+### Tutorial
 
-### Prepare
-Calculate nudge succes per subject with:
-
-`poetry run python nudging/prepare.py`
-
-This generates a csv file for each study in `data/interim` and a combined csv file `data/interim/combined.csv`. Each row represents a subject and contains personal characteristics (covariates) and nudge success calculated using propensity score matching. The covariates used for propensity score matching are defined per dataset/study separately.
-
-### Train
-First, choose the features to be used for training through the configuration file `config.yaml`. Only datasets containing all features will be used. By default, we use:
-- nudge_domain
-- nudge_type
-- gender
-- age
-
-Train a probabilistic classifier on the combined dataset:
-
-`poetry run python nudging/train.py`
-
-By default logistic regression is used, but you can also select naive Bayes with:
-
-`poetry run python nudging/train.py naive_bayes`
-
-The trained model is written to `models/nudging.joblib`.
-
-### Evaluate
-Evaluate the trained model using the combined dataset:
-
-`poetry run python nudging/evaluate.py`
-
- Note that we have not (yet) split off the dataset for training and evaluation. This means we apply the model on the same dataset we trained on. The computed probability is rounded to 0 or 1 and compared to the nudge success. TO DO: evaluate on unused data.
-
-### Predict
-Predict nudge effectiveness using the trained model:
-
-`poetry run python nudging/predict.py`
-
-The predicted nudge effectiveness per subgroup is written to `data/processed/nudge_probability.csv`. Also, plots of the nudge effectiveness are generated and stored in the `plots` folder.
+The tutorial is available under `examples/tutorial.ipynb`.
 
 
 <!-- CONTRIBUTING -->
