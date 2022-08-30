@@ -53,7 +53,10 @@ class ConvertGender(BasePipe):
         truth = X.truth
         col = find_free_col(
             X, n_features_uncorrelated=truth["n_features_uncorrelated"])
-        X.standard_df[col] = rescale(X.standard_df[col].values, 0, 2)
+        vals = X.standard_df[col].values
+        q = np.random.rand()*0.2 + 0.4
+        qval = np.quantile(vals, q)
+        X.standard_df[col] = (vals > qval).astype(int)
         X.standard_df.rename(columns={col: "gender"}, inplace=True)
         if "n_rescale" in truth:
             truth["n_rescale"] += 1

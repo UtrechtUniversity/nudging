@@ -75,8 +75,12 @@ def execute_sequential(jobs, target, progress_bar=False, args=[],
                        kwargs={}):
     if progress_bar:
         results = []
-        for job in tqdm(jobs):
-            results.append(target(*args, **kwargs, **job))
+        if isinstance(progress_bar, tqdm):
+            for job in jobs:
+                results.append(target(*args, **kwargs, **job))
+        else:
+            for job in tqdm(jobs):
+                results.append(target(*args, **kwargs, **job))
     else:
         results = [target(*args, **kwargs, **job) for job in jobs]
     return results

@@ -11,7 +11,7 @@ import pandas as pd
 
 
 def create_data_dirs(filename):
-    """ Read excel file with open dataset and create folders using 1st author name"""
+    """Read excel file with open dataset and create folders using 1st author name"""
     data = pd.read_excel(filename)
 
     valid_ids = np.where(np.logical_not(np.isnan(data["ID"])))[0]
@@ -41,7 +41,7 @@ def create_data_dirs(filename):
         if download_fp.exists():
             continue
 
-        with open(download_fp, "w") as file_:
+        with open(download_fp, "w", encoding="utf-8") as file_:
             json.dump(download_properties, file_, indent=4)
         print("--------------------------------")
         print(download_fp, download_fp.exists())
@@ -55,7 +55,7 @@ def read_info(info_fp):
         dict: contents of data_info.json
     """
     try:
-        with open(info_fp, "r") as json_file:
+        with open(info_fp, "r", encoding="utf-8") as json_file:
             result = json.load(json_file)
             # pprint(result)
     except FileNotFoundError:

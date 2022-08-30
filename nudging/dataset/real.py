@@ -52,7 +52,10 @@ class RealDataset(BaseDataSet):
         # Remove unused columns
 
         result = data_frame.copy(deep=True)
-        used_columns = cls.truth["covariates"] + ["nudge", "outcome"]
+        try:
+            used_columns = cls.truth["covariates"] + ["nudge", "outcome"]
+        except KeyError:
+            used_columns = list(data_frame)
         result = result.loc[:, used_columns]
 
         # Convert to a numeric type
@@ -67,20 +70,20 @@ class RealDataset(BaseDataSet):
         try:
             if "nudge_type" not in result.columns:
                 result["nudge_type"] = cls.truth["nudge_type"]
-        except AttributeError:
+        except (AttributeError, KeyError):
             result["nudge_type"] = -1
         try:
             if "nudge_domain" not in result.columns:
                 result["nudge_domain"] = cls.truth["nudge_domain"]
-        except AttributeError:
+        except (AttributeError, KeyError):
             result["nudge_domain"] = -1
 
         # Remove duplicates
         result = remove_duplicate_cols(result)
 
         # shuffle rows
-        np.random.seed(1234123)
-        result = result.sample(frac=1)
+        # np.random.seed(1234123)
+        # result = result.sample(frac=1)
 
         return result
 

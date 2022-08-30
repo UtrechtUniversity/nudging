@@ -3,15 +3,16 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.linear_model import BayesianRidge
-from sklearn.linear_model import LogisticRegression
-from tqdm import tqdm
-import yaml
+from scipy import stats
+# from sklearn.linear_model import BayesianRidge
+# from sklearn.linear_model import LogisticRegression
+# from tqdm import tqdm
+# import yaml
 
-from nudging.model.biregressor import BiRegressor
-from nudging.model.probmodel import ProbModel
-from nudging.cate import get_cate_correlations, get_cate_subgroups
-from nudging.simulation import generate_datasets
+# from nudging.model.biregressor import BiRegressor
+# from nudging.model.probmodel import ProbModel
+# from nudging.cate import get_cate_correlations #, get_cate_subgroups
+# from nudging.simulation import generate_datasets
 
 
 def equal_range(start, stop, n_step):
@@ -61,6 +62,27 @@ def smooth_data(xdata, ydata, n_data=100):
     return new_x, new_y
 
 
+def smooth_data_2(xdata, ydata, n_data=20):
+    """Smooth data between interval, but use normal distribution"""
+    xdata = np.array(xdata)
+    ydata = np.array(ydata)
+    if len(np.unique(xdata)) < n_data:
+        new_x = np.unique(xdata)
+        new_y = [np.mean(ydata[xdata == x]) for x in new_x]
+        return new_x, np.array(new_y)
+
+    ydata = ydata[np.argsort(xdata)]
+    xdata = np.sort(xdata)
+    std = (np.max(xdata)-np.min(xdata))/n_data
+    xres = []
+    yres = []
+    for center in xdata:
+        mult = stats.norm(loc=center, scale=std).pdf(xdata)
+        yres.append(np.sum(ydata*mult)/np.sum(mult))
+        xres.append(np.sum(xdata*mult)/np.sum(mult))
+    return np.array(xres), np.array(yres)
+
+
 def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
     """Plot correlations
     Args:
@@ -83,60 +105,61 @@ def plot_correlations(outdir, datasets_, attr, *args, **kwargs):
     plt.savefig(filename)
 
 
-if __name__ == "__main__":
-
-    # Choose model
-    model1 = BiRegressor(BayesianRidge())
-    model2 = ProbModel(LogisticRegression())
-
-    # Get predictors from config.yaml
-    config = yaml.safe_load(open("config.yaml"))
-    model1.predictors = config["features"]
-    model2.predictors = config["features"]
-
-    # Generate simulated datasets
-    np.random.seed(9817274)
-    datasets = generate_datasets(n=1000)
-
-    attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
-
-    # Compute correlations
-
-    correlations1 = []
-    correlations2 = []
-    # subgroups observed cate
-    for d in tqdm(datasets):
-        PLOTDIR = "plots_subgroups_cate_obs"
-        cor = get_cate_subgroups(model1, d)
-        correlations1.append(cor)
-        cor = get_cate_subgroups(model2, d)
-        correlations2.append(cor)
-
-    for attribute in attributes:
-        plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
-
-    # subgroups modelled cate
-    correlations1 = []
-    correlations2 = []
-    for d in tqdm(datasets):
-        PLOTDIR = "plots_subgroups_cate_model"
-        cor = get_cate_subgroups(model1, d, d.truth["cate"])
-        correlations1.append(cor)
-        cor = get_cate_subgroups(model2, d, d.truth["cate"])
-        correlations2.append(cor)
-
-    for attribute in attributes:
-        plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
-
-    # individual correlations
-    correlations1 = []
-    correlations2 = []
-    for d in tqdm(datasets):
-        PLOTDIR = "plots_ind_cate_model"
-        cor = get_cate_correlations(model1, d, d.truth["cate"])
-        correlations1.append(np.mean(cor))
-        cor = get_cate_correlations(model2, d, d.truth["cate"])
-        correlations2.append(np.mean(cor))
-
-    for attribute in attributes:
-        plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
+# if __name__ == "__main__":
+#
+#     # Choose model
+#     model1 = BiRegressor(BayesianRidge())
+#     model2 = ProbModel(LogisticRegression())
+#
+#     # Get predictors from config.yaml
+#     with open("config.yaml", encoding="utf-8") as f:
+#         config = yaml.safe_load(f)
+#     model1.predictors = config["features"]
+#     model2.predictors = config["features"]
+#
+#     # Generate simulated datasets
+#     np.random.seed(9817274)
+#     datasets = generate_datasets(n=1000)
+#
+#     attributes = ["nudge_avg", "noise_frac", "n_samples", "control_unique", "control_precision"]
+#
+#     # Compute correlations
+#
+#     correlations1 = []
+#     correlations2 = []
+#     # subgroups observed cate
+#     for d in tqdm(datasets):
+#         PLOTDIR = "plots_subgroups_cate_obs"
+#         cor = get_cate_subgroups(model1, d)
+#         correlations1.append(cor)
+#         cor = get_cate_subgroups(model2, d)
+#         correlations2.append(cor)
+#
+#     for attribute in attributes:
+#         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
+#
+#     # subgroups modelled cate
+#     correlations1 = []
+#     correlations2 = []
+#     for d in tqdm(datasets):
+#         PLOTDIR = "plots_subgroups_cate_model"
+#         cor = get_cate_subgroups(model1, d, d.truth["cate"])
+#         correlations1.append(cor)
+#         cor = get_cate_subgroups(model2, d, d.truth["cate"])
+#         correlations2.append(cor)
+#
+#     for attribute in attributes:
+#         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)
+#
+#     # individual correlations
+#     correlations1 = []
+#     correlations2 = []
+#     for d in tqdm(datasets):
+#         PLOTDIR = "plots_ind_cate_model"
+#         cor = get_cate_correlations(model1, d, d.truth["cate"])
+#         correlations1.append(np.mean(cor))
+#         cor = get_cate_correlations(model2, d, d.truth["cate"])
+#         correlations2.append(np.mean(cor))
+#
+#     for attribute in attributes:
+#         plot_correlations(PLOTDIR, datasets, attribute,  correlations1, correlations2, n_data=50)

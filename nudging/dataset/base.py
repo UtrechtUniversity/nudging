@@ -18,6 +18,8 @@ class BaseDataSet():
 
     def __getattr__(self, item):
         """Easier access to nudge and outcomes"""
+        if item.startswith("__"):
+            return super().__getattr__(self, item)  # pylint: disable=no-member
         if item in ["nudge", "outcome"] and item in self.standard_df:
             return self.standard_df[item].values
         return self.truth[item]
@@ -86,6 +88,9 @@ class BaseDataSet():
         """
         if len(idx_sets) == 0:
             return [self]
+
+        if len(idx_sets) == 1:
+            return self._split_once(idx_sets[0])
 
         return [self._split_once(idx) for idx in idx_sets]
 

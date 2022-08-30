@@ -20,7 +20,8 @@ if __name__ == "__main__":
     clean_dirs(outdirs)
 
     # Get predictors from config.yaml
-    config = yaml.safe_load(open("config.yaml"))
+    with open("config.yaml", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
     predictors = config["features"]
 
     # Choose model

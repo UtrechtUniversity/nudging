@@ -5,10 +5,8 @@ import numpy as np
 class MonoRegressor(BaseModel):
     """Class for MonoRegressor model
 
-    This model is a s-learner, which means that two models
-    are trained: one on the nudged group and one on the control
-    group. The CATE is then simply computed by the difference
-    between the models.
+    This model is a s-learner, which means that only a single model
+    is trained, with the treatment indicator as an extra feature.
     """
     def train(self, data):
         X, nudge, outcome = self._X_nudge_outcome(data)
