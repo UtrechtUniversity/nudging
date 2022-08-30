@@ -3,7 +3,7 @@ import numpy as np
 from nudging.simulation.utils import mixed_features
 from nudging.model.biregressor import BiRegressor
 from sklearn.linear_model import BayesianRidge
-from nudging.cate import get_cate, get_cate_subgroups, get_cate_correlations,\
+from nudging.cate import get_cate, get_cate_correlations,\
     measure_top_perf, get_cate_top_performance
 from nudging.simulation import generate_datasets
 
@@ -31,12 +31,12 @@ def test_get_cate(sim_matrix):
     assert len(all_idx) == len(sim_matrix)
     assert len(all_idx) == len(np.unique(all_idx))
 
-
-def test_cate_subgroups(sim_matrix_age):
-    model = BiRegressor(BayesianRidge())
-    model.predictors = ["age", "gender"]
-    results = get_cate_subgroups(model, sim_matrix_age, true_cate=sim_matrix_age.cate)
-    assert not np.isnan(results)
+#
+# def test_cate_subgroups(sim_matrix_age):
+#     model = BiRegressor(BayesianRidge())
+#     model.predictors = ["age", "gender"]
+#     results = get_cate_subgroups(model, sim_matrix_age, true_cate=sim_matrix_age.cate)
+#     assert not np.isnan(results)
 
 
 def test_get_cate_correlations(sim_matrix):
