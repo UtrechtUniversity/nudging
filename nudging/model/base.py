@@ -91,7 +91,8 @@ class BaseModel(ABC):
         return cate
 
     def _X_nudge_outcome(self, data):
-        return *self._X_nudge(data),  data["outcome"].values
+        X, nudge = self._X_nudge(data)
+        return X, nudge,  data["outcome"].values
 
     def _X_nudge(self, data):
         self.set_predictors(data)
