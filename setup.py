@@ -14,7 +14,7 @@ setup(
     description='Precision nudging package',
     long_description=long_description,
     packages=find_packages(exclude=['data', 'docs', 'tests', 'examples']),
-    python_requires='~=3.6',
+    python_requires='~=3.7',
     install_requires=[
         "pandas",
         "numpy",
