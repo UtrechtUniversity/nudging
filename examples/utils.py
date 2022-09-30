@@ -37,6 +37,7 @@ def get_datasets(n=500, base_cache_dir=None):
         sim_datasets = generate_datasets(n)
         with open(dataset_fp, "wb") as f:
             pkl.dump(sim_datasets, f)
+
     return sim_datasets
 
 
@@ -50,7 +51,7 @@ def get_correlations(datasets, base_cache_dir=None):
     correlation_fp = Path(cache_dir, f"correlation{n}.pkl")
     if correlation_fp.is_file():
         with open(correlation_fp, "rb") as f:
-            return pkl.load(f)
+            return convert_names(pkl.load(f))
 
     np.random.seed(28374582)
     models = get_models("default")
@@ -68,17 +69,18 @@ def get_correlations(datasets, base_cache_dir=None):
 
     with open(correlation_fp, "wb") as f:
         pkl.dump(all_results, f)
+    return convert_names(all_results)
     return all_results
 
 
 def get_models(key="default"):
     if key == "default":
         return {
-            "mdm": MDMModel(ARDRegression()),
-            "prob_log": ProbModel(LogisticRegression()),
-            "prob_bay": ProbModel(ARDRegression()),
-            "t-learner": BiRegressor(ARDRegression()),
-            "pca": PCAModel(ARDRegression()),
+            "t-learner (ARD)": BiRegressor(ARDRegression()),
+            "propensity_classifier (log)": ProbModel(LogisticRegression()),
+            "propensity_regressor (ARD)": ProbModel(ARDRegression()),
+            "mdm (ARD)": MDMModel(ARDRegression()),
+            "pca (ARD)": PCAModel(ARDRegression()),
         }
 
     meta_conversion = {
@@ -118,6 +120,20 @@ def get_models(key="default"):
 
     raise ValueError(f"Unknown model name '{key}'")
 
+
+def convert_names(results):
+    conversion = {"t-learner": "t-learner (ARD)",
+                  "prob_log": "propensity_classifier (log)",
+                  "prob_bay": "propensity_regressor (ARD)",
+                  "mdm": "mdm (ARD)",
+                  "pca": "pca (ARD)"}
+    if len(set(list(conversion)) | set(list(results))) != len(conversion):
+        return results
+
+    return {new_name: results[old_name] for old_name, new_name in conversion.items()
+            if old_name in results}
+
+
 @ignore_warnings(category=ConvergenceWarning)
 # def compute_learners(datasets, model, i_data):#, regressor_name, learner_type):
 def compute_learners(kwargs):
@@ -148,6 +164,8 @@ def run_model_2(model, datasets, pbar):
     results = pool.map(compute_learners, jobs)
     pbar.update(len(jobs))
     return results
+
+
 
 # def aggregate_results(results):
 #     if isinstance(results, dict):
