@@ -125,8 +125,8 @@ def convert_names(results):
     conversion = {"t-learner": "t-learner (ARD)",
                   "prob_log": "propensity_classifier (log)",
                   "prob_bay": "propensity_regressor (ARD)",
-                  "mdm": "mdm (ARD)",
-                  "pca": "pca (ARD)"}
+                  "mdm": "MDM (ARD)",
+                  "pca": "PCA (ARD)"}
     if len(set(list(conversion)) | set(list(results))) != len(conversion):
         return results
 
