@@ -18,7 +18,7 @@ setup(
     install_requires=[
         "pandas",
         "numpy",
-        "sklearn",
+        "scikit-learn",
         "scipy",
         "seaborn",
         "pyreadstat",
