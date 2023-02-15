@@ -231,5 +231,5 @@ def parameter_descriptions():
         "n_features": "Number of features",
         "avg_correlation": "Average correlation between features/outcome",
         "balance": "Proportion treatment group",
-        "n_rescale": "Number of categorical variables",
+        "n_rescale": "Number of ordinal variables",
     }
